@@ -1,0 +1,17 @@
+__pycache__
+lib/__pycache__
+tests
+tests/
+tests*
+10*
+lib/scratchpad.py
+scratchpad.py
+*.PNG
+*.png
+*.jpg
+*.jpeg
+*.JPEG
+*.GIF
+*.gif
+.vscode/
+.vscode/*
