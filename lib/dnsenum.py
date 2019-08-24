@@ -1,30 +1,72 @@
 #!/usr/bin/env python3
 
-import multiprocessing
-import subprocess
-import shlex
+import os
 
-from multiprocessing.pool import ThreadPool
-
-
-def call_proc(cmd):
-    """ This runs in a separate thread. """
-    #subprocess.call(shlex.split(cmd))  # This will block until cmd finishes
-    p = subprocess.Popen(shlex.split(cmd), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    out, err = p.communicate()
-    return (out, err)
+# from multiprocessing import Pool
+import time
+from sty import fg, bg, ef, rs, RgbFg
+from lib import nmapParser
+from lib import enumWebSSL
+from subprocess import call
 
 
-pool = ThreadPool(multiprocessing.cpu_count())
-results = []
-for i in range(1, 20):
-    arguments += str(i) + "_image.jpg "
-    results.append(pool.apply_async(call_proc, ("./combine" + arguments, )))
+class DnsEnum:
+    def __init__(self, target):
+        self.target = target
+        self.processes = ""
+        # self.domains = ""
+        # self.domainName = []
 
-# Close the pool and wait for each running task to complete
-pool.close()
-pool.join()
-for result in results:
-    out, err = result.get()
-    print("out: {} err: {}".format(out, err))
-subprocess.call("./merge_resized_images")
+    def Scan(self):
+        np = nmapParser.NmapParserFunk(self.target)
+        np.openPorts()
+        dnsPort = np.dns_ports
+        if len(dnsPort) == 0:
+            pass
+        else:
+            if not os.path.exists("{}-Report/dns".format(self.target)):
+                os.makedirs("{}-Report/dns".format(self.target))
+
+            webssl = enumWebSSL.EnumWebSSL(self.target)
+            webssl.getDomainName()
+            dns = webssl.domainName
+            # print(dns)
+
+            # dnsnoquotes = "[{0}]".format("".join(map(str, dns)))
+            # print(str(dnsnoquotes))
+
+            if dns:
+                for i in dns:
+                    dig_command = "dig axfr @{} {} | tee {}-Report/dns/dig-{}-{}.log".format(
+                        self.target, i, self.target, self.target, i
+                    )
+                    green_plus = fg.li_green + "+" + fg.rs
+                    cmd_info = "[" + green_plus + "]"
+                    print(cmd_info, dig_command)
+                    call(dig_command, shell=True)
+                    filterZoneTransferDomainsCMD = (
+                        "grep -v ';' {}-Report/dns/dig-{}-{}.log ".format(
+                            self.target, self.target, i
+                        )
+                        + "| grep -v -e '^[[:space:]]*$' "
+                        + "| awk '{print $1}' "
+                        + "| sed 's/.$//' | sort -u >{}-Report/dns/zonexfer-domains.log".format(
+                            self.target
+                        )
+                    )
+                    # print(filterZoneTransferDomainsCMD)
+                    call(filterZoneTransferDomainsCMD, shell=True)
+
+                    commands = (
+                        "dnsenum --dnsserver {} --enum -f /usr/share/seclists/Discovery/DNS/subdomains-top1mil-5000.txt -r {} | tee {}-Report/dns/dsnenum-{}-{}.log".format(
+                            self.target, i, self.target, self.target, i
+                        ),
+                        # "gobuster dns -d {} -w /usr/share/seclists/Discovery/DNS/subdomains-top1mil-5000.txt -t 80 -o {}-Report/dns/gobuster-{}-{}.log".format(
+                        #     i, self.target, self.target, i
+                        # ),
+                    )
+                    for cmd in commands:
+                        print(cmd_info, cmd)
+                        call(cmd, shell=True)
+                    self.processes = commands
+                    # self.domains = dns

@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 
 from lib import topOpenPorts
-from lib import enumServices
+from lib import nmapOpenPorts
 from lib import nmapParser
 from lib import enumWeb
 from lib import enumWebSSL
 from lib import smbEnum
+from lib import dnsenum
 import argparse
 import time
 import sys
@@ -20,7 +21,19 @@ from termcolor import colored
 from sty import fg, bg, ef, rs, RgbFg
 import colorama
 from colorama import Fore, Back, Style
+
 colorama.init()
+
+green_plus = fg.li_green + "+" + fg.rs
+cmd_info = "[" + green_plus + "]"
+
+intervals = (
+    ("weeks", 604800),  # 60 * 60 * 24 * 7
+    ("days", 86400),  # 60 * 60 * 24
+    ("hours", 3600),  # 60 * 60
+    ("minutes", 60),
+    ("seconds", 1),
+)
 
 
 def banner():
@@ -38,15 +51,6 @@ def banner():
     print_art(msg, color)
 
 
-intervals = (
-    ('weeks', 604800),  # 60 * 60 * 24 * 7
-    ('days', 86400),  # 60 * 60 * 24
-    ('hours', 3600),  # 60 * 60
-    ('minutes', 60),
-    ('seconds', 1),
-)
-
-
 def display_time(seconds, granularity=2):
     result = []
 
@@ -55,68 +59,124 @@ def display_time(seconds, granularity=2):
         if value:
             seconds -= value * count
             if value == 1:
-                name = name.rstrip('s')
+                name = name.rstrip("s")
             result.append("{} {}".format(value, name))
-    return ', '.join(result[:granularity])
+    return ", ".join(result[:granularity])
 
 
 def main():
     banner()
     startTimer = time.time()
     parser = argparse.ArgumentParser()
-    parser.add_argument(
-        '-t',
-        '--target',
-        help="Single IPv4 Target to Scan",
-    )
+    parser.add_argument("-t", "--target", help="Single IPv4 Target to Scan")
 
     args = parser.parse_args()
     # print(args)
-    if args.target:
+    def getOpenPorts():
         p = topOpenPorts.TopOpenPorts(args.target)
         p.Scan()
-        # np = nmapParser.NmapParserFunk(args.target)
-        # np.openPorts()
+
+    def enumHTTP():
+        d = fg.cyan + "Running default nmap scripts on all http ports:" + fg.rs
+        print(d)
         eweb = enumWeb.EnumWeb(args.target)
         eweb.Scan()
         web_enum_commands = eweb.processes
-        green_plus = fg.li_green + '+' + fg.rs
-        cmd_info = '[' + green_plus + ']'
-        webssl = enumWebSSL.EnumWebSSL(args.target)
-        webssl.Scan()
-        web_ssl_enum_commands = webssl.processes
-        # print(web_enum_commands)
-        smb = smbEnum.SmbEnum(args.target)
-        smb.Scan()
-        smb_enum_commands = smb.processes
-        # commands1 = str(tuple(web_enum_commands) + tuple(smb_enum_commands))
-        # commands = tuple(commands1)
-        a = fg.cyan + 'Enumerating HTTP Ports, Running the following commands:' + fg.rs
+        a = fg.cyan + "Enumerating HTTP Ports, Running the following commands:" + fg.rs
         print(a)
         for command in web_enum_commands:
             print(cmd_info, command)
-        pool = Pool(5)  # Run 3 concurrent commands at a time
-        for i, returncode in enumerate(pool.imap(partial(call, shell=True), web_enum_commands)):
+        pool = Pool(2)
+        for i, returncode in enumerate(
+            pool.imap(partial(call, shell=True), web_enum_commands)
+        ):
             if returncode != 0:
                 print("{} command failed: {}".format(i, returncode))
 
-        b = fg.cyan + 'Enumerating HTTPS/SSL Ports, Running the following commands:' + fg.rs
+    def enumHTTPS():
+        e = fg.cyan + "Running SSLSCAN, Checking for Domain Names:" + fg.rs
+        print(e)
+        webssl = enumWebSSL.EnumWebSSL(args.target)
+        webssl.Scan()
+        dnsName = webssl.domainName
+        web_ssl_enum_commands = webssl.processes
+        # print("{} has domain name: ".format(args.target), webssl.domainName)
+        b = (
+            fg.cyan
+            + "Enumerating HTTPS/SSL Ports, Running the following commands:"
+            + fg.rs
+        )
         print(b)
-        for command in web_ssl_enum_commands:
-            print(cmd_info, command)
-        pool2 = Pool(5)  # Run 5 concurrent commands at a time
-        for i, returncode in enumerate(pool2.imap(partial(call, shell=True),
-                                                  web_ssl_enum_commands)):
+        # for command in web_ssl_enum_commands:
+        #     print(cmd_info, command)
+        pool2 = Pool(2)  # Run 2 concurrent commands at a time
+        for i, returncode in enumerate(
+            pool2.imap(partial(call, shell=True), web_ssl_enum_commands)
+        ):
+            # print(cmd_info, i)
             if returncode != 0:
                 print("{} command failed: {}".format(i, returncode))
-        c = fg.cyan + 'Enumerating NetBios SMB Samba Ports, Running the following commands:' + fg.rs
+
+    # def enumDNS():
+    #     info = fg.cyan + "Enumerating DNS, Checking for Zone-Transfer" + fg.rs
+    #     print(info)
+    #     dn = dnsenum.DnsEnum(args.target)
+    #     dn.Scan()
+    #     dns_enum_commands = dn.processes
+    #     for command in dns_enum_commands:
+    #         print(cmd_info, command)
+    #     pool4 = Pool(2)
+    #     for i, returncode in enumerate(
+    #         pool4.imap(partial(call, shell=True), dns_enum_commands)
+    #     ):
+    #         if returncode != 0:
+    #             print("{} command failed: {}".format(i, returncode))
+
+    def enumSMB():
+        c = (
+            fg.cyan
+            + "Enumerating NetBios SMB Samba Ports, Running the following commands:"
+            + fg.rs
+        )
         print(c)
+        smb = smbEnum.SmbEnum(args.target)
+        smb.Scan()
+        smb_enum_commands = smb.processes
         for command in smb_enum_commands:
             print(cmd_info, command)
-        pool3 = Pool(5)  # Run 5 concurrent commands at a time
-        for i, returncode in enumerate(pool3.imap(partial(call, shell=True), smb_enum_commands)):
+        pool3 = Pool(2)  # Run 2 concurrent commands at a time
+        for i, returncode in enumerate(
+            pool3.imap(partial(call, shell=True), smb_enum_commands)
+        ):
             if returncode != 0:
                 print("{} command failed: {}".format(i, returncode))
+
+    def enumTopTcpPorts():
+        g = fg.cyan + "Running Nmap Default Scripts on all open TCP Ports:" + fg.rs
+        print(g)
+        nmapTCP = nmapOpenPorts.NmapOpenPorts(args.target)
+        nmapTCP.Scan()
+
+    def getOpenPorts():
+        np = nmapParser.NmapParserFunk(args.target)
+        np.openPorts()
+        # npSC = nmapParser.NmapParserFunk(args.target)
+        # npSC.enumPorts()
+
+    def scanTop10000Ports():
+        ntp = topOpenPorts.TopOpenPorts(args.target)
+        ntp.Scan()
+        # ntp.fullScan()
+
+    if args.target:
+        scanTop10000Ports()
+        getOpenPorts()
+        enumTopTcpPorts()
+        enumHTTP()
+        enumHTTPS()
+        enumSMB()
+        # enumDNS()
+
     else:
         print("Must supply a target see help message")
     # cur_dir = os.getcwd()
@@ -130,9 +190,9 @@ def main():
 
     end = time.time()
     time_elapsed = end - startTimer
-    print("All Scans Completed in: ", display_time(time_elapsed))
+    durationMSG = fg.cyan + "All Scans Completed in: " + fg.rs
+    print(durationMSG, display_time(time_elapsed))
 
 
-if __name__ == '__main__':
-    # topOpenPorts.TopOpenPorts('Scanning ports').Scan()
+if __name__ == "__main__":
     main()
