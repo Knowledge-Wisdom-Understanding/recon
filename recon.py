@@ -7,6 +7,11 @@ from lib import enumWeb
 from lib import enumWebSSL
 from lib import smbEnum
 from lib import dnsenum
+from pyfiglet import figlet_format
+from termcolor import colored
+from sty import fg, bg, ef, rs, RgbFg
+import colorama
+from colorama import Fore, Back, Style
 import argparse
 import time
 import sys
@@ -16,11 +21,7 @@ import shutil
 from subprocess import call
 from multiprocessing import Pool
 from functools import partial
-from pyfiglet import figlet_format
-from termcolor import colored
-from sty import fg, bg, ef, rs, RgbFg
-import colorama
-from colorama import Fore, Back, Style
+import socket
 
 colorama.init()
 
@@ -34,6 +35,7 @@ intervals = (
     ("minutes", 60),
     ("seconds", 1),
 )
+
 
 
 def banner():
@@ -72,6 +74,15 @@ def main():
 
     args = parser.parse_args()
     # print(args)
+    def validateIP():
+        try:
+            s = socket.inet_aton(args.target)
+        except socket.error:
+            print ""
+            print("Bad IP Address entered")
+            print ""
+            sys.exit()
+
     def getOpenPorts():
         p = topOpenPorts.TopOpenPorts(args.target)
         p.Scan()
@@ -169,6 +180,7 @@ def main():
         # ntp.fullScan()
 
     if args.target:
+        validateIP()
         # scanTop10000Ports()
         getOpenPorts()
         # enumTopTcpPorts()

@@ -3,6 +3,7 @@
 import os
 from subprocess import call
 from multiprocessing import Pool
+from functools import partial
 from sty import fg, bg, ef, rs, RgbFg
 from lib import nmapParser
 from lib import dnsenum
@@ -17,6 +18,9 @@ class EnumWebSSL:
         self.processes = ""
         self.domainName = []
         self.altDomainNames = []
+
+    def parseDomains():
+        
 
     def Scan(self):
         np = nmapParser.NmapParserFunk(self.target)
@@ -36,7 +40,7 @@ class EnumWebSSL:
                 green_plus = fg.li_green + "+" + fg.rs
                 cmd_info = "[" + green_plus + "]"
                 print(cmd_info, sslscanCMD)
-                call(sslscanCMD, shell=True)
+                # call(sslscanCMD, shell=True)
                 if not os.path.exists(
                     "{}-Report/web/sslscan-color-{}-{}.log".format(
                         self.target, self.target, sslport
@@ -66,13 +70,13 @@ class EnumWebSSL:
                                 altDomainNames.append(alname2)
                     print(altDomainNames)
                     print(domainName)
-                    both = domainName + altDomainNames
-                    hosts = Hosts(path="/etc/hosts")
-                    new_entry = HostsEntry(
-                        entry_type="ipv4", address=self.target, names=both
-                    )
-                    hosts.add([new_entry])
-                    hosts.write()
+                    # both = domainName + altDomainNames
+                    # hosts = Hosts(path="/etc/hosts")
+                    # new_entry = HostsEntry(
+                    #     entry_type="ipv4", address=self.target, names=both
+                    # )
+                    # hosts.add([new_entry])
+                    # hosts.write()
 
                     # print(domainName)
             if len(domainName) == 0:
