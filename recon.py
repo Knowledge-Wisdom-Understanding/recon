@@ -37,7 +37,6 @@ intervals = (
 )
 
 
-
 def banner():
     def random_color():
         valid_colors = ("red", "green", "yellow", "blue", "magenta", "cyan")
@@ -78,9 +77,9 @@ def main():
         try:
             s = socket.inet_aton(args.target)
         except socket.error:
-            print ""
-            print("Bad IP Address entered")
-            print ""
+            print("")
+            print("[+] Bad IP address")
+            print("")
             sys.exit()
 
     def getOpenPorts():

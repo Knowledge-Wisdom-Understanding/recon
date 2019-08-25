@@ -19,13 +19,14 @@ class EnumWebSSL:
         self.domainName = []
         self.altDomainNames = []
 
-    def parseDomains():
-        
-
     def Scan(self):
         np = nmapParser.NmapParserFunk(self.target)
         np.openPorts()
         ssl_ports = np.ssl_ports
+
+        def parseDomains(self):
+            print("TODO")
+
         if len(ssl_ports) == 0:
             pass
         else:
