@@ -169,12 +169,12 @@ def main():
         # ntp.fullScan()
 
     if args.target:
-        scanTop10000Ports()
+        # scanTop10000Ports()
         getOpenPorts()
-        enumTopTcpPorts()
-        enumHTTP()
+        # enumTopTcpPorts()
+        # enumHTTP()
         enumHTTPS()
-        enumSMB()
+        # enumSMB()
         # enumDNS()
 
     else:

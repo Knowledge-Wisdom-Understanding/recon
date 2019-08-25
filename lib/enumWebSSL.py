@@ -53,13 +53,26 @@ class EnumWebSSL:
                     with open(sslscanFile, "rt") as f:
                         for line in f:
                             if "Subject:" in line:
-                                domainName.append(
-                                    line.lstrip("Subject:  ").rstrip("\n")
-                                )
+                                n = line.lstrip("Subject:").rstrip("\n")
+                                # print(n)
+                                na = n.lstrip()
+                                # print(na)
+                                domainName.append(na)
                             if "Altnames:" in line:
-                                altDomainNames.append(
-                                    line.lstrip("Altnames:  ").rstrip("\n")
-                                )
+                                alnam = line.lstrip("Altnames:").rstrip("\n")
+                                alname = alnam.lstrip()
+                                alname1 = alname.lstrip("DNS:")
+                                alname2 = alname1.replace("DNS:", "").replace(",", "")
+                                altDomainNames.append(alname2)
+                    print(altDomainNames)
+                    print(domainName)
+                    both = domainName + altDomainNames
+                    hosts = Hosts(path="/etc/hosts")
+                    new_entry = HostsEntry(
+                        entry_type="ipv4", address=self.target, names=both
+                    )
+                    hosts.add([new_entry])
+                    hosts.write()
 
                     # print(domainName)
             if len(domainName) == 0:
@@ -98,42 +111,54 @@ class EnumWebSSL:
                 #     if returncode != 0:
                 #         print("{} command failed: {}".format(i, returncode))
                 zxferFile = "{}-Report/dns/zonexfer-domains.log".format(self.target)
-                dns = []
-                with open(zxferFile, "r") as zf:
-                    for line in zf:
-                        dns.append(line.rstrip())
-                # dns = ",".join(map(str, dnsName))
-                # print(dns)
-                if len(dns) != 0:
-                    hosts = Hosts(path="/etc/hosts")
-                    new_entry = HostsEntry(
-                        entry_type="ipv4", address=self.target, names=dns
-                    )
-                    hosts.add([new_entry])
-                    hosts.write()
-                    commands = ()
-                    for i in dns:
-                        commands = commands + (
-                            "whatweb -v -a 3 https://{}:{} >{}-Report/web/whatweb-{}-{}.txt".format(
-                                i, sslport, self.target, i, sslport
-                            ),
-                            "wafw00f https://{}:{} >{}-Report/web/wafw00f-{}-{}.txt".format(
-                                i, sslport, self.target, i, sslport
-                            ),
-                            "curl -sSik https://{}:{}/robots.txt -m 10 -o {}-Report/web/robots-{}-{}.txt &>/dev/null".format(
-                                i, sslport, self.target, i, sslport
-                            ),
-                            "python3 /opt/dirsearch/dirsearch.py -u https://{}:{} -t 50 -e php,asp,aspx,txt -x 403,500 -f --plain-text-report {}-Report/web/dirsearch-{}-{}.log".format(
-                                i, sslport, self.target, i, sslport
-                            ),
-                            # 'python3 /opt/dirsearch/dirsearch.py -u https://{}:{} -t 50 -e php,asp,aspx -f -w /usr/share/wordlists/dirbuster/directory-list-2.3-small.txt -x 403,500 --plain-text-resslport web/dirsearch-dlistsmall-{}-{}.log'
-                            # .format(self.target, sslport, self.target, self.target, sslport),
-                            "nikto -ask=no -host https://{}:{} -ssl  >{}-Report/web/niktoscan-{}-{}.txt 2>&1 &".format(
-                                i, sslport, self.target, i, sslport
-                            ),
+                if not os.path.exists(zxferFile):
+                    pass
+                    # for line in etchosts dns names do commands.
+                else:
+                    dns = []
+                    with open(zxferFile, "r") as zf:
+                        for line in zf:
+                            dns.append(line.rstrip())
+                    # dns = ",".join(map(str, dnsName))
+                    print(dns)
+                    if len(dns) != 0:
+                        hosts = Hosts(path="/etc/hosts")
+                        new_entry = HostsEntry(
+                            entry_type="ipv4", address=self.target, names=dns
                         )
+                        hosts.add([new_entry])
+                        hosts.write()
+                        commands = ()
+                        for i in dns:
+                            commands = commands + (
+                                "whatweb -v -a 3 https://{}:{} >{}-Report/web/whatweb-{}-{}.txt".format(
+                                    i, sslport, self.target, i, sslport
+                                ),
+                                "wafw00f https://{}:{} >{}-Report/web/wafw00f-{}-{}.txt".format(
+                                    i, sslport, self.target, i, sslport
+                                ),
+                                "curl -sSik https://{}:{}/robots.txt -m 10 -o {}-Report/web/robots-{}-{}.txt &>/dev/null".format(
+                                    i, sslport, self.target, i, sslport
+                                ),
+                                "python3 /opt/dirsearch/dirsearch.py -u https://{}:{} -t 50 -e php,asp,aspx,txt -x 403,500 -f --plain-text-report {}-Report/web/dirsearch-{}-{}.log".format(
+                                    i, sslport, self.target, i, sslport
+                                ),
+                                # 'python3 /opt/dirsearch/dirsearch.py -u https://{}:{} -t 50 -e php,asp,aspx -f -w /usr/share/wordlists/dirbuster/directory-list-2.3-small.txt -x 403,500 --plain-text-resslport web/dirsearch-dlistsmall-{}-{}.log'
+                                # .format(self.target, sslport, self.target, self.target, sslport),
+                                "nikto -ask=no -host https://{}:{} -ssl  >{}-Report/web/niktoscan-{}-{}.txt 2>&1 &".format(
+                                    i, sslport, self.target, i, sslport
+                                ),
+                            )
 
-                    self.processes = commands
+                        self.processes = commands
+                    elif len(dns) == 0:
+                        both = domainName + altDomainNames
+                        hosts = Hosts(path="/etc/hosts")
+                        new_entry = HostsEntry(
+                            entry_type="ipv4", address=self.target, names=both
+                        )
+                        hosts.add([new_entry])
+                        hosts.write()
             # c = fg.cyan + 'Enumerating HTTPS/SSL Ports, Running the following commands:' + fg.rs
             # print(c)
             # green_plus = fg.li_green + '+' + fg.rs
@@ -169,10 +194,21 @@ class EnumWebSSL:
                     with open(sslscanFile, "rt") as f:
                         for line in f:
                             if "Subject:" in line:
-                                self.domainName.append(
-                                    line.lstrip("Subject:  ").rstrip("\n")
-                                )
+                                nam = line.lstrip("Subject:").rstrip("\n")
+                                name = nam.lstrip()
+                                self.domainName.append(name)
                             if "Altnames:" in line:
-                                self.altDomainNames.append(
-                                    line.lstrip("Altnames:  ").rstrip("\n")
-                                )
+                                anam = line.lstrip("Altnames:").rstrip("\n")
+                                # print(anam)
+                                aname = anam.lstrip()
+                                # print(aname)
+                                aname1 = aname.lstrip("DNS:")
+                                # print(aname1)
+                                aname2 = aname1.replace("DNS:", "").replace(",", "")
+                                # print(aname2)
+                                # aname3 = aname2.replace(" ", " , ")
+                                # print(aname3)
+                                # aname4 = aname3.replace(" ", "'")
+                                # print(aname4)
+                                self.altDomainNames.append(aname2)
+                    # print(self.altDomainNames)

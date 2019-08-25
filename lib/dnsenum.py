@@ -29,44 +29,47 @@ class DnsEnum:
 
             webssl = enumWebSSL.EnumWebSSL(self.target)
             webssl.getDomainName()
-            dns = webssl.domainName
-            # print(dns)
+            dns1 = webssl.domainName
+            altdns = webssl.altDomainNames
+            dns = dns1 + altdns
+            print(dns)
 
             # dnsnoquotes = "[{0}]".format("".join(map(str, dns)))
             # print(str(dnsnoquotes))
 
-            if dns:
-                for i in dns:
-                    dig_command = "dig axfr @{} {} | tee {}-Report/dns/dig-{}-{}.log".format(
-                        self.target, i, self.target, self.target, i
+            if len(dns) != 0:
+                alldns = " ".join(map(str, dns))
+                dig_command = "dig axfr @{} {} | tee {}-Report/dns/dig-{}-{}.log".format(
+                    self.target, alldns, self.target, self.target, alldns
+                )
+                green_plus = fg.li_green + "+" + fg.rs
+                cmd_info = "[" + green_plus + "]"
+                print(cmd_info, dig_command)
+                call(dig_command, shell=True)
+                filterZoneTransferDomainsCMD = (
+                    "grep -v ';' {}-Report/dns/dig-{}-{}.log ".format(
+                        self.target, self.target, alldns
                     )
-                    green_plus = fg.li_green + "+" + fg.rs
-                    cmd_info = "[" + green_plus + "]"
-                    print(cmd_info, dig_command)
-                    call(dig_command, shell=True)
-                    filterZoneTransferDomainsCMD = (
-                        "grep -v ';' {}-Report/dns/dig-{}-{}.log ".format(
-                            self.target, self.target, i
-                        )
-                        + "| grep -v -e '^[[:space:]]*$' "
-                        + "| awk '{print $1}' "
-                        + "| sed 's/.$//' | sort -u >{}-Report/dns/zonexfer-domains.log".format(
-                            self.target
-                        )
+                    + "| grep -v -e '^[[:space:]]*$' "
+                    + "| awk '{print $1}' "
+                    + "| sed 's/.$//' | sort -u >{}-Report/dns/zonexfer-domains.log".format(
+                        self.target
                     )
-                    # print(filterZoneTransferDomainsCMD)
-                    call(filterZoneTransferDomainsCMD, shell=True)
+                )
+                # print(filterZoneTransferDomainsCMD)
+                call(filterZoneTransferDomainsCMD, shell=True)
 
-                    commands = (
-                        "dnsenum --dnsserver {} --enum -f /usr/share/seclists/Discovery/DNS/subdomains-top1mil-5000.txt -r {} | tee {}-Report/dns/dsnenum-{}-{}.log".format(
-                            self.target, i, self.target, self.target, i
-                        ),
-                        # "gobuster dns -d {} -w /usr/share/seclists/Discovery/DNS/subdomains-top1mil-5000.txt -t 80 -o {}-Report/dns/gobuster-{}-{}.log".format(
-                        #     i, self.target, self.target, i
-                        # ),
-                    )
-                    for cmd in commands:
-                        print(cmd_info, cmd)
-                        call(cmd, shell=True)
-                    self.processes = commands
-                    # self.domains = dns
+                # for i in dns:
+                commands = (
+                    "dnsenum --dnsserver {} --enum -f /usr/share/seclists/Discovery/DNS/subdomains-top1mil-5000.txt -r {} | tee {}-Report/dns/dsnenum-{}-{}.log".format(
+                        self.target, dns[0], self.target, self.target, dns[0]
+                    ),
+                    # "gobuster dns -d {} -w /usr/share/seclists/Discovery/DNS/subdomains-top1mil-5000.txt -t 80 -o {}-Report/dns/gobuster-{}-{}.log".format(
+                    #     i, self.target, self.target, i
+                    # ),
+                )
+                for cmd in commands:
+                    print(cmd_info, cmd)
+                    # call(cmd, shell=True)
+                self.processes = commands
+                # self.domains = dns
