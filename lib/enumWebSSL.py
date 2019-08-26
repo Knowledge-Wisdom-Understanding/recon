@@ -33,46 +33,24 @@ class EnumWebSSL:
             if len(hostnames) == 0:
                 for sslport in ssl_ports:
                     commands = (
-                        "whatweb -v -a 3 https://{}:{} >{}-Report/webSSL/whatweb-{}-{}.txt".format(
-                            self.target, sslport, self.target, self.target, sslport
-                        ),
-                        "wafw00f https://{}:{} >{}-Report/webSSL/wafw00f-{}-{}.txt".format(
-                            self.target, sslport, self.target, self.target, sslport
-                        ),
-                        "curl -sSik https://{}:{}/robots.txt -m 10 -o {}-Report/webSSL/robots-{}-{}.txt &>/dev/null".format(
-                            self.target, sslport, self.target, self.target, sslport
-                        ),
-                        "python3 /opt/dirsearch/dirsearch.py -u https://{}:{} -t 50 -e php,asp,aspx,txt -x 403,500 -f --plain-text-report {}-Report/webSSL/dirsearch-{}-{}.log".format(
-                            self.target, sslport, self.target, self.target, sslport
-                        ),
-                        # 'python3 /opt/dirsearch/dirsearch.py -u https://{}:{} -t 50 -e php,asp,aspx -f -w /usr/share/wordlists/dirbuster/directory-list-2.3-small.txt -x 403,500 --plain-text-resslport web/dirsearch-dlistsmall-{}-{}.log'
-                        # .format(self.target, sslport, self.target, self.target, sslport),
-                        "nikto -ask=no -host https://{}:{} -ssl  >{}-Report/webSSL/niktoscan-{}-{}.txt 2>&1 &".format(
-                            self.target, sslport, self.target, self.target, sslport
-                        ),
+                        f"whatweb -v -a 3 https://{self.target}:{sslport} >{self.target}-Report/webSSL/whatweb-{self.target}-{sslport}.txt",
+                        f"wafw00f https://{self.target}:{sslport} >{self.target}-Report/webSSL/wafw00f-{self.target}-{sslport}.txt",
+                        f"curl -sSik https://{self.target}:{sslport}/robots.txt -m 10 -o {self.target}-Report/webSSL/robots-{self.target}-{sslport}.txt &>/dev/null",
+                        f"python3 /opt/dirsearch/dirsearch.py -u https://{self.target}:{sslport} -t 50 -e php,asp,aspx,html,txt -x 403,500 -f --plain-text-report {self.target}-Report/webSSL/dirsearch-{self.target}-{sslport}.log",
+                        f"python3 /opt/dirsearch/dirsearch.py -u https://{self.target}:{sslport} -t 50 -e php -f -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -x 403,500 --plain-text-report {self.target}-Report/webSSL/dirsearch-dlistmedium-{self.target}-{sslport}.log",
+                        f"nikto -ask=no -host https://{self.target}:{sslport} -ssl  >{self.target}-Report/webSSL/niktoscan-{self.target}-{sslport}.txt 2>&1 &",
                     )
             else:
                 for ssl_port2 in ssl_ports:
                     commands = ()
                     for i in hostnames:
                         commands = commands + (
-                            "whatweb -v -a 3 https://{}:{} >{}-Report/webSSL/whatweb-{}-{}.txt".format(
-                                i, ssl_port2, self.target, i, ssl_port2
-                            ),
-                            "wafw00f https://{}:{} >{}-Report/webSSL/wafw00f-{}-{}.txt".format(
-                                i, ssl_port2, self.target, i, ssl_port2
-                            ),
-                            "curl -sSik https://{}:{}/robots.txt -m 10 -o {}-Report/webSSL/robots-{}-{}.txt &>/dev/null".format(
-                                i, ssl_port2, self.target, i, ssl_port2
-                            ),
-                            "python3 /opt/dirsearch/dirsearch.py -u https://{}:{} -t 50 -e php,asp,aspx,txt -x 403,500 -f --plain-text-report {}-Report/webSSL/dirsearch-{}-{}.log".format(
-                                i, ssl_port2, self.target, i, ssl_port2
-                            ),
-                            # 'python3 /opt/dirsearch/dirsearch.py -u https://{}:{} -t 50 -e php,asp,aspx -f -w /usr/share/wordlists/dirbuster/directory-list-2.3-small.txt -x 403,500 --plain-text-resslport web/dirsearch-dlistsmall-{}-{}.log'
-                            # .format(self.target, ssl_port2, self.target, self.target, ssl_port2),
-                            "nikto -ask=no -host https://{}:{} -ssl  >{}-Report/webSSL/niktoscan-{}-{}.txt 2>&1 &".format(
-                                i, ssl_port2, self.target, i, ssl_port2
-                            ),
+                            f"whatweb -v -a 3 https://{i}:{ssl_port2} >{self.target}-Report/webSSL/whatweb-{i}-{ssl_port2}.txt",
+                            f"wafw00f https://{i}:{ssl_port2} >{self.target}-Report/webSSL/wafw00f-{i}-{ssl_port2}.txt",
+                            f"curl -sSik https://{i}:{ssl_port2}/robots.txt -m 10 -o {self.target}-Report/webSSL/robots-{i}-{ssl_port2}.txt &>/dev/null",
+                            f"python3 /opt/dirsearch/dirsearch.py -u https://{i}:{ssl_port2} -t 50 -e php,asp,aspx,txt -x 403,500 -f --plain-text-report {self.target}-Report/webSSL/dirsearch-{i}-{ssl_port2}.log",
+                            f"python3 /opt/dirsearch/dirsearch.py -u https://{i}:{ssl_port2} -t 50 -e php,asp,aspx -f -w /usr/share/wordlists/dirbuster/directory-list-2.3-small.txt -x 403,500 --plain-text-report {self.target}-Report/webSSL/dirsearch-dlistsmall-{i}-{ssl_port2}.log",
+                            f"nikto -ask=no -host https://{i}:{ssl_port2} -ssl  >{self.target}-Report/webSSL/niktoscan-{i}-{ssl_port2}.txt 2>&1 &",
                         )
 
             self.processes = commands

@@ -20,8 +20,8 @@ class SmbEnum:
         if len(smb_ports) == 0:
             pass
         else:
-            if not os.path.exists("{}-Report/smb".format(self.target)):
-                os.makedirs("{}-Report/smb".format(self.target))
+            if not os.path.exists(f"{self.target}-Report/smb"):
+                os.makedirs(f"{self.target}-Report/smb")
             c = (
                 fg.cyan
                 + "Enumerating NetBios SMB Samba Ports, Running the following commands:"
@@ -29,36 +29,16 @@ class SmbEnum:
             )
             print(c)
             commands = (
-                'smbclient -L //{} -U "guest"% | tee -a {}-Report/smb/smb-scan-{}.log'.format(
-                    self.target, self.target, self.target
-                ),
-                "nmblookup -A {} | tee -a {}-Report/smb/smb-scan-{}.log".format(
-                    self.target, self.target, self.target
-                ),
-                "nmap -vv -sV -Pn -p139,445 --script smb-enum-domains.nse,smb-enum-groups.nse,smb-enum-processes.nse,smb-enum-sessions.nse,smb-enum-shares.nse,smb-enum-users.nse,smb-ls.nse,smb-mbenum.nse,smb-os-discovery.nse,smb-print-text.nse,smb-psexec.nse,smb-security-mode.nse,smb-server-stats.nse,smb-system-info.nse,smb-vuln-conficker.nse,smb-vuln-cve2009-3103.nse,smb-vuln-ms06-025.nse,smb-vuln-ms07-029.nse,smb-vuln-ms08-067.nse,smb-vuln-ms10-054.nse,smb-vuln-ms10-061.nse,smb-vuln-ms17-010.nse --script-args=unsafe=1 -oA {}-Report/nmap/smbvulns-{} {} | tee -a {}-Report/smb/smb-scan-{}.log".format(
-                    self.target, self.target, self.target, self.target, self.target
-                ),
-                "nbtscan -rvh {} | tee -a {}-Report/smb/smb-scan-{}.log".format(
-                    self.target, self.target, self.target
-                ),
-                "smbmap -H {} | tee -a {}-Report/smb/smb-scan-{}.log".format(
-                    self.target, self.target, self.target
-                ),
-                "smbmap -H {} -R | tee -a {}-Report/smb/smb-scan-{}.log".format(
-                    self.target, self.target, self.target
-                ),
-                'smbmap -u null -p "" -H {} | tee -a {}-Report/smb/smb-scan-{}.log'.format(
-                    self.target, self.target, self.target
-                ),
-                'smbmap -u null -p "" -H {} -R | tee -a {}-Report/smb/smb-scan-{}.log'.format(
-                    self.target, self.target, self.target
-                ),
-                'smbmap -u null -p "" -H {} | tee -a {}-Report/smb/smb-scan-{}.log'.format(
-                    self.target, self.target, self.target
-                ),
-                "enum4linux -av {} | tee -a {}-Report/smb/smb-scan-{}.log".format(
-                    self.target, self.target, self.target
-                ),
+                f"smbclient -L //{self.target} -U 'guest'% | tee -a {self.target}-Report/smb/smb-scan-{self.target}.log",
+                f"nmblookup -A {self.target} | tee -a {self.target}-Report/smb/smb-scan-{self.target}.log",
+                f"nmap -vv -sV -Pn -p139,445 --script smb-enum-domains.nse,smb-enum-groups.nse,smb-enum-processes.nse,smb-enum-sessions.nse,smb-enum-shares.nse,smb-enum-users.nse,smb-ls.nse,smb-mbenum.nse,smb-os-discovery.nse,smb-print-text.nse,smb-psexec.nse,smb-security-mode.nse,smb-server-stats.nse,smb-system-info.nse,smb-vuln-conficker.nse,smb-vuln-cve2009-3103.nse,smb-vuln-ms06-025.nse,smb-vuln-ms07-029.nse,smb-vuln-ms08-067.nse,smb-vuln-ms10-054.nse,smb-vuln-ms10-061.nse,smb-vuln-ms17-010.nse --script-args=unsafe=1 -oA {self.target}-Report/nmap/smbvulns-{self.target} {self.target} | tee -a {self.target}-Report/smb/smb-scan-{self.target}.log",
+                f"nbtscan -rvh {self.target} | tee -a {self.target}-Report/smb/smb-scan-{self.target}.log",
+                f"smbmap -H {self.target} | tee -a {self.target}-Report/smb/smb-scan-{self.target}.log",
+                f"smbmap -H {self.target} -R | tee -a {self.target}-Report/smb/smb-scan-{self.target}.log",
+                f'smbmap -u null -p "" -H {self.target} | tee -a {self.target}-Report/smb/smb-scan-{self.target}.log',
+                f'smbmap -u null -p "" -H {self.target} -R | tee -a {self.target}-Report/smb/smb-scan-{self.target}.log',
+                f'smbmap -u null -p "" -H {self.target} | tee -a {self.target}-Report/smb/smb-scan-{self.target}.log',
+                f"enum4linux -av {self.target} | tee -a {self.target}-Report/smb/smb-scan-{self.target}.log",
             )
             # c = fg.cyan + 'Enumerating SMB, Running the following commands:' + fg.rs
             # print(c)

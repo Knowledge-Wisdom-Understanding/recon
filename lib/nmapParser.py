@@ -16,9 +16,8 @@ class NmapParserFunk:
         self.smb_ports = []
         self.dns_ports = []
         self.nmap_services = []
-        # self.servicesSC = []
-        # self.nmap_servicesSC = []
-        # self.nmap_scripts = []
+        self.proxy_ports = []
+        self.ssh_ports = []
 
     def openPorts(self):
         report = NmapParser.parse_fromfile(
@@ -50,10 +49,18 @@ class NmapParserFunk:
                 if "domain" in service[1]:
                     if service[0] not in self.dns_ports:
                         self.dns_ports.append(service[0])
+                if "http-proxy" in service[1]:
+                    if service[0] not in self.proxy_ports:
+                        self.proxy_ports.append(service[0])
+                if "ssh" in service[1]:
+                    if service[0] not in self.ssh_ports:
+                        self.ssh_ports.append(service[0])
 
-        # print("HTTP PORTS:", self.http_ports)
-        # print("OPEN TCP PORTS:", self.tcp_ports)
-        # print("SSL:", self.ssl_ports)
-        # print("SMB:", self.smb_ports)
-        # print("DNS:", self.dns_ports)
-        # print("Services:", self.services)
+        print("HTTP PORTS:", self.http_ports)
+        print("OPEN TCP PORTS:", self.tcp_ports)
+        print("SSL:", self.ssl_ports)
+        print("SMB:", self.smb_ports)
+        print("DNS:", self.dns_ports)
+        print("Services:", self.services)
+        print("SSH:", self.ssh_ports)
+        print("Proxy Ports:", self.proxy_ports)

@@ -35,7 +35,7 @@ class DomainFinder:
         ]
         dns = []
         with open(
-            "{}-Report/nmap/tcp-scripts-{}.nmap".format(self.target, self.target), "r"
+            f"{self.target}-Report/nmap/tcp-scripts-{self.target}.nmap", "r"
         ) as nm:
             for line in nm:
                 new = (
@@ -61,30 +61,34 @@ class DomainFinder:
             tmpdns.append(x)
         ################# SSLSCAN #######################
         if len(ssl_ports) == 0:
-            pass
+            tmpdns2 = []
+            for x in tmpdns:
+                tmpdns2.append(x)
+
+            unsortedhostnames = []
+            for x in tmpdns2:
+                unsortedhostnames.append(x)
+            allsortedhostnames = sorted(set(tmpdns2))
+            allsortedhostnameslist = []
+            for x in allsortedhostnames:
+                allsortedhostnameslist.append(x)
         else:
-            if not os.path.exists("{}-Report/web".format(self.target)):
-                os.makedirs("{}-Report/web".format(self.target))
+            if not os.path.exists(f"{self.target}-Report/web"):
+                os.makedirs(f"{self.target}-Report/web")
             https_string_ports = ",".join(map(str, ssl_ports))
             # print(https_string_ports)
             for sslport in ssl_ports:
-                sslscanCMD = "sslscan https://{}:{} | tee {}-Report/web/sslscan-color-{}-{}.log".format(
-                    self.target, sslport, self.target, self.target, sslport
-                )
+                sslscanCMD = f"sslscan https://{self.target}:{sslport} | tee {self.target}-Report/web/sslscan-color-{self.target}-{sslport}.log"
                 green_plus = fg.li_green + "+" + fg.rs
                 cmd_info = "[" + green_plus + "]"
                 print(cmd_info, sslscanCMD)
                 call(sslscanCMD, shell=True)
                 if not os.path.exists(
-                    "{}-Report/web/sslscan-color-{}-{}.log".format(
-                        self.target, self.target, sslport
-                    )
+                    f"{self.target}-Report/web/sslscan-color-{self.target}-{sslport}.log"
                 ):
                     pass
                 else:
-                    sslscanFile = "{}-Report/web/sslscan-color-{}-{}.log".format(
-                        self.target, self.target, sslport
-                    )
+                    sslscanFile = f"{self.target}-Report/web/sslscan-color-{self.target}-{sslport}.log"
                     # print(sslscanFile)
                     domainName = []
                     altDomainNames = []
@@ -120,13 +124,13 @@ class DomainFinder:
                     for x in tmpdns:
                         tmpdns2.append(x)
 
-        unsortedhostnames = []
-        for x in tmpdns2:
-            unsortedhostnames.append(x)
-        allsortedhostnames = sorted(set(tmpdns2))
-        allsortedhostnameslist = []
-        for x in allsortedhostnames:
-            allsortedhostnameslist.append(x)
+                    unsortedhostnames = []
+                    for x in tmpdns2:
+                        unsortedhostnames.append(x)
+                    allsortedhostnames = sorted(set(tmpdns2))
+                    allsortedhostnameslist = []
+                    for x in allsortedhostnames:
+                        allsortedhostnameslist.append(x)
 
         dnsPort = np.dns_ports
         if len(dnsPort) == 0:
@@ -141,28 +145,22 @@ class DomainFinder:
                 hosts.write()
 
         else:
-            if not os.path.exists("{}-Report/dns".format(self.target)):
-                os.makedirs("{}-Report/dns".format(self.target))
+            if not os.path.exists(f"{self.target}-Report/dns"):
+                os.makedirs(f"{self.target}-Report/dns")
             ######## Check For Zone Transfer: Running dig ###############
             if len(allsortedhostnameslist) != 0:
                 alldns = " ".join(map(str, allsortedhostnameslist))
                 # print(alldns)
-                dig_command = "dig axfr @{} {} | tee {}-Report/dns/dig-zonexfer-{}.log".format(
-                    self.target, alldns, self.target, self.target
-                )
+                dig_command = f"dig axfr @{self.target} {alldns} | tee {self.target}-Report/dns/dig-zonexfer-{self.target}.log"
                 print(cmd_info, dig_command)
                 call(dig_command, shell=True)
                 filterZoneTransferDomainsCMD = (
-                    "grep -v ';' {}-Report/dns/dig-{}-{}.log ".format(
-                        self.target, self.target, alldns
-                    )
+                    f"grep -v ';' {self.target}-Report/dns/dig-zonexfer-{self.target}.log "
                     + "| grep -v -e '^[[:space:]]*$' "
                     + "| awk '{print $1}' "
-                    + "| sed 's/.$//' | sort -u >{}-Report/dns/zonexfer-domains.log".format(
-                        self.target
-                    )
+                    + f"| sed 's/.$//' | sort -u >{self.target}-Report/dns/zonexfer-domains.log"
                 )
-                zxferFile = "{}-Report/dns/zonexfer-domains.log".format(self.target)
+                zxferFile = f"{self.target}-Report/dns/zonexfer-domains.log"
                 if os.path.exists(zxferFile):
                     zonexferDns = []
                     with open(zxferFile, "r") as zf:

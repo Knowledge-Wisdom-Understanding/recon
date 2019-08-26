@@ -88,7 +88,17 @@ class DnsEnum:
             tmpdns.append(x)
         ################# SSLSCAN #######################
         if len(ssl_ports) == 0:
-            pass
+            tmpdns2 = []
+            for x in tmpdns:
+                tmpdns2.append(x)
+
+            unsortedhostnames = []
+            for x in tmpdns2:
+                unsortedhostnames.append(x)
+            allsortedhostnames = sorted(set(tmpdns2))
+            allsortedhostnameslist = []
+            for x in allsortedhostnames:
+                allsortedhostnameslist.append(x)
         else:
             https_string_ports = ",".join(map(str, ssl_ports))
             for sslport in ssl_ports:
@@ -134,13 +144,13 @@ class DnsEnum:
                     for x in tmpdns:
                         tmpdns2.append(x)
 
-        unsortedhostnames = []
-        for x in tmpdns2:
-            unsortedhostnames.append(x)
-        allsortedhostnames = sorted(set(tmpdns2))
-        allsortedhostnameslist = []
-        for x in allsortedhostnames:
-            allsortedhostnameslist.append(x)
+                    unsortedhostnames = []
+                    for x in tmpdns2:
+                        unsortedhostnames.append(x)
+                    allsortedhostnames = sorted(set(tmpdns2))
+                    allsortedhostnameslist = []
+                    for x in allsortedhostnames:
+                        allsortedhostnameslist.append(x)
 
         dnsPort = np.dns_ports
         if len(dnsPort) == 0:

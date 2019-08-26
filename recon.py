@@ -7,7 +7,8 @@ from lib import enumWeb
 from lib import enumWebSSL
 from lib import smbEnum
 from lib import dnsenum
-from pyfiglet import figlet_format
+
+# from pyfiglet import figlet_format
 from termcolor import colored
 from sty import fg, bg, ef, rs, RgbFg
 import colorama
@@ -42,14 +43,70 @@ def banner():
         valid_colors = ("red", "green", "yellow", "blue", "magenta", "cyan")
         return random.choice(valid_colors)
 
+    def random_freight():
+        valid_frieghts = (
+            """
+                           #########                      
+                        ######                            
+                   ___###___________                      
+            _,--'''_________________'''--._               
+          /',--'\\"##           __  "//'--.'\   ,  /\    _
+-._  /\  //'   ##\\       ,-_,-'  \_///\,-'`\\-' \/  \,-' 
+   \/  \//    _  _\\ ,-._/         //'       \\           
+       //'--._ _| |\\___   ___   _//   ___   _\\   ___    
+      | |    (|   | \\  | | Y | |// | | E | | | | | S |   
+   ___| |   /ooo=oo-o\\oo-oo=oo-//=oo-oo=oo-oo| |=oo=oo___
+        \"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"|           
+         |    \                           .   /           
+   .      \   /\            .  -     '    .  /            
+           `-.  '-..     ' '          ,  ,,-'     `       
+              \     '- '            ,/,-'/                
+    \          \_- ' '             --',-'                 
+              -'                    \/            |       
+     |  _  -                          - _        .       
+                                                /                  
+    o o o o o o o . . .   ______________________________ _____=======_||____
+   o      _____           ||                            | |                 |
+ .][__n_n_|DD[  ====_____  |    Yes         Knotez      | |   Loaf   Dems   |
+>(________|__|_[_________]_|____________________________|_|_________________|
+_/oo OOOOO oo`  ooo   ooo  'o!o!o                  o!o!o` 'o!o         o!o`
+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+                    """,
+            """
+                                              _________
+                                             |=========|
+                    __[]__         _          \_______/
++================+ /______\     __(_)__    ()  \_____/   ()
+ `-+ +-----+---+ | |------|    /_______\  /__\  |   | +======+
+   | |     |   | +-+------+-.  |=======| <____> |   | ||    ||
+   | |     |   | |o          \_|___  __|__//\\__|___|_+======+
+   | +=========+ |o                                     o||=+
+   | *         * |o            yezr                     o||||
+   |    --%--    |o~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~o||=+
+   +=====================================+-----------+====+
+       |==/ ------ \=====/ ------ \===%--||o        o||____
+         // \  L_/__\___//_\__L_/__\_/ %=||o~~~~~~~~o||===\\_____
+        ||__ /.  ___________ .  ______/ +==============+     \  \_
+        ||   \__/   || ||   \__/   ||     //--\\\  //--\\\\    \ \ \\\\\_
+         \\\ / || \ //   \\\ / || \ //     (( <> ))(( <> ))\\_\_\_\_\\\\\\\\
+          \========/     \========/       \____/  \____/  `----------+
+An Enumeration Tool by Knowledge-Wisdom-Understanding
+""",
+        )
+        return random.choice(valid_frieghts)
+
     def print_art(msg, color):
-        art = figlet_format(msg)
-        colored_art = colored(art, color=color)
+        # art = figlet_format(msg)
+        colored_art = colored(msg, color=color)
         print(colored_art)
 
-    msg = "The Truth is Out There"
+        # msg = "Seinfeld"
+
+    freight = random_freight()
+
     color = random_color()
-    print_art(msg, color)
+
+    print_art(freight, color)
 
 
 def display_time(seconds, granularity=2):
@@ -61,7 +118,7 @@ def display_time(seconds, granularity=2):
             seconds -= value * count
             if value == 1:
                 name = name.rstrip("s")
-            result.append("{} {}".format(value, name))
+            result.append(f"{value} {name}")
     return ", ".join(result[:granularity])
 
 
@@ -79,7 +136,7 @@ def main():
             s = socket.inet_aton(args.target)
         except socket.error:
             print("")
-            print("{} Bad IP address".format(red))
+            print(f"{red} Bad IP address")
             print("")
             sys.exit()
 
@@ -88,13 +145,9 @@ def main():
         p.Scan()
 
     def enumHTTP():
-        d = fg.cyan + "Running default nmap scripts on all http ports:" + fg.rs
-        print(d)
         eweb = enumWeb.EnumWeb(args.target)
         eweb.Scan()
         web_enum_commands = eweb.processes
-        a = fg.cyan + "Enumerating HTTP Ports, Running the following commands:" + fg.rs
-        print(a)
         for command in web_enum_commands:
             print(cmd_info, command)
         pool = Pool(2)
@@ -102,7 +155,7 @@ def main():
             pool.imap(partial(call, shell=True), web_enum_commands)
         ):
             if returncode != 0:
-                print("{} command failed: {}".format(i, returncode))
+                print(f"{i} command failed: {returncode}")
 
     def enumHTTPS():
         webssl = enumWebSSL.EnumWebSSL(args.target)
@@ -115,7 +168,7 @@ def main():
             pool2.imap(partial(call, shell=True), web_ssl_enum_commands)
         ):
             if returncode != 0:
-                print("{} command failed: {}".format(i, returncode))
+                pprint(f"{i} command failed: {returncode}")
 
     def enumDNS():
         dn = dnsenum.DnsEnum(args.target)
@@ -128,7 +181,7 @@ def main():
             pool4.imap(partial(call, shell=True), dns_enum_commands)
         ):
             if returncode != 0:
-                print("{} command failed: {}".format(i, returncode))
+                print(f"{i} command failed: {returncode}")
 
     def enumSMB():
         smb = smbEnum.SmbEnum(args.target)
@@ -141,7 +194,7 @@ def main():
             pool3.imap(partial(call, shell=True), smb_enum_commands)
         ):
             if returncode != 0:
-                print("{} command failed: {}".format(i, returncode))
+                print(f"{i} command failed: {returncode}")
 
     def enumTopTcpPorts():
         g = fg.cyan + "Running Nmap Default Scripts on all open TCP Ports:" + fg.rs
@@ -158,6 +211,10 @@ def main():
         ntp.Scan()
         # ntp.fullScan()
 
+    def fullTcpScan():
+        ntp = topOpenPorts.TopOpenPorts(args.target)
+        ntp.fullScan()
+
     if args.target:
         validateIP()
         scanTop10000Ports()
@@ -167,6 +224,7 @@ def main():
         enumHTTP()
         enumHTTPS()
         enumSMB()
+        fullTcpScan()
 
     else:
         print("Must supply a target see help message")

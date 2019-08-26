@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import os
-import subprocess as s
+from subprocess import call
 from sty import fg, bg, ef, rs, RgbFg
 
 # import sys
@@ -27,7 +27,7 @@ class TopOpenPorts:
         green_plus = fg.li_green + "+" + fg.rs
         cmd_info = "[" + green_plus + "]"
         print(cmd_info, nmap_command)
-        s.call(nmap_command, shell=True)
+        call(nmap_command, shell=True)
         # print(cmd_info, nmapDebugging)
         # s.call(nmapDebugging, shell=True)
 
@@ -42,7 +42,7 @@ class TopOpenPorts:
         green_plus = fg.li_green + "+" + fg.rs
         cmd_info = "[" + green_plus + "]"
         print(cmd_info, nmap_command)
-        s.call(nmap_command, shell=True)
+        call(nmap_command, shell=True)
 
         # def OpenServices(self):
         #     print("todo")
