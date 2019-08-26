@@ -74,7 +74,7 @@ class DomainFinder:
                 green_plus = fg.li_green + "+" + fg.rs
                 cmd_info = "[" + green_plus + "]"
                 print(cmd_info, sslscanCMD)
-                # call(sslscanCMD, shell=True)
+                call(sslscanCMD, shell=True)
                 if not os.path.exists(
                     "{}-Report/web/sslscan-color-{}-{}.log".format(
                         self.target, self.target, sslport
