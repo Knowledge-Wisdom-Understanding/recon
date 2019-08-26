@@ -47,7 +47,7 @@ def banner():
         colored_art = colored(art, color=color)
         print(colored_art)
 
-    msg = "Shhhhh, I'm hunting wabbits"
+    msg = "The Truth is Out There"
     color = random_color()
     print_art(msg, color)
 

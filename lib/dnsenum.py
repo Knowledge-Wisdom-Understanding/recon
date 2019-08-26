@@ -23,6 +23,8 @@ class DnsEnum:
         dn.Scan()
         dns = dn.hostnames
         # print("dnsenum dns list: {}".format(dns))
+        if not os.path.exists("{}-Report/dns".format(self.target)):
+            os.makedirs("{}-Report/dns".format(self.target))
 
         if len(dns) != 0:
             commands = ()
