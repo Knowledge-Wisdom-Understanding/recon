@@ -24,9 +24,6 @@ class EnumWebSSL:
         np.openPorts()
         ssl_ports = np.ssl_ports
 
-        def parseDomains(self):
-            print("TODO")
-
         if len(ssl_ports) == 0:
             pass
         else:
@@ -67,19 +64,19 @@ class EnumWebSSL:
                                 alnam = line.lstrip("Altnames:").rstrip("\n")
                                 alname = alnam.lstrip()
                                 alname1 = alname.lstrip("DNS:")
-                                alname2 = alname1.replace("DNS:", "").replace(",", "")
-                                altDomainNames.append(alname2)
-                    print(altDomainNames)
+                                alname2 = (
+                                    alname1.replace("DNS:", "").replace(",", "").split()
+                                )
+                                for x in alname2:
+                                    altDomainNames.append(x)
                     print(domainName)
-                    # both = domainName + altDomainNames
-                    # hosts = Hosts(path="/etc/hosts")
-                    # new_entry = HostsEntry(
-                    #     entry_type="ipv4", address=self.target, names=both
-                    # )
-                    # hosts.add([new_entry])
-                    # hosts.write()
-
-                    # print(domainName)
+                    print(altDomainNames)
+                    # print(alname2)
+                    both = []
+                    for x in domainName:
+                        both.append(x)
+                    for x in altDomainNames:
+                        both.append(x)
             if len(domainName) == 0:
                 for sslport in ssl_ports:
                     commands = (
@@ -117,6 +114,31 @@ class EnumWebSSL:
                 #         print("{} command failed: {}".format(i, returncode))
                 zxferFile = "{}-Report/dns/zonexfer-domains.log".format(self.target)
                 if not os.path.exists(zxferFile):
+                    if len(altDomainNames) != 0:
+                        print("alt not eq 0")
+                        hosts = Hosts(path="/etc/hosts")
+                        new_entry = HostsEntry(
+                            entry_type="ipv4", address=self.target, names=both
+                        )
+                        hosts.add([new_entry])
+                        hosts.write()
+                        print(
+                            "both altdns and subject dns exist, added {} to hosts file".format(
+                                both
+                            )
+                        )
+                    elif len(domainName) == 1:
+                        print("alt not eq 0")
+                        hosts = Hosts(path="/etc/hosts")
+                        new_entry = HostsEntry(
+                            entry_type="ipv4", address=self.target, names=domainName
+                        )
+                        hosts.add([new_entry])
+                        hosts.write()
+
+                        print(domainName)
+                    else:
+                        pass
                     pass
                     # for line in etchosts dns names do commands.
                 else:
@@ -133,6 +155,7 @@ class EnumWebSSL:
                         )
                         hosts.add([new_entry])
                         hosts.write()
+                        print("dns not equal to 0")
                         commands = ()
                         for i in dns:
                             commands = commands + (
@@ -156,14 +179,6 @@ class EnumWebSSL:
                             )
 
                         self.processes = commands
-                    elif len(dns) == 0:
-                        both = domainName + altDomainNames
-                        hosts = Hosts(path="/etc/hosts")
-                        new_entry = HostsEntry(
-                            entry_type="ipv4", address=self.target, names=both
-                        )
-                        hosts.add([new_entry])
-                        hosts.write()
             # c = fg.cyan + 'Enumerating HTTPS/SSL Ports, Running the following commands:' + fg.rs
             # print(c)
             # green_plus = fg.li_green + '+' + fg.rs
@@ -209,7 +224,9 @@ class EnumWebSSL:
                                 # print(aname)
                                 aname1 = aname.lstrip("DNS:")
                                 # print(aname1)
-                                aname2 = aname1.replace("DNS:", "").replace(",", "")
+                                aname2 = (
+                                    aname1.replace("DNS:", "").replace(",", "").split()
+                                )
                                 # print(aname2)
                                 # aname3 = aname2.replace(" ", " , ")
                                 # print(aname3)

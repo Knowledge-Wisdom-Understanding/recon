@@ -31,7 +31,11 @@ class DnsEnum:
             webssl.getDomainName()
             dns1 = webssl.domainName
             altdns = webssl.altDomainNames
-            dns = dns1 + altdns
+            dns = []
+            for x in dns1:
+                dns.append(x)
+            for x in altdns:
+                dns.append(x)
             print(dns)
 
             # dnsnoquotes = "[{0}]".format("".join(map(str, dns)))
@@ -45,7 +49,7 @@ class DnsEnum:
                 green_plus = fg.li_green + "+" + fg.rs
                 cmd_info = "[" + green_plus + "]"
                 print(cmd_info, dig_command)
-                call(dig_command, shell=True)
+                # call(dig_command, shell=True)
                 filterZoneTransferDomainsCMD = (
                     "grep -v ';' {}-Report/dns/dig-{}-{}.log ".format(
                         self.target, self.target, alldns
@@ -57,7 +61,7 @@ class DnsEnum:
                     )
                 )
                 # print(filterZoneTransferDomainsCMD)
-                call(filterZoneTransferDomainsCMD, shell=True)
+                # call(filterZoneTransferDomainsCMD, shell=True)
 
                 # for i in dns:
                 commands = (

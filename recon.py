@@ -74,11 +74,12 @@ def main():
     args = parser.parse_args()
     # print(args)
     def validateIP():
+        red = "[" + fg.red + "+" + fg.rs + "]"
         try:
             s = socket.inet_aton(args.target)
         except socket.error:
             print("")
-            print("[+] Bad IP address")
+            print("{} Bad IP address".format(red))
             print("")
             sys.exit()
 
@@ -119,13 +120,12 @@ def main():
         print(b)
         # for command in web_ssl_enum_commands:
         #     print(cmd_info, command)
-        pool2 = Pool(2)  # Run 2 concurrent commands at a time
-        for i, returncode in enumerate(
-            pool2.imap(partial(call, shell=True), web_ssl_enum_commands)
-        ):
-            # print(cmd_info, i)
-            if returncode != 0:
-                print("{} command failed: {}".format(i, returncode))
+        # pool2 = Pool(2)  # Run 2 concurrent commands at a time
+        # for i, returncode in enumerate(
+        #     pool2.imap(partial(call, shell=True), web_ssl_enum_commands)
+        # ):
+        #     if returncode != 0:
+        #         print("{} command failed: {}".format(i, returncode))
 
     # def enumDNS():
     #     info = fg.cyan + "Enumerating DNS, Checking for Zone-Transfer" + fg.rs
