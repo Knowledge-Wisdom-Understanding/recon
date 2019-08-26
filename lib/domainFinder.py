@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 
-# import os
+import os
+from sty import fg, bg, ef, rs, RgbFg
 from python_hosts.hosts import Hosts, HostsEntry
 import re
 from lib import nmapParser
+from subprocess import call
 
 
 class DomainFinder:
@@ -11,7 +13,7 @@ class DomainFinder:
         self.target = target
         self.hostnames = []
 
-    def Run():
+    def Scan(self):
         np = nmapParser.NmapParserFunk(self.target)
         np.openPorts()
         ssl_ports = np.ssl_ports
@@ -53,11 +55,11 @@ class DomainFinder:
                         dns.append(x)
         # print(dns)
         sdns = sorted(set(dns))
-        print(sdns)
+        # print(sdns)
+        tmpdns = []
         for x in sdns:
-            self.hostnames.append(x)
-        print(self.hostnames)
-
+            tmpdns.append(x)
+        ################# SSLSCAN #######################
         if len(ssl_ports) == 0:
             pass
         else:
@@ -72,7 +74,7 @@ class DomainFinder:
                 green_plus = fg.li_green + "+" + fg.rs
                 cmd_info = "[" + green_plus + "]"
                 print(cmd_info, sslscanCMD)
-                call(sslscanCMD, shell=True)
+                # call(sslscanCMD, shell=True)
                 if not os.path.exists(
                     "{}-Report/web/sslscan-color-{}-{}.log".format(
                         self.target, self.target, sslport
@@ -103,12 +105,84 @@ class DomainFinder:
                                 )
                                 for x in alname2:
                                     altDomainNames.append(x)
-                    print(domainName)
-                    print(altDomainNames)
+                    # print(domainName)
+                    # print(altDomainNames)
                     # print(alname2)
                     both = []
                     for x in domainName:
                         both.append(x)
                     for x in altDomainNames:
                         both.append(x)
+
+                    tmpdns2 = []
+                    for x in both:
+                        tmpdns2.append(x)
+                    for x in tmpdns:
+                        tmpdns2.append(x)
+
+        unsortedhostnames = []
+        for x in tmpdns2:
+            unsortedhostnames.append(x)
+        allsortedhostnames = sorted(set(tmpdns2))
+        allsortedhostnameslist = []
+        for x in allsortedhostnames:
+            allsortedhostnameslist.append(x)
+
+        dnsPort = np.dns_ports
+        if len(dnsPort) == 0:
+            if len(allsortedhostnameslist) != 0:
+                for x in allsortedhostnameslist:
+                    self.hostnames.append(x)
+                hosts = Hosts(path="/etc/hosts")
+                new_entry = HostsEntry(
+                    entry_type="ipv4", address=self.target, names=allsortedhostnameslist
+                )
+                hosts.add([new_entry])
+                hosts.write()
+
+        else:
+            if not os.path.exists("{}-Report/dns".format(self.target)):
+                os.makedirs("{}-Report/dns".format(self.target))
+            ######## Check For Zone Transfer: Running dig ###############
+            if len(allsortedhostnameslist) != 0:
+                alldns = " ".join(map(str, allsortedhostnameslist))
+                # print(alldns)
+                dig_command = "dig axfr @{} {} | tee {}-Report/dns/dig-zonexfer-{}.log".format(
+                    self.target, alldns, self.target, self.target
+                )
+                print(cmd_info, dig_command)
+                call(dig_command, shell=True)
+                filterZoneTransferDomainsCMD = (
+                    "grep -v ';' {}-Report/dns/dig-{}-{}.log ".format(
+                        self.target, self.target, alldns
+                    )
+                    + "| grep -v -e '^[[:space:]]*$' "
+                    + "| awk '{print $1}' "
+                    + "| sed 's/.$//' | sort -u >{}-Report/dns/zonexfer-domains.log".format(
+                        self.target
+                    )
+                )
+                zxferFile = "{}-Report/dns/zonexfer-domains.log".format(self.target)
+                if os.path.exists(zxferFile):
+                    zonexferDns = []
+                    with open(zxferFile, "r") as zf:
+                        for line in zf:
+                            zonexferDns.append(line.rstrip())
+                    if len(allsortedhostnameslist) != 0:
+                        for x in allsortedhostnameslist:
+                            zonexferDns.append(x)
+                    sortedAllDomains = sorted(set(zonexferDns))
+                    sortedAllDomainsList = []
+                    for x in sortedAllDomains:
+                        sortedAllDomainsList.append(x)
+                        self.hostnames.append(x)
+                    if len(zonexferDns) != 0:
+                        hosts = Hosts(path="/etc/hosts")
+                        new_entry = HostsEntry(
+                            entry_type="ipv4",
+                            address=self.target,
+                            names=sortedAllDomainsList,
+                        )
+                        hosts.add([new_entry])
+                        hosts.write()
 

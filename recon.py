@@ -47,7 +47,7 @@ def banner():
         colored_art = colored(art, color=color)
         print(colored_art)
 
-    msg = "MrPMillz"
+    msg = "Shhhhh, I'm hunting wabbits"
     color = random_color()
     print_art(msg, color)
 
@@ -105,50 +105,32 @@ def main():
                 print("{} command failed: {}".format(i, returncode))
 
     def enumHTTPS():
-        e = fg.cyan + "Running SSLSCAN, Checking for Domain Names:" + fg.rs
-        print(e)
         webssl = enumWebSSL.EnumWebSSL(args.target)
         webssl.Scan()
-        dnsName = webssl.domainName
         web_ssl_enum_commands = webssl.processes
-        # print("{} has domain name: ".format(args.target), webssl.domainName)
-        b = (
-            fg.cyan
-            + "Enumerating HTTPS/SSL Ports, Running the following commands:"
-            + fg.rs
-        )
-        print(b)
-        # for command in web_ssl_enum_commands:
-        #     print(cmd_info, command)
-        # pool2 = Pool(2)  # Run 2 concurrent commands at a time
-        # for i, returncode in enumerate(
-        #     pool2.imap(partial(call, shell=True), web_ssl_enum_commands)
-        # ):
-        #     if returncode != 0:
-        #         print("{} command failed: {}".format(i, returncode))
+        for command in web_ssl_enum_commands:
+            print(cmd_info, command)
+        pool2 = Pool(2)  # Run 2 concurrent commands at a time
+        for i, returncode in enumerate(
+            pool2.imap(partial(call, shell=True), web_ssl_enum_commands)
+        ):
+            if returncode != 0:
+                print("{} command failed: {}".format(i, returncode))
 
-    # def enumDNS():
-    #     info = fg.cyan + "Enumerating DNS, Checking for Zone-Transfer" + fg.rs
-    #     print(info)
-    #     dn = dnsenum.DnsEnum(args.target)
-    #     dn.Scan()
-    #     dns_enum_commands = dn.processes
-    #     for command in dns_enum_commands:
-    #         print(cmd_info, command)
-    #     pool4 = Pool(2)
-    #     for i, returncode in enumerate(
-    #         pool4.imap(partial(call, shell=True), dns_enum_commands)
-    #     ):
-    #         if returncode != 0:
-    #             print("{} command failed: {}".format(i, returncode))
+    def enumDNS():
+        dn = dnsenum.DnsEnum(args.target)
+        dn.Scan()
+        dns_enum_commands = dn.processes
+        for command in dns_enum_commands:
+            print(cmd_info, command)
+        pool4 = Pool(2)
+        for i, returncode in enumerate(
+            pool4.imap(partial(call, shell=True), dns_enum_commands)
+        ):
+            if returncode != 0:
+                print("{} command failed: {}".format(i, returncode))
 
     def enumSMB():
-        c = (
-            fg.cyan
-            + "Enumerating NetBios SMB Samba Ports, Running the following commands:"
-            + fg.rs
-        )
-        print(c)
         smb = smbEnum.SmbEnum(args.target)
         smb.Scan()
         smb_enum_commands = smb.processes
@@ -170,8 +152,6 @@ def main():
     def getOpenPorts():
         np = nmapParser.NmapParserFunk(args.target)
         np.openPorts()
-        # npSC = nmapParser.NmapParserFunk(args.target)
-        # npSC.enumPorts()
 
     def scanTop10000Ports():
         ntp = topOpenPorts.TopOpenPorts(args.target)
@@ -180,13 +160,13 @@ def main():
 
     if args.target:
         validateIP()
-        # scanTop10000Ports()
-        getOpenPorts()
-        # enumTopTcpPorts()
-        # enumHTTP()
+        scanTop10000Ports()
+        getOpenPorts()  # Must Always be ON
+        enumTopTcpPorts()
+        enumDNS()
+        enumHTTP()
         enumHTTPS()
-        # enumSMB()
-        # enumDNS()
+        enumSMB()
 
     else:
         print("Must supply a target see help message")

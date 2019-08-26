@@ -22,7 +22,12 @@ class SmbEnum:
         else:
             if not os.path.exists("{}-Report/smb".format(self.target)):
                 os.makedirs("{}-Report/smb".format(self.target))
-
+            c = (
+                fg.cyan
+                + "Enumerating NetBios SMB Samba Ports, Running the following commands:"
+                + fg.rs
+            )
+            print(c)
             commands = (
                 'smbclient -L //{} -U "guest"% | tee -a {}-Report/smb/smb-scan-{}.log'.format(
                     self.target, self.target, self.target

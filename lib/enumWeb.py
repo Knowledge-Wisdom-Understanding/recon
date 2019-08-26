@@ -24,15 +24,6 @@ class EnumWeb:
             if not os.path.exists("{}-Report/web".format(self.target)):
                 os.makedirs("{}-Report/web".format(self.target))
             http_string_ports = ",".join(map(str, http_ports))
-            # print(http_string_ports)
-            # nmap_command = "nmap -vv -Pn -sC -sV -p {} -oA {}-Report/nmap/http-scripts-{} {}".format(
-            #     http_string_ports, self.target, self.target, self.target
-            # )
-            # green_plus = fg.li_green + "+" + fg.rs
-            # cmd_info = "[" + green_plus + "]"
-            # print(cmd_info, nmap_command)
-            # s.call(nmap_command, shell=True)
-
             for port in http_ports:
                 commands = (
                     "whatweb -v -a 3 http://{}:{} >{}-Report/web/whatweb-{}-{}.txt".format(
