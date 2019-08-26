@@ -40,11 +40,5 @@ class SmbEnum:
                 f'smbmap -u null -p "" -H {self.target} | tee -a {self.target}-Report/smb/smb-scan-{self.target}.log',
                 f"enum4linux -av {self.target} | tee -a {self.target}-Report/smb/smb-scan-{self.target}.log",
             )
-            # c = fg.cyan + 'Enumerating SMB, Running the following commands:' + fg.rs
-            # print(c)
-            # green_plus = fg.li_green + '+' + fg.rs
-            # cmd_info = '[' + green_plus + ']'
-            # for command in commands:
-            #     print(cmd_info, command)
             self.processes = commands
             # print(self.processes)

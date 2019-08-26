@@ -5,7 +5,8 @@ from sty import fg, bg, ef, rs, RgbFg
 from lib import nmapParser
 from lib import dnsenum
 
-
+################################ NOT SURE IF THIS File will be necessary yet. ################################
+########## Not currently being used by any other files in project. ############################################
 class EnumWebSSL:
     def __init__(self, target):
         self.target = target

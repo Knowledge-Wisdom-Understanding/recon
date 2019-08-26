@@ -22,9 +22,8 @@ class DnsEnum:
         dn = domainFinder.DomainFinder(self.target)
         dn.Scan()
         dns = dn.hostnames
-        # print("dnsenum dns list: {}".format(dns))
-        if not os.path.exists("{}-Report/dns".format(self.target)):
-            os.makedirs("{}-Report/dns".format(self.target))
+        if not os.path.exists(f"{self.target}-Report/dns"):
+            os.makedirs(f"{self.target}-Report/dns")
 
         if len(dns) != 0:
             commands = ()
@@ -34,9 +33,7 @@ class DnsEnum:
                     pass
                 else:
                     commands = commands + (
-                        "dnsenum --dnsserver {} --enum -f /usr/share/seclists/Discovery/DNS/subdomains-top1mil-5000.txt -r {} | tee {}-Report/dns/dsnenum-{}-{}.log".format(
-                            self.target, d, self.target, self.target, d
-                        ),
+                        f"dnsenum --dnsserver {self.target} --enum -f /usr/share/seclists/Discovery/DNS/subdomains-top1mil-5000.txt -r {d} | tee {self.target}-Report/dns/dsnenum-{self.target}-{d}.log",
                     )
                     self.processes = commands
 
@@ -62,7 +59,7 @@ class DnsEnum:
         ]
         dns = []
         with open(
-            "{}-Report/nmap/tcp-scripts-{}.nmap".format(self.target, self.target), "r"
+            f"{self.target}-Report/nmap/tcp-scripts-{self.target}.nmap", "r"
         ) as nm:
             for line in nm:
                 new = (
@@ -103,25 +100,20 @@ class DnsEnum:
             https_string_ports = ",".join(map(str, ssl_ports))
             for sslport in ssl_ports:
                 if not os.path.exists(
-                    "{}-Report/web/sslscan-color-{}-{}.log".format(
-                        self.target, self.target, sslport
-                    )
+                    f"{self.target}-Report/webSSL/sslscan-color-{self.target}-{sslport}.log"
                 ):
                     pass
                 else:
-                    sslscanFile = "{}-Report/web/sslscan-color-{}-{}.log".format(
+                    sslscanFile = "{}-Report/webSSL/sslscan-color-{}-{}.log".format(
                         self.target, self.target, sslport
                     )
-                    # print(sslscanFile)
                     domainName = []
                     altDomainNames = []
                     with open(sslscanFile, "rt") as f:
                         for line in f:
                             if "Subject:" in line:
                                 n = line.lstrip("Subject:").rstrip("\n")
-                                # print(n)
                                 na = n.lstrip()
-                                # print(na)
                                 domainName.append(na)
                             if "Altnames:" in line:
                                 alnam = line.lstrip("Altnames:").rstrip("\n")
@@ -161,7 +153,7 @@ class DnsEnum:
         else:
             ######## Check For Zone Transfer: Running dig ###############
             if len(allsortedhostnameslist) != 0:
-                zxferFile = "{}-Report/dns/zonexfer-domains.log".format(self.target)
+                zxferFile = f"{self.target}-Report/dns/zonexfer-domains.log"
                 if os.path.exists(zxferFile):
                     zonexferDns = []
                     with open(zxferFile, "r") as zf:

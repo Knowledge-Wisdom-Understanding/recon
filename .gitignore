@@ -15,3 +15,4 @@ scratchpad.py
 *.gif
 .vscode/
 .vscode/*
+docs/hacking.md

@@ -7,8 +7,6 @@ from lib import enumWeb
 from lib import enumWebSSL
 from lib import smbEnum
 from lib import dnsenum
-
-# from pyfiglet import figlet_format
 from termcolor import colored
 from sty import fg, bg, ef, rs, RgbFg
 import colorama
@@ -96,16 +94,11 @@ An Enumeration Tool by Knowledge-Wisdom-Understanding
         return random.choice(valid_frieghts)
 
     def print_art(msg, color):
-        # art = figlet_format(msg)
         colored_art = colored(msg, color=color)
         print(colored_art)
 
-        # msg = "Seinfeld"
-
     freight = random_freight()
-
     color = random_color()
-
     print_art(freight, color)
 
 
@@ -129,7 +122,7 @@ def main():
     parser.add_argument("-t", "--target", help="Single IPv4 Target to Scan")
 
     args = parser.parse_args()
-    # print(args)
+
     def validateIP():
         red = "[" + fg.red + "+" + fg.rs + "]"
         try:
@@ -209,7 +202,6 @@ def main():
     def scanTop10000Ports():
         ntp = topOpenPorts.TopOpenPorts(args.target)
         ntp.Scan()
-        # ntp.fullScan()
 
     def fullTcpScan():
         ntp = topOpenPorts.TopOpenPorts(args.target)
@@ -228,14 +220,6 @@ def main():
 
     else:
         print("Must supply a target see help message")
-    # cur_dir = os.getcwd()
-    # dirs_mv = ['smb', 'web']
-    # list_dir = os.listdir(cur_dir)
-    # dest = os.path.join(cur_dir, '{}-Report'.format(args.target))
-    # for sub_dir in list_dir:
-    #     if sub_dir in dirs_mv:
-    #         dir_to_move = os.path.join(cur_dir, sub_dir)
-    #         shutil.move(dir_to_move, dest)
 
     end = time.time()
     time_elapsed = end - startTimer
