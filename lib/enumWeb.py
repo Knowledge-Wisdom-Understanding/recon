@@ -29,8 +29,8 @@ class EnumWeb:
             http_string_ports = ",".join(map(str, http_ports))
             for port in http_ports:
                 commands = (
-                    f"whatweb -v -a 3 http://{self.target}:{port} >{self.target}-Report/web/whatweb-{self.target}-{port}.txt",
-                    f"wafw00f http://{self.target}:{port} >{self.target}-Report/web/wafw00f-{self.target}-{port}.txt",
+                    f"whatweb -v -a 3 http://{self.target}:{port} | tee {self.target}-Report/web/whatweb-{self.target}-{port}.txt",
+                    f"wafw00f http://{self.target}:{port} | tee {self.target}-Report/web/wafw00f-{self.target}-{port}.txt",
                     f"curl -sSik http://{self.target}:{port}/robots.txt -m 10 -o {self.target}-Report/web/robots-{self.target}-{port}.txt &>/dev/null",
                     f"python3 /opt/dirsearch/dirsearch.py -u http://{self.target}:{port} -t 50 -e php,asp,aspx,txt,html -x 403,500 -f --plain-text-report {self.target}-Report/web/dirsearch-{self.target}-{port}.log",
                     f"python3 /opt/dirsearch/dirsearch.py -u http://{self.target}:{port} -t 50 -e php,asp,aspx,txt,html -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -x 403,500 --plain-text-report {self.target}-Report/web/dirsearch-dlistmedium-{self.target}-{port}.log",
@@ -38,3 +38,6 @@ class EnumWeb:
                 )
             self.processes = commands
             # print(self.processes)
+
+    def CMS(self):
+        print("Todo")

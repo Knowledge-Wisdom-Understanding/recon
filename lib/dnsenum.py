@@ -33,7 +33,7 @@ class DnsEnum:
                     pass
                 else:
                     commands = commands + (
-                        f"dnsenum --dnsserver {self.target} --enum -f /usr/share/seclists/Discovery/DNS/subdomains-top1mil-5000.txt -r {d} | tee {self.target}-Report/dns/dsnenum-{self.target}-{d}.log",
+                        f"dnsenum --dnsserver {self.target} --enum -f /usr/share/seclists/Discovery/DNS/subdomains-top1mil-5000.txt -r {d} | tee {self.target}-Report/dns/dnsenum-{self.target}-{d}.log",
                     )
                     self.processes = commands
 

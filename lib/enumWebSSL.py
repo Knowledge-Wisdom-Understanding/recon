@@ -33,7 +33,7 @@ class EnumWebSSL:
             if len(hostnames) == 0:
                 for sslport in ssl_ports:
                     commands = (
-                        f"whatweb -v -a 3 https://{self.target}:{sslport} >{self.target}-Report/webSSL/whatweb-{self.target}-{sslport}.txt",
+                        f"whatweb -v -a 3 https://{self.target}:{sslport} | tee {self.target}-Report/webSSL/whatweb-{self.target}-{sslport}.txt",
                         f"wafw00f https://{self.target}:{sslport} >{self.target}-Report/webSSL/wafw00f-{self.target}-{sslport}.txt",
                         f"curl -sSik https://{self.target}:{sslport}/robots.txt -m 10 -o {self.target}-Report/webSSL/robots-{self.target}-{sslport}.txt &>/dev/null",
                         f"python3 /opt/dirsearch/dirsearch.py -u https://{self.target}:{sslport} -t 50 -e php,asp,aspx,html,txt -x 403,500 -f --plain-text-report {self.target}-Report/webSSL/dirsearch-{self.target}-{sslport}.log",

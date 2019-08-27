@@ -1,4 +1,6 @@
 __pycache__
+*__pycache__*
+utils/__pycache__
 lib/__pycache__
 tests
 tests/

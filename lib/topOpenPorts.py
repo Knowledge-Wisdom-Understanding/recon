@@ -12,7 +12,7 @@ class TopOpenPorts:
         self.target = target
 
     def Scan(self):
-        if not os.path.exists(f"{self.target}-Report".):
+        if not os.path.exists(f"{self.target}-Report"):
             os.makedirs(f"{self.target}-Report")
         if not os.path.exists(f"{self.target}-Report/nmap"):
             os.makedirs(f"{self.target}-Report/nmap")

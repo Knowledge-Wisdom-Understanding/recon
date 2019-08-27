@@ -7,6 +7,7 @@ from lib import enumWeb
 from lib import enumWebSSL
 from lib import smbEnum
 from lib import dnsenum
+from utils import remove_color
 from termcolor import colored
 from sty import fg, bg, ef, rs, RgbFg
 import colorama
@@ -71,24 +72,14 @@ _/oo OOOOO oo`  ooo   ooo  'o!o!o                  o!o!o` 'o!o         o!o`
 -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
                     """,
             """
-                                              _________
-                                             |=========|
-                    __[]__         _          \_______/
-+================+ /______\     __(_)__    ()  \_____/   ()
- `-+ +-----+---+ | |------|    /_______\  /__\  |   | +======+
-   | |     |   | +-+------+-.  |=======| <____> |   | ||    ||
-   | |     |   | |o          \_|___  __|__//\\__|___|_+======+
-   | +=========+ |o                                     o||=+
-   | *         * |o            yezr                     o||||
-   |    --%--    |o~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~o||=+
-   +=====================================+-----------+====+
-       |==/ ------ \=====/ ------ \===%--||o        o||____
-         // \  L_/__\___//_\__L_/__\_/ %=||o~~~~~~~~o||===\\_____
-        ||__ /.  ___________ .  ______/ +==============+     \  \_
-        ||   \__/   || ||   \__/   ||     //--\\\  //--\\\\    \ \ \\\\\_
-         \\\ / || \ //   \\\ / || \ //     (( <> ))(( <> ))\\_\_\_\_\\\\\\\\
-          \========/     \========/       \____/  \____/  `----------+
-An Enumeration Tool by Knowledge-Wisdom-Understanding
+       _____________          ____    ________________                               
+      /___/___      \        /  / |  /___/__          \                   _____      
+          /  /   _   \______/__/  |______|__|_____ *   \_________________/__/  |___  
+       __/__/   /_\   \ |  |  \   __\/  _ \|  |       __/ __ \_/ ___\/  _ \|       | 
+      |   |     ___    \|  |  /|  | (  |_| )  |    |   \  ___/\  \__(  |_| )   |   | 
+      |___|____/\__\____|____/_|__|\_\____/|__|____|_  /\___  |\___  \____/|___|  /  
+                                                 \___\/  \__\/  \___\/      \___\/   
+                 gtihub.com/Knowledge-Wisdom-Understanding
 """,
         )
         return random.choice(valid_frieghts)
@@ -132,6 +123,10 @@ def main():
             print(f"{red} Bad IP address")
             print("")
             sys.exit()
+
+    def removeColor():
+        nocolor = remove_color.Clean(args.target)
+        nocolor.listfiles()
 
     def getOpenPorts():
         p = topOpenPorts.TopOpenPorts(args.target)
@@ -217,6 +212,7 @@ def main():
         enumHTTPS()
         enumSMB()
         fullTcpScan()
+        removeColor()
 
     else:
         print("Must supply a target see help message")
