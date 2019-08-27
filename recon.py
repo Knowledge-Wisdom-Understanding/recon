@@ -7,6 +7,7 @@ from lib import enumWeb
 from lib import enumWebSSL
 from lib import smbEnum
 from lib import dnsenum
+from lib import aqua
 from utils import remove_color
 from termcolor import colored
 from sty import fg, bg, ef, rs, RgbFg
@@ -45,25 +46,14 @@ def banner():
     def random_freight():
         valid_frieghts = (
             """
-                           #########                      
-                        ######                            
-                   ___###___________                      
-            _,--'''_________________'''--._               
-          /',--'\\"##           __  "//'--.'\   ,  /\    _
--._  /\  //'   ##\\       ,-_,-'  \_///\,-'`\\-' \/  \,-' 
-   \/  \//    _  _\\ ,-._/         //'       \\           
-       //'--._ _| |\\___   ___   _//   ___   _\\   ___    
-      | |    (|   | \\  | | Y | |// | | E | | | | | S |   
-   ___| |   /ooo=oo-o\\oo-oo=oo-//=oo-oo=oo-oo| |=oo=oo___
-        \"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"'"|           
-         |    \                           .   /           
-   .      \   /\            .  -     '    .  /            
-           `-.  '-..     ' '          ,  ,,-'     `       
-              \     '- '            ,/,-'/                
-    \          \_- ' '             --',-'                 
-              -'                    \/            |       
-     |  _  -                          - _        .       
-                                                /                  
+       _____________          ____    ________________                               
+      /___/___      \        /  / |  /___/__          \                   _____      
+          /  /   _   \______/__/  |______|__|_____ *   \_________________/__/  |___  
+       __/__/   /_\   \ |  |  \   __\/  _ \|  |       __/ __ \_/ ___\/  _ \|       | 
+      |   |     ___    \|  |  /|  | (  |_| )  |    |   \  ___/\  \__(  |_| )   |   | 
+      |___|____/\__\____|____/_|__|\_\____/|__|____|_  /\___  |\___  \____/|___|  /  
+                                                 \___\/  \__\/  \___\/      \___\/   
+                 gtihub.com/Knowledge-Wisdom-Understanding
     o o o o o o o . . .   ______________________________ _____=======_||____
    o      _____           ||                            | |                 |
  .][__n_n_|DD[  ====_____  |    Yes         Knotez      | |   Loaf   Dems   |
@@ -202,24 +192,34 @@ def main():
         ntp = topOpenPorts.TopOpenPorts(args.target)
         ntp.fullScan()
 
+    def aquatone():
+        aq = aqua.Aquatone(args.target)
+        aq.Scan()
+
+    def cmsEnum():
+        cm = enumWeb.EnumWeb(args.target)
+        cm.CMS()
+
     if args.target:
         validateIP()
-        scanTop10000Ports()
+        # scanTop10000Ports()
         getOpenPorts()  # Must Always be ON
-        enumTopTcpPorts()
-        enumDNS()
-        enumHTTP()
-        enumHTTPS()
-        enumSMB()
-        fullTcpScan()
-        removeColor()
+        # enumTopTcpPorts()
+        # enumDNS()
+        # enumHTTP()
+        cmsEnum()
+        # enumHTTPS()
+        # removeColor()
+        # aquatone()
+        # enumSMB()
+        # fullTcpScan()
 
     else:
         print("Must supply a target see help message")
 
     end = time.time()
     time_elapsed = end - startTimer
-    durationMSG = fg.cyan + "All Scans Completed in: " + fg.rs
+    durationMSG = fg.cyan + f"All Scans Completed for {args.target} in: " + fg.rs
     print(durationMSG, display_time(time_elapsed))
 
 

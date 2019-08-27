@@ -24,6 +24,8 @@ class DnsEnum:
         dns = dn.hostnames
         if not os.path.exists(f"{self.target}-Report/dns"):
             os.makedirs(f"{self.target}-Report/dns")
+        if not os.path.exists(f"{self.target}-Report/aquatone"):
+            os.makedirs(f"{self.target}-Report/aquatone")
 
         if len(dns) != 0:
             commands = ()

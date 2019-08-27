@@ -73,22 +73,24 @@ class DomainFinder:
             for x in allsortedhostnames:
                 allsortedhostnameslist.append(x)
         else:
-            if not os.path.exists(f"{self.target}-Report/web"):
-                os.makedirs(f"{self.target}-Report/web")
+            if not os.path.exists(f"{self.target}-Report/webSSL"):
+                os.makedirs(f"{self.target}-Report/webSSL")
+            if not os.path.exists(f"{self.target}-Report/aquatone"):
+                os.makedirs(f"{self.target}-Report/aquatone")
             https_string_ports = ",".join(map(str, ssl_ports))
             # print(https_string_ports)
             for sslport in ssl_ports:
-                sslscanCMD = f"sslscan https://{self.target}:{sslport} | tee {self.target}-Report/web/sslscan-color-{self.target}-{sslport}.log"
+                sslscanCMD = f"sslscan https://{self.target}:{sslport} | tee {self.target}-Report/webSSL/sslscan-color-{self.target}-{sslport}.log"
                 green_plus = fg.li_green + "+" + fg.rs
                 cmd_info = "[" + green_plus + "]"
                 print(cmd_info, sslscanCMD)
                 call(sslscanCMD, shell=True)
                 if not os.path.exists(
-                    f"{self.target}-Report/web/sslscan-color-{self.target}-{sslport}.log"
+                    f"{self.target}-Report/webSSL/sslscan-color-{self.target}-{sslport}.log"
                 ):
                     pass
                 else:
-                    sslscanFile = f"{self.target}-Report/web/sslscan-color-{self.target}-{sslport}.log"
+                    sslscanFile = f"{self.target}-Report/webSSL/sslscan-color-{self.target}-{sslport}.log"
                     # print(sslscanFile)
                     domainName = []
                     altDomainNames = []

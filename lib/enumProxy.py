@@ -21,6 +21,8 @@ class CheckProxy:
         else:
             if not os.path.exists(f"{self.target}-Report/proxy"):
                 os.makedirs(f"{self.target}-Report/proxy")
+            if not os.path.exists(f"{self.target}-Report/aquatone"):
+                os.makedirs(f"{self.target}-Report/aquatone")
             c = (
                 fg.cyan
                 + "Enumerating HTTP-PROXY : Running the following commands:"
