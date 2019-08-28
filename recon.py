@@ -227,9 +227,9 @@ def main():
 
     if args.target:
         validateIP()
-        # scanTop10000Ports()
+        scanTop10000Ports()
         getOpenPorts()  # Must Always be ON
-        # enumTopTcpPorts()
+        enumTopTcpPorts()
         enumDNS()
         enumHTTP()
         cmsEnum()
