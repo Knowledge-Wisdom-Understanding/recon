@@ -19,6 +19,14 @@ class NmapParserFunk:
         self.proxy_ports = []
         self.ssh_ports = []
         self.oracle_tns_ports = []
+        self.ftp_ports = []
+        self.smtp_ports = []
+        self.ldap_ports = []
+        self.java_rmi_ports = []
+        self.cups_ports = []
+        self.rpc_ports = []
+        self.nfs_ports = []
+        self.udp_ports = []
 
     def openPorts(self):
         report = NmapParser.parse_fromfile(
@@ -64,6 +72,9 @@ class NmapParserFunk:
                     if service[0] != 49160:
                         if service[0] not in self.oracle_tns_ports:
                             self.oracle_tns_ports.append(service[0])
+                if "ftp" in service[1]:
+                    if service[0] not in self.ftp_ports:
+                        self.ftp_ports.append(service[0])
 
         # print("HTTP PORTS:", self.http_ports)
         # print("ORACLE PORTS:", self.oracle_tns_ports)

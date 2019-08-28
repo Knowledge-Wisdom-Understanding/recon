@@ -9,6 +9,7 @@ from lib import smbEnum
 from lib import dnsenum
 from lib import aqua
 from utils import remove_color
+from utils import peaceout_banner
 from termcolor import colored
 from sty import fg, bg, ef, rs, RgbFg
 import colorama
@@ -25,10 +26,7 @@ from functools import partial
 import socket
 from tqdm import tqdm
 
-colorama.init()
-
-green_plus = fg.li_green + "+" + fg.rs
-cmd_info = "[" + green_plus + "]"
+cmd_info = "[" + fg.li_green + "+" + fg.rs + "]"
 
 intervals = (
     ("weeks", 604800),  # 60 * 60 * 24 * 7
@@ -47,6 +45,12 @@ def banner():
     def random_freight():
         valid_frieghts = (
             """
+    o o o o o o o . . .   ______________________________ _____=======_||____
+   o      _____           ||                            | |                 |
+ .][__n_n_|DD[  ====_____  |    Yes         Knotez      | |   Loaf   Dems   |
+>(________|__|_[_________]_|____________________________|_|_________________|
+_/oo OOOOO oo`  ooo   ooo  'o!o!o                  o!o!o` 'o!o         o!o`
+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
        _____________          ____    ________________                               
       /___/___      \        /  / |  /___/__          \                   _____      
           /  /   _   \______/__/  |______|__|_____ *   \_________________/__/  |___  
@@ -55,12 +59,6 @@ def banner():
       |___|____/\__\____|____/_|__|\_\____/|__|____|_  /\___  |\___  \____/|___|  /  
                                                  \___\/  \__\/  \___\/      \___\/   
                  gtihub.com/Knowledge-Wisdom-Understanding
-    o o o o o o o . . .   ______________________________ _____=======_||____
-   o      _____           ||                            | |                 |
- .][__n_n_|DD[  ====_____  |    Yes         Knotez      | |   Loaf   Dems   |
->(________|__|_[_________]_|____________________________|_|_________________|
-_/oo OOOOO oo`  ooo   ooo  'o!o!o                  o!o!o` 'o!o         o!o`
--+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
                     """,
             """
        _____________          ____    ________________                               
@@ -201,13 +199,29 @@ def main():
         ntp = topOpenPorts.TopOpenPorts(args.target)
         ntp.Scan()
 
-    def fullTcpScan():
+    def fullTcpAndTopUdpScan():
         ntp = topOpenPorts.TopOpenPorts(args.target)
-        ntp.fullScan()
+        ntp.topUdpAllTcp()
+        nmap_commands = ntp.processes
+        for command in nmap_commands:
+            print(cmd_info, command)
+        with Pool(processes=2) as p:
+            max_ = len(nmap_commands)
+            with tqdm(total=max_) as pbar:
+                for i, returncode in enumerate(
+                    p.imap_unordered(partial(call, shell=True), nmap_commands)
+                ):
+                    pbar.update()
+                    if returncode != 0:
+                        print(f"{i} command failed: {returncode}")
 
     def aquatone():
         aq = aqua.Aquatone(args.target)
         aq.Scan()
+
+    def peace():
+        pe = peaceout_banner.PeaceOut()
+        pe.bannerOut()
 
     def cmsEnum():
         cm = enumWeb.EnumWeb(args.target)
@@ -237,7 +251,8 @@ def main():
         removeColor()
         aquatone()
         enumSMB()
-        fullTcpScan()
+        fullTcpAndTopUdpScan()
+        peace()
 
     else:
         print("Must supply a target see help message")

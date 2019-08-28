@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import os
-import subprocess as s
+from subprocess import call
 from sty import fg, bg, ef, rs, RgbFg
 from lib import nmapParser
 
@@ -13,6 +13,7 @@ class NmapOpenPorts:
         self.target = target
 
     def Scan(self):
+        cwd = os.getcwd()
         np = nmapParser.NmapParserFunk(self.target)
         np.openPorts()
         tcpPorts = np.tcp_ports
@@ -21,10 +22,10 @@ class NmapOpenPorts:
         else:
             tcp_string_ports = ",".join(map(str, tcpPorts))
             # print(http_string_ports)
-            nmap_command = "nmap -vv -Pn -sC -sV -p {} --script-timeout 2m -oA {}-Report/nmap/tcp-scripts-{} {}".format(
-                tcp_string_ports, self.target, self.target, self.target
-            )
-            green_plus = fg.li_green + "+" + fg.rs
-            cmd_info = "[" + green_plus + "]"
+            nmap_command = f"nmap -vv -Pn -sC -sV -p {tcp_string_ports} --script-timeout 2m -oA {self.target}-Report/nmap/tcp-scripts-{self.target} {self.target}"
+            cmd_info = "[" + fg.li_green + "+" + fg.rs + "]"
             print(cmd_info, nmap_command)
-            s.call(nmap_command, shell=True)
+            call(nmap_command, shell=True)
+            # vulnscan_cmd = f"cd /opt/ReconScan && python3 vulnscan.py {cwd}/{self.target}-Report/nmap/tcp-scripts-{self.target}.xml && cd - &>/dev/null"
+            # print(cmd_info, vulnscan_cmd)
+            # call(vulnscan_cmd, shell=True)
