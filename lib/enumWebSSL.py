@@ -38,8 +38,8 @@ class EnumWebSSL:
                         f"whatweb -v -a 3 https://{self.target}:{sslport} | tee {self.target}-Report/webSSL/whatweb-{self.target}-{sslport}.txt",
                         f"wafw00f https://{self.target}:{sslport} >{self.target}-Report/webSSL/wafw00f-{self.target}-{sslport}.txt",
                         f"curl -sSik https://{self.target}:{sslport}/robots.txt -m 10 -o {self.target}-Report/webSSL/robots-{self.target}-{sslport}.txt &>/dev/null",
-                        f"python3 /opt/dirsearch/dirsearch.py -u https://{self.target}:{sslport} -t 20 -e php,asp,aspx,html,txt -x 403,500 -f --plain-text-report {self.target}-Report/webSSL/dirsearch-{self.target}-{sslport}.log",
-                        f"python3 /opt/dirsearch/dirsearch.py -u https://{self.target}:{sslport} -t 80 -e php -f -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -x 403,500 --plain-text-report {self.target}-Report/webSSL/dirsearch-dlistmedium-{self.target}-{sslport}.log",
+                        f"python3 /opt/dirsearch/dirsearch.py -u https://{self.target}:{sslport} -t 30 -e php,asp,aspx,html,txt -x 403,500 --plain-text-report {self.target}-Report/webSSL/dirsearch-{self.target}-{sslport}.log",
+                        f"python3 /opt/dirsearch/dirsearch.py -u https://{self.target}:{sslport} -t 70 -e php -f -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -x 403,500 --plain-text-report {self.target}-Report/webSSL/dirsearch-dlistmedium-{self.target}-{sslport}.log",
                         f"nikto -ask=no -host https://{self.target}:{sslport} -ssl  >{self.target}-Report/webSSL/niktoscan-{self.target}-{sslport}.txt 2>&1 &",
                     )
             else:

@@ -4,6 +4,7 @@ import os
 from sty import fg, bg, ef, rs, RgbFg
 from lib import nmapParser
 from subprocess import call
+from shutil import which
 
 
 class Aquatone:
@@ -13,6 +14,8 @@ class Aquatone:
     def Scan(self):
         np = nmapParser.NmapParserFunk(self.target)
         np.openPorts()
+        cwd = os.getcwd()
+        cmd_info = "[" + fg.li_green + "+" + fg.rs + "]"
         ssl_ports = np.ssl_ports
         http_ports = np.http_ports
         all_web_ports = []
@@ -29,5 +32,12 @@ class Aquatone:
         aqua_path = f"{cwd}/{self.target}-Report/aquatone/aquatone"
         if os.path.exists(urls_path):
             aquatone_cmd = f"""cat {urls_path} | aquatone -ports {all_web_ports_comma_list} -out {aqua_path} -screenshot-timeout 40000"""
+            print(cmd_info, aquatone_cmd)
             call(aquatone_cmd, shell=True)
-
+        if not which("firefox"):
+            return
+        if os.path.exists(
+            f"{cwd}/{self.target}-Report/aquatone/aquatone/aquatone_report.html"
+        ):
+            open_in_ff_cmd = f"firefox {cwd}/{self.target}-Report/aquatone/aquatone/aquatone_report.html"
+            call(open_in_ff_cmd, shell=True)

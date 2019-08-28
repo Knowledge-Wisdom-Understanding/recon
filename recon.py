@@ -19,10 +19,11 @@ import sys
 import random
 import os
 import shutil
-from subprocess import call
+from subprocess import call, Popen, PIPE
 from multiprocessing import Pool
 from functools import partial
 import socket
+from tqdm import tqdm
 
 colorama.init()
 
@@ -128,12 +129,15 @@ def main():
         web_enum_commands = eweb.processes
         for command in web_enum_commands:
             print(cmd_info, command)
-        pool = Pool(2)
-        for i, returncode in enumerate(
-            pool.imap(partial(call, shell=True), web_enum_commands)
-        ):
-            if returncode != 0:
-                print(f"{i} command failed: {returncode}")
+        with Pool(processes=2) as p:
+            max_ = len(web_enum_commands)
+            with tqdm(total=max_) as pbar:
+                for i, returncode in enumerate(
+                    p.imap_unordered(partial(call, shell=True), web_enum_commands)
+                ):
+                    pbar.update()
+                    if returncode != 0:
+                        print(f"{i} command failed: {returncode}")
 
     def enumHTTPS():
         webssl = enumWebSSL.EnumWebSSL(args.target)
@@ -141,12 +145,15 @@ def main():
         web_ssl_enum_commands = webssl.processes
         for command in web_ssl_enum_commands:
             print(cmd_info, command)
-        pool2 = Pool(2)  # Run 2 concurrent commands at a time
-        for i, returncode in enumerate(
-            pool2.imap(partial(call, shell=True), web_ssl_enum_commands)
-        ):
-            if returncode != 0:
-                pprint(f"{i} command failed: {returncode}")
+        with Pool(processes=2) as p:
+            max_ = len(web_ssl_enum_commands)
+            with tqdm(total=max_) as pbar:
+                for i, returncode in enumerate(
+                    p.imap_unordered(partial(call, shell=True), web_ssl_enum_commands)
+                ):
+                    pbar.update()
+                    if returncode != 0:
+                        print(f"{i} command failed: {returncode}")
 
     def enumDNS():
         dn = dnsenum.DnsEnum(args.target)
@@ -154,12 +161,15 @@ def main():
         dns_enum_commands = dn.processes
         for command in dns_enum_commands:
             print(cmd_info, command)
-        pool4 = Pool(2)
-        for i, returncode in enumerate(
-            pool4.imap(partial(call, shell=True), dns_enum_commands)
-        ):
-            if returncode != 0:
-                print(f"{i} command failed: {returncode}")
+        with Pool(processes=2) as p:
+            max_ = len(dns_enum_commands)
+            with tqdm(total=max_) as pbar:
+                for i, returncode in enumerate(
+                    p.imap_unordered(partial(call, shell=True), dns_enum_commands)
+                ):
+                    pbar.update()
+                    if returncode != 0:
+                        print(f"{i} command failed: {returncode}")
 
     def enumSMB():
         smb = smbEnum.SmbEnum(args.target)
@@ -167,12 +177,15 @@ def main():
         smb_enum_commands = smb.processes
         for command in smb_enum_commands:
             print(cmd_info, command)
-        pool3 = Pool(2)  # Run 2 concurrent commands at a time
-        for i, returncode in enumerate(
-            pool3.imap(partial(call, shell=True), smb_enum_commands)
-        ):
-            if returncode != 0:
-                print(f"{i} command failed: {returncode}")
+        with Pool(processes=2) as p:
+            max_ = len(smb_enum_commands)
+            with tqdm(total=max_) as pbar:
+                for i, returncode in enumerate(
+                    p.imap_unordered(partial(call, shell=True), smb_enum_commands)
+                ):
+                    pbar.update()
+                    if returncode != 0:
+                        print(f"{i} command failed: {returncode}")
 
     def enumTopTcpPorts():
         g = fg.cyan + "Running Nmap Default Scripts on all open TCP Ports:" + fg.rs
@@ -199,20 +212,32 @@ def main():
     def cmsEnum():
         cm = enumWeb.EnumWeb(args.target)
         cm.CMS()
+        cms_commands = cm.cms_processes
+        for command in cms_commands:
+            print(cmd_info, command)
+        with Pool(processes=2) as p:
+            max_ = len(cms_commands)
+            with tqdm(total=max_) as pbar:
+                for i, returncode in enumerate(
+                    p.imap_unordered(partial(call, shell=True), cms_commands)
+                ):
+                    pbar.update()
+                    if returncode != 0:
+                        print(f"{i} command failed: {returncode}")
 
     if args.target:
         validateIP()
         # scanTop10000Ports()
         getOpenPorts()  # Must Always be ON
         # enumTopTcpPorts()
-        # enumDNS()
-        # enumHTTP()
+        enumDNS()
+        enumHTTP()
         cmsEnum()
-        # enumHTTPS()
-        # removeColor()
-        # aquatone()
-        # enumSMB()
-        # fullTcpScan()
+        enumHTTPS()
+        removeColor()
+        aquatone()
+        enumSMB()
+        fullTcpScan()
 
     else:
         print("Must supply a target see help message")
