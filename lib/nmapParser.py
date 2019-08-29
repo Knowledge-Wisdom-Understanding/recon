@@ -51,8 +51,7 @@ class NmapParserFunk:
 
     def openPorts(self):
         report = NmapParser.parse_fromfile(
-            f"/root/Documents/VULNHUB/boxes/JEROME/nmap/full-tcp-scan-192.168.11.174.xml"
-            # f"{self.target}-Report/nmap/top-ports-{self.target}.xml"
+            f"{self.target}-Report/nmap/top-ports-{self.target}.xml"
         )
         self.nmap_services += report.hosts[0].services
         self.nmap_services = sorted(self.nmap_services, key=lambda s: s.port)
@@ -135,8 +134,7 @@ class NmapParserFunk:
     def openProxyPorts(self):
         self.openPorts()
         proxy_report = NmapParser.parse_fromfile(
-            f"/root/Documents/VULNHUB/boxes/JEROME/nmap/proxychainScanTopPorts.xml"
-            # f"{self.target}-Report/nmap/proxychain-top-ports.xml"
+            f"{self.target}-Report/nmap/proxychain-top-ports.xml"
         )
         self.proxy_nmap_services += proxy_report.hosts[0].services
         self.proxy_nmap_services = sorted(

@@ -254,32 +254,32 @@ def main():
         proxy_commands = pscan.all_processes
         for cmd in proxy_commands:
             print(cmd_info, cmd)
-        # with Pool(processes=2) as p:
-        #     max_ = len(proxy_commands)
-        #     with tqdm(total=max_) as pbar:
-        #         for i, returncode in enumerate(
-        #             p.imap_unordered(partial(call, shell=True), proxy_commands)
-        #         ):
-        #             pbar.update()
-        #             if returncode != 0:
-        #                 print(f"{i} command failed: {returncode}")
+        with Pool(processes=2) as p:
+            max_ = len(proxy_commands)
+            with tqdm(total=max_) as pbar:
+                for i, returncode in enumerate(
+                    p.imap_unordered(partial(call, shell=True), proxy_commands)
+                ):
+                    pbar.update()
+                    if returncode != 0:
+                        print(f"{i} command failed: {returncode}")
 
     if args.target:
-        # validateIP()
-        # scanTop10000Ports()
+        validateIP()
+        scanTop10000Ports()
         getOpenPorts()  # Must Always be ON
-        # enumTopTcpPorts()
-        # enumDNS()
-        # enumHTTP()
-        # cmsEnum()
-        # enumHTTPS()
-        # removeColor()
-        # aquatone()
+        enumTopTcpPorts()
+        enumDNS()
+        enumHTTP()
+        cmsEnum()
+        enumHTTPS()
+        removeColor()
+        aquatone()
         getProxyPorts()
         proxyEnum()
-        # enumSMB()
-        # fullTcpAndTopUdpScan()
-        # peace()
+        enumSMB()
+        fullTcpAndTopUdpScan()
+        peace()
 
     else:
         print("Must supply a target see help message")

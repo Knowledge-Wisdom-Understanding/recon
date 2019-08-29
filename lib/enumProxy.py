@@ -53,7 +53,7 @@ class CheckProxy:
 
             proxychains_nmap_top_ports_cmd = f"proxychains nmap -vv -sT -Pn -sV -T3 --max-retries 1 --max-scan-delay 20 --top-ports 10000 -oA {self.target}-Report/nmap/proxychain-top-ports 127.0.0.1"
             print(cmd_info, proxychains_nmap_top_ports_cmd)
-            # call(proxychains_nmap_top_ports_cmd, shell=True)
+            call(proxychains_nmap_top_ports_cmd, shell=True)
 
     def Enum(self):
         npp = nmapParser.NmapParserFunk(self.target)
