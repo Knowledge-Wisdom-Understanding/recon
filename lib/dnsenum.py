@@ -26,7 +26,9 @@ class DnsEnum:
         if not os.path.exists(f"{self.target}-Report/aquatone"):
             os.makedirs(f"{self.target}-Report/aquatone")
 
-        if len(dns) != 0:
+        if len(dns) == 0:
+            pass
+        else:
             commands = ()
             for d in dns:
                 self.hostnames.append(d)
@@ -59,31 +61,35 @@ class DnsEnum:
             ".txt",
         ]
         dns = []
-        with open(
-            f"{self.target}-Report/nmap/tcp-scripts-{self.target}.nmap", "r"
-        ) as nm:
-            for line in nm:
-                new = (
-                    line.replace("=", " ")
-                    .replace("/", " ")
-                    .replace("commonName=", "")
-                    .replace("/organizationName=", " ")
-                )
-                # print(new)
-                matches = re.findall(
-                    r"(?:[a-zA-Z0-9](?:[a-zA-Z0-9\-]{,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,6}",
-                    new,
-                )
-                # print(matches)
-                for x in matches:
-                    if not any(s in x for s in ignore):
-                        dns.append(x)
-        # print(dns)
-        sdns = sorted(set(dns))
-        # print(sdns)
-        tmpdns = []
-        for x in sdns:
-            tmpdns.append(x)
+        try:
+            with open(
+                f"{self.target}-Report/nmap/top-ports-{self.target}.nmap", "r"
+            ) as nm:
+                for line in nm:
+                    new = (
+                        line.replace("=", " ")
+                        .replace("/", " ")
+                        .replace("commonName=", "")
+                        .replace("/organizationName=", " ")
+                    )
+                    # print(new)
+                    matches = re.findall(
+                        r"(?:[a-zA-Z0-9](?:[a-zA-Z0-9\-]{,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,6}",
+                        new,
+                    )
+                    # print(matches)
+                    for x in matches:
+                        if not any(s in x for s in ignore):
+                            dns.append(x)
+            # print(dns)
+            sdns = sorted(set(dns))
+            # print(sdns)
+            tmpdns = []
+            for x in sdns:
+                tmpdns.append(x)
+        except FileNotFoundError as fnf_error:
+            print(fnf_error)
+            exit()
         ################# SSLSCAN #######################
         if len(ssl_ports) == 0:
             tmpdns2 = []

@@ -35,9 +35,10 @@ class Aquatone:
             print(cmd_info, aquatone_cmd)
             call(aquatone_cmd, shell=True)
         if not which("firefox"):
-            return
-        if os.path.exists(
-            f"{cwd}/{self.target}-Report/aquatone/aquatone/aquatone_report.html"
-        ):
-            open_in_ff_cmd = f"firefox {cwd}/{self.target}-Report/aquatone/aquatone/aquatone_report.html"
+            pass
+        else:
+            os.path.exists(
+                f"{cwd}/{self.target}-Report/aquatone/aquatone/aquatone_report.html"
+            )
+            open_in_ff_cmd = f"firefox {cwd}/{self.target}-Report/aquatone/aquatone/aquatone_report.html &"
             call(open_in_ff_cmd, shell=True)

@@ -58,24 +58,28 @@ class CheckProxy:
     def Enum(self):
         npp = nmapParser.NmapParserFunk(self.target)
         npp.openProxyPorts()
-        pweb = enumWeb.EnumWeb(self.target)
-        pweb.proxyScan()
-        http_proxy_commands = pweb.proxy_processes
-        psslweb = enumWebSSL.EnumWebSSL(self.target)
-        psslweb.sslProxyScan()
-        ssl_proxy_commands = psslweb.proxy_processes
-        all_commands = []
-        proxy_tcp_ports = npp.proxy_tcp_ports
-        tcp_proxy_ports = ",".join(map(str, proxy_tcp_ports))
-        default_command = f"proxychains nmap -vv -sT -Pn -sC -sV -p {tcp_proxy_ports} --script-timeout 2m -oA {self.target}-Report/nmap/proxychain-ServiceScan 127.0.0.1"
-        all_commands.append(default_command)
-        for cmd in http_proxy_commands:
-            all_commands.append(cmd)
-        for cmd in ssl_proxy_commands:
-            all_commands.append(cmd)
-        sorted_commands = sorted(set(all_commands), reverse=True)
-        commands_to_run = []
-        for i in sorted_commands:
-            commands_to_run.append(i)
-        allCmds = tuple(commands_to_run)
-        self.all_processes = allCmds
+        open_proxy_ports = npp.proxy_ports2
+        if len(open_proxy_ports) == 0:
+            pass
+        else:
+            pweb = enumWeb.EnumWeb(self.target)
+            pweb.proxyScan()
+            http_proxy_commands = pweb.proxy_processes
+            psslweb = enumWebSSL.EnumWebSSL(self.target)
+            psslweb.sslProxyScan()
+            ssl_proxy_commands = psslweb.proxy_processes
+            all_commands = []
+            proxy_tcp_ports = npp.proxy_tcp_ports
+            tcp_proxy_ports = ",".join(map(str, proxy_tcp_ports))
+            default_command = f"proxychains nmap -vv -sT -Pn -sC -sV -p {tcp_proxy_ports} --script-timeout 2m -oA {self.target}-Report/nmap/proxychain-ServiceScan 127.0.0.1"
+            all_commands.append(default_command)
+            for cmd in http_proxy_commands:
+                all_commands.append(cmd)
+            for cmd in ssl_proxy_commands:
+                all_commands.append(cmd)
+            sorted_commands = sorted(set(all_commands), reverse=True)
+            commands_to_run = []
+            for i in sorted_commands:
+                commands_to_run.append(i)
+            allCmds = tuple(commands_to_run)
+            self.all_processes = allCmds

@@ -44,7 +44,7 @@ class EnumWeb:
                     f"wafw00f http://{self.target}:{port} | tee {self.target}-Report/web/wafw00f-{self.target}-{port}.txt",
                     f"curl -sSik http://{self.target}:{port}/robots.txt -m 10 -o {self.target}-Report/web/robots-{self.target}-{port}.txt &>/dev/null",
                     f"python3 /opt/dirsearch/dirsearch.py -u http://{self.target}:{port} -t 50 -e php,asp,aspx,txt,html -w wordlists/dicc.txt -x 403,500 --plain-text-report {self.target}-Report/web/dirsearch-{self.target}-{port}.log",
-                    # f"python3 /opt/dirsearch/dirsearch.py -u http://{self.target}:{port} -t 80 -e php,asp,aspx,html,txt -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -x 403,500 --plain-text-report {self.target}-Report/web/dirsearch-dlistmedium-{self.target}-{port}.log",
+                    f"python3 /opt/dirsearch/dirsearch.py -u http://{self.target}:{port} -t 80 -e php,asp,aspx,html,txt -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -x 403,500 --plain-text-report {self.target}-Report/web/dirsearch-dlistmedium-{self.target}-{port}.log",
                     f"nikto -ask=no -host http://{self.target}:{port} >{self.target}-Report/web/niktoscan-{self.target}-{port}.txt 2>&1 &",
                 )
             self.processes = commands
