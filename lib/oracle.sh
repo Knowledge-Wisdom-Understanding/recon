@@ -12,16 +12,11 @@ Enum_Oracle() {
     reconDir2="$getcwd/$rhost-Report/oracle"
     SIDS=$(sed -n -e 's/^.*server: //p' $reconDir2/oracle-sid.txt)
     sid_list=$(echo $SIDS | tr "," "\n")
-    cp /usr/share/metasploit-framework/data/wordlists/oracle_default_userpass.txt $reconDir2/oracle_default_userpass.txt
-    cp /opt/odat/accounts/accounts_multiple.txt $reconDir2/accounts_multiple.txt
-    sed 's/ /\//g' $reconDir2/oracle_default_userpass.txt -i
-    sed -e 's/\(.*\)/\L\1/' $reconDir2/accounts_multiple.txt >$reconDir2/accounts_multiple_lowercase.txt
-    rm $reconDir2/accounts_multiple.txt
     if [[ -n $SIDS ]]; then
         for sid in $sid_list; do
             cd /opt/odat
             echo -e "${NICE} Running ODAT passwordguesser ${NICE} ./odat.py passwordguesser -s $rhost -p 1521 -d $sid --accounts-file $reconDir2/oracle_default_userpass.txt --force-retry | tee $reconDir2/oracle-$sid-password-guesser.txt"
-            ./odat.py passwordguesser -s $rhost -p 1521 -d $sid --accounts-file $reconDir2/oracle_default_userpass.txt --force-retry | tee $reconDir2/oracle-$sid-password-guesser.txt
+            ./odat.py passwordguesser -s $rhost -p 1521 -d $sid --accounts-file $getcwd/wordlists/oracle_default_userpass.txt --force-retry | tee $reconDir2/oracle-$sid-password-guesser.txt
             if grep -i "Valid credentials found" $reconDir2/oracle-$sid-password-guesser.txt 2>/dev/null; then
                 echo -e "${NICE} ${NICE} ${NICE} ${NICE} ${NICE} ${NICE} ${TEAL}Found Valid Credentials!${END} ${NICE} ${NICE} ${NICE} ${NICE} ${NICE} ${NICE}"
                 cp $reconDir2/oracle-$sid-password-guesser.txt $reconDir2/Found-Oracle-$sid-Credentials.txt
@@ -39,7 +34,7 @@ Enum_Oracle() {
                 :
             else
                 echo -e "${NICE} Running ODAT passwordguesser ${NICE} ./odat.py passwordguesser -s $rhost -p 1521 -d $sid --accounts-file $reconDir2/accounts_multiple_lowercase.txt --force-retry | tee $reconDir2/oracle-$sid-2-password-guesser.txt"
-                ./odat.py passwordguesser -s $rhost -p 1521 -d $sid --accounts-file $reconDir2/accounts_multiple_lowercase.txt --force-retry | tee $reconDir2/oracle-$sid-2-password-guesser.txt
+                ./odat.py passwordguesser -s $rhost -p 1521 -d $sid --accounts-file $getcwd/wordlists/accounts_multiple_lowercase.txt --force-retry | tee $reconDir2/oracle-$sid-2-password-guesser.txt
             fi
             grep -Ev "Time|ETA" $reconDir2/oracle-sid.txt >$reconDir2/oracle-SID.txt
             if [[ -s $reconDir2/oracle-$sid-2-password-guesser.txt ]]; then
