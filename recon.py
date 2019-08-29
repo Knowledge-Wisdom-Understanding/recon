@@ -8,12 +8,11 @@ from lib import enumWebSSL
 from lib import smbEnum
 from lib import dnsenum
 from lib import aqua
+from lib import enumProxy
 from utils import remove_color
 from utils import peaceout_banner
 from termcolor import colored
 from sty import fg, bg, ef, rs, RgbFg
-import colorama
-from colorama import Fore, Back, Style
 import argparse
 import time
 import sys
@@ -27,6 +26,11 @@ import socket
 from tqdm import tqdm
 
 cmd_info = "[" + fg.li_green + "+" + fg.rs + "]"
+bad_cmd = "[" + fg.li_red + "+" + fg.rs + "]"
+
+if os.getuid() != 0:
+    print(f"{bad_cmd} This program needs to be ran as root.")
+    sys.exit()
 
 intervals = (
     ("weeks", 604800),  # 60 * 60 * 24 * 7
@@ -239,20 +243,43 @@ def main():
                     if returncode != 0:
                         print(f"{i} command failed: {returncode}")
 
+    def getProxyPorts():
+        pr = nmapParser.NmapParserFunk(args.target)
+        pr.openProxyPorts()
+
+    def proxyEnum():
+        pscan = enumProxy.CheckProxy(args.target)
+        pscan.Scan()
+        pscan.Enum()
+        proxy_commands = pscan.all_processes
+        for cmd in proxy_commands:
+            print(cmd_info, cmd)
+        # with Pool(processes=2) as p:
+        #     max_ = len(proxy_commands)
+        #     with tqdm(total=max_) as pbar:
+        #         for i, returncode in enumerate(
+        #             p.imap_unordered(partial(call, shell=True), proxy_commands)
+        #         ):
+        #             pbar.update()
+        #             if returncode != 0:
+        #                 print(f"{i} command failed: {returncode}")
+
     if args.target:
-        validateIP()
-        scanTop10000Ports()
+        # validateIP()
+        # scanTop10000Ports()
         getOpenPorts()  # Must Always be ON
-        enumTopTcpPorts()
-        enumDNS()
-        enumHTTP()
-        cmsEnum()
-        enumHTTPS()
-        removeColor()
-        aquatone()
-        enumSMB()
-        fullTcpAndTopUdpScan()
-        peace()
+        # enumTopTcpPorts()
+        # enumDNS()
+        # enumHTTP()
+        # cmsEnum()
+        # enumHTTPS()
+        # removeColor()
+        # aquatone()
+        getProxyPorts()
+        proxyEnum()
+        # enumSMB()
+        # fullTcpAndTopUdpScan()
+        # peace()
 
     else:
         print("Must supply a target see help message")
