@@ -9,6 +9,8 @@ from lib import smbEnum
 from lib import dnsenum
 from lib import aqua
 from lib import enumProxy
+from lib import ldapEnum
+from lib import oracleEnum
 from utils import remove_color
 from utils import peaceout_banner
 from termcolor import colored
@@ -18,7 +20,6 @@ import time
 import sys
 import random
 import os
-import shutil
 from subprocess import call, Popen, PIPE
 from multiprocessing import Pool
 from functools import partial
@@ -49,12 +50,6 @@ def banner():
     def random_freight():
         valid_frieghts = (
             """
-    o o o o o o o . . .   ______________________________ _____=======_||____
-   o      _____           ||                            | |                 |
- .][__n_n_|DD[  ====_____  |    Yes         Knotez      | |   Loaf   Dems   |
->(________|__|_[_________]_|____________________________|_|_________________|
-_/oo OOOOO oo`  ooo   ooo  'o!o!o                  o!o!o` 'o!o         o!o`
--+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
        _____________          ____    ________________                               
       /___/___      \        /  / |  /___/__          \                   _____      
           /  /   _   \______/__/  |______|__|_____ *   \_________________/__/  |___  
@@ -63,6 +58,12 @@ _/oo OOOOO oo`  ooo   ooo  'o!o!o                  o!o!o` 'o!o         o!o`
       |___|____/\__\____|____/_|__|\_\____/|__|____|_  /\___  |\___  \____/|___|  /  
                                                  \___\/  \__\/  \___\/      \___\/   
                  gtihub.com/Knowledge-Wisdom-Understanding
+    o o o o o o o . . .   ______________________________ _____=======_||____
+   o      _____           ||                            | |                 |
+ .][__n_n_|DD[  ====_____  |    Yes         Knotez      | |   Loaf   Dems   |
+>(________|__|_[_________]_|____________________________|_|_________________|
+_/oo OOOOO oo`  ooo   ooo  'o!o!o                  o!o!o` 'o!o         o!o`
+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
                     """,
             """
        _____________          ____    ________________                               
@@ -190,7 +191,7 @@ def main():
                         print(f"{i} command failed: {returncode}")
 
     def enumTopTcpPorts():
-        g = fg.cyan + "Running Nmap Default Scripts on all open TCP Ports:" + fg.rs
+        g = fg.li_cyan + "Running Nmap Default Scripts on all open TCP Ports:" + fg.rs
         print(g)
         nmapTCP = nmapOpenPorts.NmapOpenPorts(args.target)
         nmapTCP.Scan()
@@ -264,6 +265,40 @@ def main():
                     if returncode != 0:
                         print(f"{i} command failed: {returncode}")
 
+    def enumLdap():
+        ld = ldapEnum.LdapEnum(args.target)
+        ld.Scan()
+        ldap_cmds = ld.processes
+        for cmd in ldap_cmds:
+            print(cmd_info, cmd)
+        with Pool(processes=2) as p:
+            max_ = len(ldap_cmds)
+            with tqdm(total=max_) as pbar:
+                for i, returncode in enumerate(
+                    p.imap_unordered(partial(call, shell=True), ldap_cmds)
+                ):
+                    pbar.update()
+                    if returncode != 0:
+                        print(f"{i} command failed: {returncode}")
+        ld.ldapSearch()
+
+    def enumOracle():
+        oc = oracleEnum.OracleEnum(args.target)
+        oc.Scan()
+        oracle_cmds = oc.processes
+        for cmd in oracle_cmds:
+            print(cmd_info, cmd)
+        with Pool(processes=2) as p:
+            max_ = len(oracle_cmds)
+            with tqdm(total=max_) as pbar:
+                for i, returncode in enumerate(
+                    p.imap_unordered(partial(call, shell=True), oracle_cmds)
+                ):
+                    pbar.update()
+                    if returncode != 0:
+                        print(f"{i} command failed: {returncode}")
+        oc.OraclePwn()
+
     if args.target:
         validateIP()
         scanTop10000Ports()
@@ -278,11 +313,13 @@ def main():
         getProxyPorts()
         proxyEnum()
         enumSMB()
+        enumLdap()
+        enumOracle()
         fullTcpAndTopUdpScan()
         peace()
 
     else:
-        print("Must supply a target see help message")
+        print(f"{bad_cmd} Must supply a target see help message")
 
     end = time.time()
     time_elapsed = end - startTimer

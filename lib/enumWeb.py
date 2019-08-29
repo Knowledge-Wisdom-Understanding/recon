@@ -23,7 +23,7 @@ class EnumWeb:
         if len(http_ports) == 0:
             pass
         else:
-            a = f"{fg.cyan} Enumerating HTTP Ports, Running the following commands: {fg.rs}"
+            a = f"{fg.li_cyan} Enumerating HTTP Ports, Running the following commands: {fg.rs}"
 
             print(a)
             if not os.path.exists(f"{self.target}-Report/web"):
@@ -139,7 +139,7 @@ class EnumWeb:
             if not os.path.exists(f"{self.target}-Report/proxy/web"):
                 os.makedirs(f"{self.target}-Report/proxy/web")
             for proxy in proxy_ports:
-                a = f"{fg.cyan} Enumerating HTTP Ports Through Port: {proxy}, Running the following commands: {fg.rs}"
+                a = f"{fg.li_cyan} Enumerating HTTP Ports Through Port: {proxy}, Running the following commands: {fg.rs}"
                 print(a)
                 for proxy_http_port in proxy_http_ports:
                     proxy_http_string_ports = ",".join(map(str, proxy_http_ports))

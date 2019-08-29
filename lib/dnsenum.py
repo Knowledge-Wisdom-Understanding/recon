@@ -7,7 +7,6 @@ from sty import fg, bg, ef, rs, RgbFg
 from lib import nmapParser
 from lib import domainFinder
 from subprocess import call
-import tldextract
 
 
 class DnsEnum:

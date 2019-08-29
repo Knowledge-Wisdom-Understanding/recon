@@ -20,7 +20,7 @@ class TopOpenPorts:
             os.makedirs(f"{self.target}-Report/nmap")
         c = fg.cyan + "Running Nmap Top Open Ports" + fg.rs
         print(c)
-        nmap_command = f"nmap -vv -Pn -sV -T3 --max-retries 1 --max-scan-delay 20 --top-ports 10000 -oA {self.target}-Report/nmap/top-ports-{self.target} {self.target}"
+        nmap_command = f"nmap -vv -Pn -sV -T4 --max-scan-delay 20 --top-ports 10000 -oA {self.target}-Report/nmap/top-ports-{self.target} {self.target}"
         cmd_info = "[" + fg.li_green + "+" + fg.rs + "]"
         print(cmd_info, nmap_command)
         call(nmap_command, shell=True)

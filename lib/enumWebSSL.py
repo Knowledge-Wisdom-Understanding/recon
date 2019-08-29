@@ -28,7 +28,7 @@ class EnumWebSSL:
             if not os.path.exists(f"{self.target}-Report/aquatone"):
                 os.makedirs(f"{self.target}-Report/aquatone")
             b = (
-                fg.cyan
+                fg.li_cyan
                 + "Enumerating HTTPS/SSL Ports, Running the following commands:"
                 + fg.rs
             )
@@ -74,7 +74,7 @@ class EnumWebSSL:
                 os.makedirs(f"{self.target}-Report/proxy/webSSL")
             for proxy in proxy_ports2:
                 for proxy_ssl_port in proxy_ssl_ports:
-                    a = f"{fg.cyan} Enumerating HTTPS Ports Through {proxy}, Running the following commands: {fg.rs}"
+                    a = f"{fg.li_cyan} Enumerating HTTPS Ports Through {proxy}, Running the following commands: {fg.rs}"
                     print(a)
                     proxy_https_string_ports = ",".join(map(str, proxy_ssl_ports))
                     proxy_whatwebCMD = f"whatweb -v -a 3 --proxy {self.target}:{proxy} https://127.0.0.1:{proxy_ssl_port} | tee {self.target}-Report/proxy/webSSL/whatweb-proxy-{self.target}-{proxy_ssl_port}.txt"

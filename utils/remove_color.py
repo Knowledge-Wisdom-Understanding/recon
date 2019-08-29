@@ -53,13 +53,19 @@ class Clean:
                                 removeColor(
                                     self,
                                     rf,
-                                    f"{os.getcwd()}/{self.target}-Report/web/sslscan.txt",
+                                    f"{os.getcwd()}/{self.target}-Report/webSSL/sslscan.txt",
                                 )
                             if "dnsenum" in rf:
                                 removeColor(
                                     self,
                                     rf,
                                     f"{os.getcwd()}/{self.target}-Report/dns/dnsenum.log",
+                                )
+                            if "oracle" in rf:
+                                removeColor(
+                                    self,
+                                    rf,
+                                    f"{os.getcwd()}/{self.target}-Report/oracle/oracleblah.log",
                                 )
         if len(dirsearch_files) != 0:
             all_dirsearch_files_on_one_line = " ".join(map(str, dirsearch_files))
