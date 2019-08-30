@@ -25,8 +25,8 @@ class EnumWeb:
         http_ports = np.http_ports
         dn = domainFinder.DomainFinder(self.target)
         dn.getRedirect()
-        hostnames = dn.hostnames
-        hostname = hostnames[0]
+        hostnames = dn.redirect_hostname
+        # print(hostnames)
         cwd = os.getcwd()
         reportDir = f"{cwd}/{self.target}-Report"
         if len(http_ports) == 0:
@@ -40,25 +40,28 @@ class EnumWeb:
             if not os.path.exists(f"{self.target}-Report/aquatone"):
                 os.makedirs(f"{self.target}-Report/aquatone")
             http_string_ports = ",".join(map(str, http_ports))
-            if not hostname:
-                for port in http_ports:
-                    if not os.path.exists(
-                        f"{self.target}-Report/web/eyewitness-{self.target}-{port}"
-                    ):
-                        os.makedirs(
-                            f"{self.target}-Report/web/eyewitness-{self.target}-{port}"
+            if hostnames:
+                sorted_hostnames = sorted(set(hostnames))
+                for hostname in sorted_hostnames:
+                    # print("loop", hostname)
+                    for port in http_ports:
+                        if not os.path.exists(
+                            f"{self.target}-Report/web/eyewitness-{hostname}-{port}"
+                        ):
+                            os.makedirs(
+                                f"{self.target}-Report/web/eyewitness-{hostname}-{port}"
+                            )
+                        commands = (
+                            f"whatweb -v -a 3 http://{hostname}:{port} | tee {reportDir}/web/whatweb-{hostname}-{port}.txt",
+                            f"cd /opt/EyeWitness && echo 'http://{hostname}:{port}' > eyefile.txt && ./EyeWitness.py --threads 5 --ocr --no-prompt --active-scan --all-protocols --web -f eyefile.txt -d {reportDir}/web/eyewitness-{hostname}-{port} && cd - &>/dev/null",
+                            f"wafw00f http://{hostname}:{port} | tee {reportDir}/web/wafw00f-{hostname}-{port}.txt",
+                            f"curl -sSik http://{hostname}:{port}/robots.txt -m 10 -o {reportDir}/web/robots-{hostname}-{port}.txt &>/dev/null",
+                            f"python3 /opt/dirsearch/dirsearch.py -u http://{hostname}:{port} -t 50 -e php,asp,aspx,txt,html -f -w wordlists/dicc.txt -x 403,500 --plain-text-report {reportDir}/web/dirsearch-{hostname}-{port}.log",
+                            f"python3 /opt/dirsearch/dirsearch.py -u http://{hostname}:{port} -t 80 -e php,asp,aspx,html,txt -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -x 403,500 --plain-text-report {reportDir}/web/dirsearch-dlistmedium-{hostname}-{port}.log",
+                            f"nikto -ask=no -host http://{hostname}:{port} >{reportDir}/web/niktoscan-{hostname}-{port}.txt 2>&1 &",
                         )
-                    commands = (
-                        f"whatweb -v -a 3 http://{self.target}:{port} | tee {reportDir}/web/whatweb-{port}.txt",
-                        f"cd /opt/EyeWitness && echo http://{self.target}:{port} >eyefile.txt && ./EyeWitness.py --threads 5 --ocr --no-prompt --active-scan --all-protocols --web -f eyefile.txt -d {cwd}/{reportDir}/web/eyewitness-{port} && cd - &>/dev/null",
-                        f"wafw00f http://{self.target}:{port} | tee {reportDir}/web/wafw00f-{port}.txt",
-                        f"curl -sSik http://{self.target}:{port}/robots.txt -m 10 -o {reportDir}/web/robots-{port}.txt &>/dev/null",
-                        f"python3 /opt/dirsearch/dirsearch.py -u http://{self.target}:{port} -t 50 -e php,asp,aspx,txt,html -w wordlists/dicc.txt -x 403,500 --plain-text-report {reportDir}/web/dirsearch-{port}.log",
-                        f"python3 /opt/dirsearch/dirsearch.py -u http://{self.target}:{port} -t 80 -e php,asp,aspx,html,txt -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -x 403,500 --plain-text-report {reportDir}/web/dirsearch-dlistmedium-{port}.log",
-                        f"nikto -ask=no -host http://{self.target}:{port} >{reportDir}/web/niktoscan-{port}.txt 2>&1 &",
-                    )
-                self.processes = commands
-                # print(self.processes)
+                        self.processes = commands
+                        # print(self.processes)
             else:
                 for port in http_ports:
                     if not os.path.exists(
@@ -68,14 +71,15 @@ class EnumWeb:
                             f"{self.target}-Report/web/eyewitness-{self.target}-{port}"
                         )
                     commands = (
-                        f"whatweb -v -a 3 http://{hostname}:{port} | tee {reportDir}/web/whatweb-{hostname}-{port}.txt",
-                        f"cd /opt/EyeWitness && echo http://{hostname}:{port} >eyefile.txt && ./EyeWitness.py --threads 5 --ocr --no-prompt --active-scan --all-protocols --web -f eyefile.txt -d {cwd}/{reportDir}/web/eyewitness-{hostname}-{port} && cd - &>/dev/null",
-                        f"wafw00f http://{hostname}:{port} | tee {reportDir}/web/wafw00f-{hostname}-{port}.txt",
-                        f"curl -sSik http://{hostname}:{port}/robots.txt -m 10 -o {reportDir}/web/robots-{hostname}-{port}.txt &>/dev/null",
-                        f"python3 /opt/dirsearch/dirsearch.py -u http://{hostname}:{port} -t 50 -e php,asp,aspx,txt,html -w wordlists/dicc.txt -x 403,500 --plain-text-report {reportDir}/web/dirsearch-{hostname}-{port}.log",
-                        f"python3 /opt/dirsearch/dirsearch.py -u http://{hostname}:{port} -t 80 -e php,asp,aspx,html,txt -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -x 403,500 --plain-text-report {reportDir}/web/dirsearch-dlistmedium-{hostname}-{port}.log",
-                        f"nikto -ask=no -host http://{hostname}:{port} >{reportDir}/web/niktoscan-{hostname}-{port}.txt 2>&1 &",
+                        f"whatweb -v -a 3 http://{self.target}:{port} | tee {reportDir}/web/whatweb-{port}.txt",
+                        f"cd /opt/EyeWitness && echo 'http://{self.target}:{port}' >eyefile.txt && ./EyeWitness.py --threads 5 --ocr --no-prompt --active-scan --all-protocols --web -f eyefile.txt -d {reportDir}/web/eyewitness-{self.target}-{port} && cd - &>/dev/null",
+                        f"wafw00f http://{self.target}:{port} | tee {reportDir}/web/wafw00f-{port}.txt",
+                        f"curl -sSik http://{self.target}:{port}/robots.txt -m 10 -o {reportDir}/web/robots-{port}.txt &>/dev/null",
+                        f"python3 /opt/dirsearch/dirsearch.py -u http://{self.target}:{port} -t 50 -e php,asp,aspx,txt,html -w wordlists/dicc.txt -x 403,500 --plain-text-report {reportDir}/web/dirsearch-{port}.log",
+                        f"python3 /opt/dirsearch/dirsearch.py -u http://{self.target}:{port} -t 80 -e php,asp,aspx,html,txt -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -x 403,500 --plain-text-report {reportDir}/web/dirsearch-dlistmedium-{port}.log",
+                        f"nikto -ask=no -host http://{self.target}:{port} >{reportDir}/web/niktoscan-{port}.txt 2>&1 &",
                     )
+
                 self.processes = commands
 
     def CMS(self):

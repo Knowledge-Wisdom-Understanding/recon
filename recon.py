@@ -59,7 +59,7 @@ def banner():
                                                  \___\/  \__\/  \___\/      \___\/   
                  gtihub.com/Knowledge-Wisdom-Understanding
     o o o o o o o . . .   ______________________________ _____=======_||____
-   o      _____           ||                            | |                 |
+   o      _____           ||       Auto-Recon           | |                 |
  .][__n_n_|DD[  ====_____  |    Yes         Knotez      | |   Loaf   Dems   |
 >(________|__|_[_________]_|____________________________|_|_________________|
 _/oo OOOOO oo`  ooo   ooo  'o!o!o                  o!o!o` 'o!o         o!o`
@@ -352,7 +352,7 @@ def main():
         removeColor()
         aquatone()
         peace()
-    if args.file and (args.target is None):
+    elif args.file and (args.target is None):
         try:
             with open(args.file, "r") as ips:
                 for ip in ips:
@@ -378,10 +378,10 @@ def main():
                     peace()
         except:
             pass
+    elif args.file and args.target:
+        print(f"{bad_cmd} Cannot use -t {args.target} and -f {args.file} together")
+        parser.print_help(sys.stderr)
     else:
-        print(
-            f"{bad_cmd} If at first you don't succeed just dust yourself off and try again."
-        )
         parser.print_help(sys.stderr)
 
     end = time.time()

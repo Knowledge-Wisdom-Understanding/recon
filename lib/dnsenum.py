@@ -18,19 +18,24 @@ class DnsEnum:
     def Scan(self):
         info = fg.cyan + "Checking Virtual Host Routing and DNS" + fg.rs
         print(info)
+        np = nmapParser.NmapParserFunk(self.target)
+        np.openPorts()
+        dnsPorts = np.dns_ports
         dn = domainFinder.DomainFinder(self.target)
         dn.Scan()
-        dns = dn.hostnames
+        redirect_hostname = dn.redirect_hostname
         if not os.path.exists(f"{self.target}-Report/dns"):
             os.makedirs(f"{self.target}-Report/dns")
         if not os.path.exists(f"{self.target}-Report/aquatone"):
             os.makedirs(f"{self.target}-Report/aquatone")
 
-        if len(dns) == 0:
+        if len(redirect_hostname) and (len(dnsPorts) == 0):
             pass
-        else:
+        elif len(dnsPorts) == 0:
+            pass
+        elif redirect_hostname:
             commands = ()
-            for d in dns:
+            for d in redirect_hostname:
                 self.hostnames.append(d)
                 if "www" in d:
                     pass

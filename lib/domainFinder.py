@@ -11,7 +11,7 @@ from subprocess import call
 class DomainFinder:
     def __init__(self, target):
         self.target = target
-        self.hostnames = []
+        self.redirect_hostname = []
 
     def Scan(self):
         np = nmapParser.NmapParserFunk(self.target)
@@ -32,6 +32,7 @@ class DomainFinder:
             ".jpg",
             ".jpeg",
             ".txt",
+            ".cgi",
         ]
         dns = []
         try:
@@ -59,11 +60,15 @@ class DomainFinder:
                         split_line = line.split()
                         last_word = split_line[-1]
                         redirect_domain = (
-                            last_word.replace("http://", "").replace("/", "").replace("'", "")
+                            last_word.replace("http://", "")
+                            .replace("/", "")
+                            .replace("'", "")
                         )
-                        print(f"{self.target} is redirecting to: {redirectDomain}, adding {redirectDomain} to /etc/hosts file")
+                        print(
+                            f"{self.target} is redirecting to: {redirectDomain}, adding {redirectDomain} to /etc/hosts file"
+                        )
                         dns.append(redirect_domain)
-                        self.hostnames.append(redirect_domain)
+                        self.redirect_hostname.append(redirect_domain)
             # print(dns)
             sdns = sorted(set(dns))
             # print(sdns)
@@ -152,7 +157,7 @@ class DomainFinder:
         if len(dnsPort) == 0:
             if len(allsortedhostnameslist) != 0:
                 for x in allsortedhostnameslist:
-                    self.hostnames.append(x)
+                    self.redirect_hostname.append(x)
                 hosts = Hosts(path="/etc/hosts")
                 new_entry = HostsEntry(
                     entry_type="ipv4", address=self.target, names=allsortedhostnameslist
@@ -189,7 +194,7 @@ class DomainFinder:
                     sortedAllDomainsList = []
                     for x in sortedAllDomains:
                         sortedAllDomainsList.append(x)
-                        self.hostnames.append(x)
+                        self.redirect_hostname.append(x)
                     if len(zonexferDns) != 0:
                         hosts = Hosts(path="/etc/hosts")
                         new_entry = HostsEntry(
@@ -204,19 +209,54 @@ class DomainFinder:
         np = nmapParser.NmapParserFunk(self.target)
         np.openPorts()
         http_ports = np.http_ports
-        dns = []
+        # dns = []
+        ignore = [
+            ".nse",
+            ".php",
+            ".html",
+            ".png",
+            ".js",
+            ".org",
+            ".versio",
+            ".com",
+            ".gif",
+            ".asp",
+            ".aspx",
+            ".jpg",
+            ".jpeg",
+            ".txt",
+            ".cgi",
+        ]
         try:
             with open(
                 f"{self.target}-Report/nmap/top-ports-{self.target}.nmap", "r"
             ) as nm:
                 for line in nm:
-                    if "|_http-title: Did not follow redirect to http:" in line:
-                    print(line)
-                    split_line = line.split()
-                    last_word = split_line[-1]
-                    redirect_domain = (
-                        last_word.replace("http://", "").replace("/", "").replace("'", "")
+                    new = (
+                        line.replace("=", " ")
+                        .replace("/", " ")
+                        .replace("commonName=", "")
+                        .replace("/organizationName=", " ")
                     )
-                    self.hostnames.append(redirect_domain)
+                    # print(new)
+                    matches = re.findall(
+                        r"(?:[a-zA-Z0-9](?:[a-zA-Z0-9\-]{,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,6}",
+                        new,
+                    )
+                    # print(matches)
+                    for x in matches:
+                        if not any(s in x for s in ignore):
+                            # dns.append(x)
+                            self.redirect_hostname.append(x)
+                    if "|_http-title: Did not follow redirect to http:" in line:
+                        print(line)
+                        split_line2 = line.split()
+                        last_word2 = split_line2[-1]
+                        redirect_domainName = (
+                            last_word2.replace("http://", "")
+                            .replace("/", "")
+                            .replace("'", "")
+                        )
+                        self.redirect_hostname.append(redirect_domainName)
         except FileNotFoundError as fnf_error:
             print(fnf_error)
