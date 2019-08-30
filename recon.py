@@ -109,6 +109,11 @@ def main():
     parser.add_argument(
         "-w", "--web", help="Get open ports then only Enumerate Web & and Dns Services"
     )
+    parser.add_argument(
+        "-b",
+        "--brute",
+        help="Brute Force ssh,ftp,http,https,smtp,or pop3. Must supply only one protocol at a time",
+    )
 
     args = parser.parse_args()
 
@@ -367,7 +372,7 @@ def main():
         udp = nmapParser.NmapParserFunk(args.target)
         udp.openUdpPorts()
 
-    if args.target and (args.file is None):
+    if args.target and (args.file is None) and (args.brute is None):
         validateIP()
         scanTop10000Ports()
         getOpenPorts()  # Must Always be ON
@@ -427,6 +432,8 @@ def main():
         removeColor()
         aquatone()
         peace()
+    elif args.target and args.brute:
+        print("TODO")
 
     elif args.file and args.target:
         print(f"{bad_cmd} Cannot use -t {args.target} and -f {args.file} together")
