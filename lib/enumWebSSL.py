@@ -41,7 +41,7 @@ class EnumWebSSL:
                         f"wafw00f https://{self.target}:{sslport} >{self.target}-Report/webSSL/wafw00f-{self.target}-{sslport}.txt",
                         f"curl -sSik https://{self.target}:{sslport}/robots.txt -m 10 -o {self.target}-Report/webSSL/robots-{self.target}-{sslport}.txt &>/dev/null",
                         f"python3 /opt/dirsearch/dirsearch.py -u https://{self.target}:{sslport} -t 30 -e php,asp,aspx,html,txt -x 403,500 -w wordlists/dicc.txt --plain-text-report {self.target}-Report/webSSL/dirsearch-{self.target}-{sslport}.log",
-                        f"python3 /opt/dirsearch/dirsearch.py -u https://{self.target}:{sslport} -t 70 -e php -f -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -x 403,500 --plain-text-report {self.target}-Report/webSSL/dirsearch-dlistmedium-{self.target}-{sslport}.log",
+                        f"python3 /opt/dirsearch/dirsearch.py -u https://{self.target}:{sslport} -t 80 -e php -f -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -x 403,500 --plain-text-report {self.target}-Report/webSSL/dirsearch-dlistmedium-{self.target}-{sslport}.log",
                         f"nikto -ask=no -host https://{self.target}:{sslport} -ssl  >{self.target}-Report/webSSL/niktoscan-{self.target}-{sslport}.txt 2>&1 &",
                     )
             else:
@@ -52,7 +52,7 @@ class EnumWebSSL:
                             f"whatweb -v -a 3 https://{i}:{ssl_port2} >{self.target}-Report/webSSL/whatweb-{i}-{ssl_port2}.txt",
                             f"wafw00f https://{i}:{ssl_port2} >{self.target}-Report/webSSL/wafw00f-{i}-{ssl_port2}.txt",
                             f"curl -sSik https://{i}:{ssl_port2}/robots.txt -m 10 -o {self.target}-Report/webSSL/robots-{i}-{ssl_port2}.txt &>/dev/null",
-                            f"python3 /opt/dirsearch/dirsearch.py -u https://{i}:{ssl_port2} -t 50 -e php,asp,aspx,txt,html -x 403,500 -f --plain-text-report {self.target}-Report/webSSL/dirsearch-{i}-{ssl_port2}.log",
+                            f"python3 /opt/dirsearch/dirsearch.py -u https://{i}:{ssl_port2} -t 50 -e php,asp,aspx,txt,html -x 403,500 --plain-text-report {self.target}-Report/webSSL/dirsearch-{i}-{ssl_port2}.log",
                             f"python3 /opt/dirsearch/dirsearch.py -u https://{i}:{ssl_port2} -t 50 -e php -f -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -x 403,500 --plain-text-report {self.target}-Report/webSSL/dirsearch-dlistsmall-{i}-{ssl_port2}.log",
                             f"nikto -ask=no -host https://{i}:{ssl_port2} -ssl  >{self.target}-Report/webSSL/niktoscan-{i}-{ssl_port2}.txt 2>&1 &",
                         )
@@ -82,7 +82,7 @@ class EnumWebSSL:
                     ssl_proxy_cmds.append(proxy_whatwebCMD)
                     proxy_dirsearch_cmd = f"python3 /opt/dirsearch/dirsearch.py -e php,asp,aspx,txt,html -x 403,500 -t 50 -w wordlists/dicc.txt --proxy {self.target}:{proxy} -u https://127.0.0.1:{proxy_http_port} --plain-text-report {self.target}-Report/proxy/webSSL/dirsearch-127.0.0.1-{proxy}-{proxy_http_port}.log"
                     ssl_proxy_cmds.append(proxy_dirsearch_cmd)
-                    proxy_dirsearch_cmd2 = f"python3 /opt/dirsearch/dirsearch.py -u https://{self.target}:{port} -t 80 -e php,asp,aspx -w /usr/share/wordlists/dirbuster/directory-list-2.3-small.txt -x 403,500 --plain-text-report {self.target}-Report/proxy/webSSL/dirsearch-dlistsmall-{self.target}-{port}.log"
+                    proxy_dirsearch_cmd2 = f"python3 /opt/dirsearch/dirsearch.py -u https://{self.target}:{port} -t 80 -e php -w /usr/share/wordlists/dirbuster/directory-list-2.3-small.txt -f -x 403,500 --plain-text-report {self.target}-Report/proxy/webSSL/dirsearch-dlistsmall-{self.target}-{port}.log"
                     ssl_proxy_cmds.append(proxy_dirsearch_cmd2)
                     proxy_nikto_cmd = f"nikto -ask=no -host https://127.0.0.1:{proxy_ssl_port}/ -useproxy https://{self.target}:{proxy}/ > {self.target}-Report/proxy/webSSL/nikto-{self.target}-{proxy_ssl_port}-proxy-scan.txt 2>&1 &"
                     ssl_proxy_cmds.append(proxy_nikto_cmd)

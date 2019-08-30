@@ -206,6 +206,7 @@ class DomainFinder:
                         hosts.write()
 
     def getRedirect(self):
+        """Extra Function for enumWeb HTTP hosts so as not to run Scan() twice."""
         np = nmapParser.NmapParserFunk(self.target)
         np.openPorts()
         http_ports = np.http_ports

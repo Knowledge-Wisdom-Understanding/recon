@@ -56,8 +56,8 @@ class EnumWeb:
                             f"cd /opt/EyeWitness && echo 'http://{hostname}:{port}' > eyefile.txt && ./EyeWitness.py --threads 5 --ocr --no-prompt --active-scan --all-protocols --web -f eyefile.txt -d {reportDir}/web/eyewitness-{hostname}-{port} && cd - &>/dev/null",
                             f"wafw00f http://{hostname}:{port} | tee {reportDir}/web/wafw00f-{hostname}-{port}.txt",
                             f"curl -sSik http://{hostname}:{port}/robots.txt -m 10 -o {reportDir}/web/robots-{hostname}-{port}.txt &>/dev/null",
-                            f"python3 /opt/dirsearch/dirsearch.py -u http://{hostname}:{port} -t 50 -e php,asp,aspx,txt,html -f -w wordlists/dicc.txt -x 403,500 --plain-text-report {reportDir}/web/dirsearch-{hostname}-{port}.log",
-                            f"python3 /opt/dirsearch/dirsearch.py -u http://{hostname}:{port} -t 80 -e php,asp,aspx,html,txt -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -x 403,500 --plain-text-report {reportDir}/web/dirsearch-dlistmedium-{hostname}-{port}.log",
+                            f"python3 /opt/dirsearch/dirsearch.py -u http://{hostname}:{port} -t 50 -e php,asp,aspx,txt,html -w wordlists/dicc.txt -x 403,500 --plain-text-report {reportDir}/web/dirsearch-{hostname}-{port}.log",
+                            f"python3 /opt/dirsearch/dirsearch.py -u http://{hostname}:{port} -t 80 -e php -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -f -x 403,500 --plain-text-report {reportDir}/web/dirsearch-dlistmedium-{hostname}-{port}.log",
                             f"nikto -ask=no -host http://{hostname}:{port} >{reportDir}/web/niktoscan-{hostname}-{port}.txt 2>&1 &",
                         )
                         self.processes = commands
@@ -76,7 +76,7 @@ class EnumWeb:
                         f"wafw00f http://{self.target}:{port} | tee {reportDir}/web/wafw00f-{port}.txt",
                         f"curl -sSik http://{self.target}:{port}/robots.txt -m 10 -o {reportDir}/web/robots-{port}.txt &>/dev/null",
                         f"python3 /opt/dirsearch/dirsearch.py -u http://{self.target}:{port} -t 50 -e php,asp,aspx,txt,html -w wordlists/dicc.txt -x 403,500 --plain-text-report {reportDir}/web/dirsearch-{port}.log",
-                        f"python3 /opt/dirsearch/dirsearch.py -u http://{self.target}:{port} -t 80 -e php,asp,aspx,html,txt -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -x 403,500 --plain-text-report {reportDir}/web/dirsearch-dlistmedium-{port}.log",
+                        f"python3 /opt/dirsearch/dirsearch.py -u http://{self.target}:{port} -t 80 -e php -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -f -x 403,500 --plain-text-report {reportDir}/web/dirsearch-dlistmedium-{port}.log",
                         f"nikto -ask=no -host http://{self.target}:{port} >{reportDir}/web/niktoscan-{port}.txt 2>&1 &",
                     )
 
