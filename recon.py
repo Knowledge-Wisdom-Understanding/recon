@@ -106,6 +106,9 @@ def main():
     parser = argparse.ArgumentParser(conflict_handler="resolve")
     parser.add_argument("-t", "--target", help="Single IPv4 Target to Scan")
     parser.add_argument("-f", "--file", help="File of IPv4 Targets to Scan")
+    parser.add_argument(
+        "-w", "--web", help="Get open ports then only Enumerate Web & and Dns Services"
+    )
 
     args = parser.parse_args()
 
@@ -376,8 +379,23 @@ def main():
                     removeColor()
                     aquatone()
                     peace()
-        except:
-            pass
+        except FileNotFoundError as fnf_error:
+            print(fnf_error)
+            exit()
+    elif args.web and (args.target is None):
+        args.target = args.web
+        validateIP()
+        scanTop10000Ports()
+        getOpenPorts()
+        enumDNS()
+        enumHTTP()
+        cmsEnum()
+        enumHTTPS()
+        cmsEnumSSL()
+        removeColor()
+        aquatone()
+        peace()
+
     elif args.file and args.target:
         print(f"{bad_cmd} Cannot use -t {args.target} and -f {args.file} together")
         parser.print_help(sys.stderr)
