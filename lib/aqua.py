@@ -3,8 +3,9 @@
 import os
 from sty import fg, bg, ef, rs, RgbFg
 from lib import nmapParser
-from subprocess import call
+from subprocess import call, check_output, STDOUT
 from shutil import which
+import sys
 
 
 class Aquatone:
@@ -31,14 +32,18 @@ class Aquatone:
         urls_path = f"{cwd}/{self.target}-Report/aquatone/urls.txt"
         aqua_path = f"{cwd}/{self.target}-Report/aquatone/aquatone"
         if os.path.exists(urls_path):
-            aquatone_cmd = f"""cat {urls_path} | aquatone -ports {all_web_ports_comma_list} -out {aqua_path} -screenshot-timeout 40000"""
-            print(cmd_info, aquatone_cmd)
-            call(aquatone_cmd, shell=True)
-        if not which("firefox"):
-            pass
-        else:
-            os.path.exists(
-                f"{cwd}/{self.target}-Report/aquatone/aquatone/aquatone_report.html"
-            )
-            open_in_ff_cmd = f"firefox {cwd}/{self.target}-Report/aquatone/aquatone/aquatone_report.html &"
-            call(open_in_ff_cmd, shell=True)
+            check_lines = f"""wc -l {urls_path} | cut -d ' ' -f 1"""
+            num_urls = check_output(check_lines, stderr=STDOUT, shell=True).rstrip()
+            ### ToDo: open urls.txt and sort urls by occurance of response codes.
+            if int(num_urls) < 50:
+                aquatone_cmd = f"""cat {urls_path} | aquatone -ports {all_web_ports_comma_list} -out {aqua_path} -screenshot-timeout 40000"""
+                print(cmd_info, aquatone_cmd)
+                call(aquatone_cmd, shell=True)
+                if not which("firefox"):
+                    pass
+                else:
+                    os.path.exists(
+                        f"{cwd}/{self.target}-Report/aquatone/aquatone/aquatone_report.html"
+                    )
+                    open_in_ff_cmd = f"firefox {cwd}/{self.target}-Report/aquatone/aquatone/aquatone_report.html &"
+                    call(open_in_ff_cmd, shell=True)

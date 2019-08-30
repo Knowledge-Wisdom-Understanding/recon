@@ -163,7 +163,7 @@ class DnsEnum:
                     self.hostnames.append(x)
 
         else:
-            ######## Check For Zone Transfer: Running dig ###############
+            ######## Check For Zone Transfer from dig output ###############
             if len(allsortedhostnameslist) != 0:
                 zxferFile = f"{self.target}-Report/dns/zonexfer-domains.log"
                 if os.path.exists(zxferFile):
