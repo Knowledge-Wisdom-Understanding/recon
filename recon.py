@@ -162,6 +162,38 @@ def main():
                     if returncode != 0:
                         print(f"{i} command failed: {returncode}")
 
+    def enumHTTP2():
+        eweb = enumWeb.EnumWeb(args.target)
+        eweb.ScanWebOption()
+        web_enum_commands = eweb.processes
+        for command in web_enum_commands:
+            print(cmd_info, command)
+        with Pool(processes=2) as p:
+            max_ = len(web_enum_commands)
+            with tqdm(total=max_) as pbar:
+                for i, returncode in enumerate(
+                    p.imap_unordered(partial(call, shell=True), web_enum_commands)
+                ):
+                    pbar.update()
+                    if returncode != 0:
+                        print(f"{i} command failed: {returncode}")
+
+    def enumHTTPS2():
+        webssl = enumWebSSL.EnumWebSSL(args.target)
+        webssl.ScanWebOption()
+        web_ssl_enum_commands = webssl.processes
+        for command in web_ssl_enum_commands:
+            print(cmd_info, command)
+        with Pool(processes=2) as p:
+            max_ = len(web_ssl_enum_commands)
+            with tqdm(total=max_) as pbar:
+                for i, returncode in enumerate(
+                    p.imap_unordered(partial(call, shell=True), web_ssl_enum_commands)
+                ):
+                    pbar.update()
+                    if returncode != 0:
+                        print(f"{i} command failed: {returncode}")
+
     def enumDNS():
         dn = dnsenum.DnsEnum(args.target)
         dn.Scan()
@@ -388,9 +420,9 @@ def main():
         scanTop10000Ports()
         getOpenPorts()
         enumDNS()
-        enumHTTP()
+        enumHTTP2()
         cmsEnum()
-        enumHTTPS()
+        enumHTTPS2()
         cmsEnumSSL()
         removeColor()
         aquatone()
