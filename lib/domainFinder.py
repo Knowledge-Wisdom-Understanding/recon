@@ -55,15 +55,15 @@ class DomainFinder:
                         if not any(s in x for s in ignore):
                             dns.append(x)
                     if "|_http-title: Did not follow redirect to http:" in line:
-                    print(line)
-                    split_line = line.split()
-                    last_word = split_line[-1]
-                    redirect_domain = (
-                        last_word.replace("http://", "").replace("/", "").replace("'", "")
-                    )
-                    print(f"{self.target} is redirecting to: {redirectDomain}, adding {redirectDomain} to /etc/hosts file")
-                    dns.append(redirect_domain)
-                    self.hostnames.append(redirect_domain)
+                        # print(line)
+                        split_line = line.split()
+                        last_word = split_line[-1]
+                        redirect_domain = (
+                            last_word.replace("http://", "").replace("/", "").replace("'", "")
+                        )
+                        print(f"{self.target} is redirecting to: {redirectDomain}, adding {redirectDomain} to /etc/hosts file")
+                        dns.append(redirect_domain)
+                        self.hostnames.append(redirect_domain)
             # print(dns)
             sdns = sorted(set(dns))
             # print(sdns)
