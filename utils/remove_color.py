@@ -11,6 +11,16 @@ class Clean:
         self.target = target
 
     def listfiles(self):
+        """
+        The Second Parameter for removeColor doesn't matter what the filename is
+        as long as it's the correct path to where the files are that your
+        removing ansi color codes from. The Remove color function removes ansi color
+        codes from any matching files and essentially keeps the same name for the file
+        by moving it to the temporary newfilename param and then moving it back to the
+        filename param.
+        This Class also creates the urls.txt file for aquatone from all the discovered links found from dirsearch.
+        """
+
         def removeColor(self, filename, newfilename):
             sedCMD = f'sed "s,\x1B\[[0-9;]*[a-zA-Z],,g" {filename} > {newfilename} && rm {filename} && mv {newfilename} {filename}'
             return call(sedCMD, shell=True)

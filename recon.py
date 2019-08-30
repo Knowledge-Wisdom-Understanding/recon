@@ -103,8 +103,9 @@ def display_time(seconds, granularity=2):
 def main():
     banner()
     startTimer = time.time()
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(conflict_handler="resolve")
     parser.add_argument("-t", "--target", help="Single IPv4 Target to Scan")
+    parser.add_argument("-f", "--file", help="File of IPv4 Targets to Scan")
 
     args = parser.parse_args()
 
@@ -190,11 +191,23 @@ def main():
                     if returncode != 0:
                         print(f"{i} command failed: {returncode}")
 
-    def enumTopTcpPorts():
-        g = fg.li_cyan + "Running Nmap Default Scripts on all open TCP Ports:" + fg.rs
+    def enumRemainingServices():
+        g = fg.li_cyan + "Enumerating Remaining Services:" + fg.rs
         print(g)
-        nmapTCP = nmapOpenPorts.NmapOpenPorts(args.target)
-        nmapTCP.Scan()
+        nmapRemaing = nmapOpenPorts.NmapOpenPorts(args.target)
+        nmapRemaing.Scan()
+        remaining_enum_cmds = nmapRemaing.processes
+        for command in remaining_enum_cmds:
+            print(cmd_info, command)
+        with Pool(processes=2) as p:
+            max_ = len(remaining_enum_cmds)
+            with tqdm(total=max_) as pbar:
+                for i, returncode in enumerate(
+                    p.imap_unordered(partial(call, shell=True), remaining_enum_cmds)
+                ):
+                    pbar.update()
+                    if returncode != 0:
+                        print(f"{i} command failed: {returncode}")
 
     def getOpenPorts():
         np = nmapParser.NmapParserFunk(args.target)
@@ -239,6 +252,22 @@ def main():
             with tqdm(total=max_) as pbar:
                 for i, returncode in enumerate(
                     p.imap_unordered(partial(call, shell=True), cms_commands)
+                ):
+                    pbar.update()
+                    if returncode != 0:
+                        print(f"{i} command failed: {returncode}")
+
+    def cmsEnumSSL():
+        cms = enumWebSSL.EnumWebSSL(args.target)
+        cms.sslEnumCMS()
+        cms_ssl_commands = cms.cms_processes
+        for command in cms_ssl_commands:
+            print(cmd_info, command)
+        with Pool(processes=2) as p:
+            max_ = len(cms_ssl_commands)
+            with tqdm(total=max_) as pbar:
+                for i, returncode in enumerate(
+                    p.imap_unordered(partial(call, shell=True), cms_ssl_commands)
                 ):
                     pbar.update()
                     if returncode != 0:
@@ -299,27 +328,61 @@ def main():
                         print(f"{i} command failed: {returncode}")
         oc.OraclePwn()
 
-    if args.target:
+    def getUdpPorts():
+        udp = nmapParser.NmapParserFunk(args.target)
+        udp.openUdpPorts()
+
+    if args.target and (args.file is None):
         validateIP()
         scanTop10000Ports()
         getOpenPorts()  # Must Always be ON
-        enumTopTcpPorts()
         enumDNS()
         enumHTTP()
         cmsEnum()
         enumHTTPS()
-        removeColor()
-        aquatone()
+        cmsEnumSSL()
         getProxyPorts()
         proxyEnum()
-        enumSMB()
         enumLdap()
+        enumSMB()
         enumOracle()
         fullTcpAndTopUdpScan()
+        getUdpPorts()
+        enumRemainingServices()
+        removeColor()
+        aquatone()
         peace()
-
+    if args.file and (args.target is None):
+        try:
+            with open(args.file, "r") as ips:
+                for ip in ips:
+                    args.target = ip.rstrip()
+                    validateIP()
+                    scanTop10000Ports()
+                    getOpenPorts()  # Must Always be ON
+                    enumDNS()
+                    enumHTTP()
+                    cmsEnum()
+                    enumHTTPS()
+                    cmsEnumSSL()
+                    getProxyPorts()
+                    proxyEnum()
+                    enumLdap()
+                    enumSMB()
+                    enumOracle()
+                    fullTcpAndTopUdpScan()
+                    getUdpPorts()
+                    enumRemainingServices()
+                    removeColor()
+                    aquatone()
+                    peace()
+        except:
+            pass
     else:
-        print(f"{bad_cmd} Must supply a target see help message")
+        print(
+            f"{bad_cmd} If at first you don't succeed just dust yourself off and try again."
+        )
+        parser.print_help(sys.stderr)
 
     end = time.time()
     time_elapsed = end - startTimer

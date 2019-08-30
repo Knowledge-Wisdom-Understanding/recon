@@ -54,6 +54,16 @@ class DomainFinder:
                     for x in matches:
                         if not any(s in x for s in ignore):
                             dns.append(x)
+                    if "|_http-title: Did not follow redirect to http:" in line:
+                    print(line)
+                    split_line = line.split()
+                    last_word = split_line[-1]
+                    redirect_domain = (
+                        last_word.replace("http://", "").replace("/", "").replace("'", "")
+                    )
+                    print(f"{self.target} is redirecting to: {redirectDomain}, adding {redirectDomain} to /etc/hosts file")
+                    dns.append(redirect_domain)
+                    self.hostnames.append(redirect_domain)
             # print(dns)
             sdns = sorted(set(dns))
             # print(sdns)
@@ -190,3 +200,23 @@ class DomainFinder:
                         hosts.add([new_entry])
                         hosts.write()
 
+    def getRedirect(self):
+        np = nmapParser.NmapParserFunk(self.target)
+        np.openPorts()
+        http_ports = np.http_ports
+        dns = []
+        try:
+            with open(
+                f"{self.target}-Report/nmap/top-ports-{self.target}.nmap", "r"
+            ) as nm:
+                for line in nm:
+                    if "|_http-title: Did not follow redirect to http:" in line:
+                    print(line)
+                    split_line = line.split()
+                    last_word = split_line[-1]
+                    redirect_domain = (
+                        last_word.replace("http://", "").replace("/", "").replace("'", "")
+                    )
+                    self.hostnames.append(redirect_domain)
+        except FileNotFoundError as fnf_error:
+            print(fnf_error)
