@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import os
-from subprocess import call, check_output
+from subprocess import call
 from sty import fg, bg, ef, rs
 import json
 
@@ -172,8 +172,8 @@ class BruteSingleUser:
         self.user = user
 
     def SshSingleUserBrute(self):
-        cwd = os.getcwd()
-        reportDir = f"{cwd}/{self.target}-Report"
+        # cwd = os.getcwd()
+        # reportDir = f"{cwd}/{self.target}-Report"
         print("Not yet implimented")
         print(
             f"Target:{self.target} serviceName:{self.serviceName} port:{self.port} user:{self.user}"
@@ -189,8 +189,8 @@ class BruteSingleUserCustom:
         self.passList = passList
 
     def SshSingleUserBruteCustom(self):
-        cwd = os.getcwd()
-        reportDir = f"{cwd}/{self.target}-Report"
+        # cwd = os.getcwd()
+        # reportDir = f"{cwd}/{self.target}-Report"
         print("Not yet implimented")
         print(
             f"Target:{self.target} serviceName:{self.serviceName} port:{self.port} user:{self.user} password list: {self.passList}"

@@ -2,7 +2,7 @@
 
 import os
 from subprocess import call
-from sty import fg, bg, ef, rs, RgbFg
+from sty import fg, bg, ef, rs
 from lib import nmapParser
 
 # import sys

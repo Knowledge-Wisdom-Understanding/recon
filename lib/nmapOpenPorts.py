@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 
 import os
-from subprocess import call
-from sty import fg, bg, ef, rs, RgbFg
 from lib import nmapParser
 from shutil import which
 

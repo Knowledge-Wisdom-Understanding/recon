@@ -15,7 +15,7 @@ from lib import brute
 from utils import remove_color
 from utils import peaceout_banner
 from termcolor import colored
-from sty import fg, bg, ef, rs, RgbFg
+from sty import fg, bg, ef, rs
 import argparse
 import time
 import sys

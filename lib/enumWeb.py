@@ -97,7 +97,6 @@ class EnumWeb:
                 os.makedirs(f"{self.target}-Report/web")
             if not os.path.exists(f"{self.target}-Report/aquatone"):
                 os.makedirs(f"{self.target}-Report/aquatone")
-            http_string_ports = ",".join(map(str, http_ports))
             if hostnames:
                 sorted_hostnames = sorted(set(hostnames))
                 for hostname in sorted_hostnames:
@@ -223,8 +222,8 @@ fi
                                                     f"chmod +x {reportDir}/web/wordpressBrute.sh",
                                                     shell=True,
                                                 )
-                                            except:
-                                                continue
+                                            except FileNotFoundError as fnf_error:
+                                                print(fnf_error)
 
                                         if "Drupal" in cms:
                                             drupal_cmd = f"droopescan scan drupal -u http://{self.target}:{http_port}/ -t 32 | tee {reportDir}/web/drupalscan-{self.target}-{http_port}.log"

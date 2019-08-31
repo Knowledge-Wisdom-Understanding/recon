@@ -108,7 +108,7 @@ class EnumWebSSL:
         proxy_ssl_ports = npp.proxy_ssl_ports
         proxy_ports2 = npp.proxy_ports
         ssl_proxy_cmds = []
-        cwd = os.getcwd()
+        # cwd = os.getcwd()
         if len(proxy_ssl_ports) == 0:
             pass
         else:

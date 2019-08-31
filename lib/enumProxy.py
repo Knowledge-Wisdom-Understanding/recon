@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 
 import os
-from sys import exit
 from subprocess import call
 import re
-from sty import fg, bg, ef, rs, RgbFg
+from sty import fg, bg, ef, rs
 from lib import nmapParser
 from lib import enumWeb
 from lib import enumWebSSL
