@@ -11,6 +11,7 @@ from lib import aqua
 from lib import enumProxy
 from lib import ldapEnum
 from lib import oracleEnum
+from lib import brute
 from utils import remove_color
 from utils import peaceout_banner
 from termcolor import colored
@@ -28,6 +29,10 @@ from tqdm import tqdm
 
 cmd_info = "[" + fg.li_green + "+" + fg.rs + "]"
 bad_cmd = "[" + fg.li_red + "+" + fg.rs + "]"
+green = fg.li_green
+teal = fg.li_cyan
+reset = fg.rs
+cwd = os.getcwd()
 
 if os.getuid() != 0:
     print(f"{bad_cmd} This program needs to be ran as root.")
@@ -41,6 +46,16 @@ intervals = (
     ("seconds", 1),
 )
 
+EXAMPLES = """
+    Ex. python3 recon.py -t 10.10.10.10
+    Ex. python3 recon.py -w 10.10.10.10
+    Ex. python3 recon.py -f ips.txt
+    Ex. python3 recon.py -t 10.10.10.10 -b ssh
+    Ex. python3 recon.py -t 10.10.10.10 -b ssh -p 2222
+    Ex. python3 recon.py -t 10.10.10.10 -b ssh -u bob -P /usr/share/seclists/Passwords/darkc0de.txt
+
+"""
+
 
 def banner():
     def random_color():
@@ -50,20 +65,16 @@ def banner():
     def random_freight():
         valid_frieghts = (
             """
-       _____________          ____    ________________                               
-      /___/___      \        /  / |  /___/__          \                   _____      
-          /  /   _   \______/__/  |______|__|_____ *   \_________________/__/  |___  
-       __/__/   /_\   \ |  |  \   __\/  _ \|  |       __/ __ \_/ ___\/  _ \|       | 
-      |   |     ___    \|  |  /|  | (  |_| )  |    |   \  ___/\  \__(  |_| )   |   | 
-      |___|____/\__\____|____/_|__|\_\____/|__|____|_  /\___  |\___  \____/|___|  /  
-                                                 \___\/  \__\/  \___\/      \___\/   
-                 gtihub.com/Knowledge-Wisdom-Understanding
-    o o o o o o o . . .   ______________________________ _____=======_||____
-   o      _____           ||                            | |                 |
- .][__n_n_|DD[  ====_____  |         Auto-Recon         | |      YESR       |
->(________|__|_[_________]_|____________________________|_|_________________|
-_/oo OOOOO oo`  ooo   ooo  'o!o!o                  o!o!o` 'o!o         o!o`
--+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
+
+           d8888          888            8888888b.                                    
+          d88888          888            888   Y88b                                   
+         d88P888          888            888    888                                   
+        d88P 888 888  888 888888 .d88b.  888   d88P .d88b.   .d8888b .d88b.  88888b.  
+       d88P  888 888  888 888   d88""88b 8888888P" d8P  Y8b d88P"   d88""88b 888 "88b 
+      d88P   888 888  888 888   888  888 888 T88b  88888888 888     888  888 888  888 
+     d8888888888 Y88b 888 Y88b. Y88..88P 888  T88b Y8b.     Y88b.   Y88..88P 888  888 
+    d88P     888  "Y88888  "Y888 "Y88P"  888   T88b "Y8888   "Y8888P "Y88P"  888  888               
+                     gtihub.com/Knowledge-Wisdom-Understanding
                     """,
             """
        _____________          ____    ________________                               
@@ -72,8 +83,8 @@ _/oo OOOOO oo`  ooo   ooo  'o!o!o                  o!o!o` 'o!o         o!o`
        __/__/   /_\   \ |  |  \   __\/  _ \|  |       __/ __ \_/ ___\/  _ \|       | 
       |   |     ___    \|  |  /|  | (  |_| )  |    |   \  ___/\  \__(  |_| )   |   | 
       |___|____/\__\____|____/_|__|\_\____/|__|____|_  /\___  |\___  \____/|___|  /  
-                                                 \___\/  \__\/  \___\/      \___\/   
-                 gtihub.com/Knowledge-Wisdom-Understanding
+      gtihub.com/Knowledge-Wisdom-Understanding  \___\/  \__\/  \__\_/      \___\/   
+        
 """,
         )
         return random.choice(valid_frieghts)
@@ -103,7 +114,11 @@ def display_time(seconds, granularity=2):
 def main():
     banner()
     startTimer = time.time()
-    parser = argparse.ArgumentParser(conflict_handler="resolve")
+    parser = argparse.ArgumentParser(
+        conflict_handler="resolve",
+        description="An Information Gathering and Enumeration Framework",
+        usage="python3 recon.py -t 10.10.10.10",
+    )
     parser.add_argument("-t", "--target", help="Single IPv4 Target to Scan")
     parser.add_argument("-f", "--file", help="File of IPv4 Targets to Scan")
     parser.add_argument(
@@ -112,8 +127,28 @@ def main():
     parser.add_argument(
         "-b",
         "--brute",
-        help="Brute Force ssh,ftp,http,https,smtp,or pop3. Must supply only one protocol at a time",
+        help="Brute Force ssh,smb,ftp,http,https,smtp,or pop3. -t, --target is REQUIRED. Must supply only one protocol at a time",
+        choices=["ftp", "http", "https", "pop3", "smb", "smtp", "ssh"],
     )
+    parser.add_argument(
+        "-p",
+        "--port",
+        help="port for brute forcing argument. If no port specified, default port will be used",
+    )
+    parser.add_argument(
+        "-u",
+        "--user",
+        help="Single user name for brute forcing, for SSH, if no user specified, will default to wordlists/usernames.txt and bruteforce usernames",
+    )
+    parser.add_argument(
+        "-U", "--USERS", help="List of usernames to try for brute forcing. Not required for SSH"
+    )
+    parser.add_argument("-P", "--PASSWORDS", help="List of passwords to try. Not required for SSH")
+    # subparsers = parser.add_subparsers(dest="brute", help="sub-command help")
+    # parser_brute = subparsers.add_parser("b", help="brute help")
+    # parser_brute.add_argument("-p", "--port", help="port help")
+    # parser_brute.add_argument("--", help="port help")
+    # parser_brute.add_argument("--port", help="port help")
 
     args = parser.parse_args()
 
@@ -372,7 +407,30 @@ def main():
         udp = nmapParser.NmapParserFunk(args.target)
         udp.openUdpPorts()
 
-    if args.target and (args.file is None) and (args.brute is None):
+    def sshUserBrute():
+        sb = brute.Brute(args.target, args.brute, args.port)
+        sb.SshUsersBrute()
+
+    def sshSingleUserBrute():
+        sb = brute.BruteSingleUser(args.target, args.brute, args.port, args.user)
+        sb.SshSingleUserBrute()
+
+    def sshSingleUserBruteCustom():
+        sb = brute.BruteSingleUserCustom(
+            args.target, args.brute, args.port, args.user, args.PASSWORDS
+        )
+        sb.SshSingleUserBruteCustom()
+
+    # This is the Full Scan option for a Single Target
+    if (
+        args.target
+        and (args.file is None)
+        and (args.brute is None)
+        and (args.port is None)
+        and (args.user is None)
+        and (args.USERS is None)
+        and (args.PASSWORDS is None)
+    ):
         validateIP()
         scanTop10000Ports()
         getOpenPorts()  # Must Always be ON
@@ -392,7 +450,17 @@ def main():
         removeColor()
         aquatone()
         peace()
-    elif args.file and (args.target is None):
+    # This is for the -f --file Option and will run all scans on all IP addresses
+    # In the provided file. Should be 1 IPv4 address per line
+    elif (
+        args.file
+        and (args.target is None)
+        and (args.brute is None)
+        and (args.port is None)
+        and (args.user is None)
+        and (args.USERS is None)
+        and (args.PASSWORDS is None)
+    ):
         try:
             with open(args.file, "r") as ips:
                 for ip in ips:
@@ -419,7 +487,17 @@ def main():
         except FileNotFoundError as fnf_error:
             print(fnf_error)
             exit()
-    elif args.web and (args.target is None):
+    # This is for the -w --web opton and will run all Web Enumeration on a single target
+    # The -t --target argument is required.
+    elif (
+        args.web
+        and (args.target is None)
+        and (args.port is None)
+        and (args.user is None)
+        and (args.USERS is None)
+        and (args.PASSWORDS is None)
+        and (args.file is None)
+    ):
         args.target = args.web
         validateIP()
         scanTop10000Ports()
@@ -432,13 +510,86 @@ def main():
         removeColor()
         aquatone()
         peace()
-    elif args.target and args.brute:
-        print("TODO")
+    # This is the Brute forcing option and -t --target argument is required
+    elif args.target and (args.file is None) and args.brute:
+        if "ssh" in args.brute:
+            if args.port is None:
+                args.port = "22"
+                if args.user is None and (args.PASSWORDS is None) and (args.USERS is None):
+                    print(
+                        f"{teal}Brute Forcing SSH usernames with wordlist: {cwd}/wordlists/usernames.txt on default SSH port, {args.port} {reset}"
+                    )
+                    sshUserBrute()
+                elif args.user is None and args.USERS:
+                    print(f"Brute Forcing Usernames with userlist {args.USERS}")
+                elif args.user and (args.PASSWORDS is None):
+                    print(f"Brute Forcing {args.user}'s password with default wordlist")
+                    sshSingleUserBrute()
+                elif args.user and args.PASSWORDS:
+                    print(
+                        f"Brute Forcing username, {args.user} with password list, {args.PASSWORDS}"
+                    )
+                    sshSingleUserBruteCustom()
+                elif args.USERS and (args.PASSWORDS is None):
+                    print(
+                        f"Brute Forcing SSH with username list, {args.USERS} and default password list"
+                    )
+                elif args.USERS and args.PASSWORDS:
+                    print(
+                        f"Brute Forcing SSH with username list, {args.USERS} and password list, {args.PASSWORDS}"
+                    )
+                else:
+                    print(EXAMPLES)
+            else:
+                if args.user is None and (args.PASSWORDS is None):
+                    print(f"Brute Forcing SSH usernames on port, {args.port}")
+                elif args.user and (args.PASSWORDS is None):
+                    print(
+                        f"Brute Forcing {args.user}'s password with default wordlist on port, {args.port}"
+                    )
+                elif args.user and args.PASSWORDS:
+                    print(
+                        f"Brute Forcing username, {args.user} with password list, {args.PASSWORDS} on port, {args.port}"
+                    )
+                elif args.USERS and (args.PASSWORDS is None):
+                    print(
+                        f"Brute Forcing SSH with username list, {args.USERS} and default password list on port, {args.port}"
+                    )
+                elif args.USERS and args.PASSWORDS:
+                    print(
+                        f"Brute Forcing SSH with username list, {args.USERS} and password list, {args.PASSWORDS} on port, {args.port}"
+                    )
+                else:
+                    print(EXAMPLES)
+        elif "smb" in args.brute:
+            if args.port is None:
+                args.port = "445"
+                print("ToDo: Impliment SMB brute forcing")
+            else:
+                print("ToDo: Impliment SMB brute forcing")
+                # print(f"Brute Forcing SMB on port {args.port}")
+        elif "ftp" in args.brute:
+            if args.port is None:
+                args.port = "22"
+                print("ToDo: Impliment SMB brute forcing")
+                # print("Brute Forcing SMB USERS on default port 22")
+            else:
+                print("ToDo: Impliment SMB brute forcing")
+                # print(f"Brute Forcing FTP USERS on port {args.port}")
+        elif "smtp" in args.brute:
+            if args.port is None:
+                args.port = "22"
+                print("ToDo: Impliment SMTP brute forcing")
+            else:
+                # print(f"Brute Forcing SMTP USERS on port {args.port}")
+                print("ToDo: Impliment SMTP brute forcing")
 
     elif args.file and args.target:
         print(f"{bad_cmd} Cannot use -t {args.target} and -f {args.file} together")
+        print(EXAMPLES)
         parser.print_help(sys.stderr)
     else:
+        print(EXAMPLES)
         parser.print_help(sys.stderr)
 
     end = time.time()

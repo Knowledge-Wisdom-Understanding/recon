@@ -1,8 +1,9 @@
+sty==1.0.0b11
+requests==2.21.0
 python_libnmap==0.7.0
 tqdm==4.35.0
-sty==1.0.0b11
 colorama==0.3.7
-requests==2.21.0
 python_hosts==0.4.5
 beautifulsoup4==4.8.0
 termcolor==1.1.0
+paramiko==2.6.0
