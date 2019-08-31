@@ -36,9 +36,7 @@ class DomainFinder:
         ]
         dns = []
         try:
-            with open(
-                f"{self.target}-Report/nmap/top-ports-{self.target}.nmap", "r"
-            ) as nm:
+            with open(f"{self.target}-Report/nmap/top-ports-{self.target}.nmap", "r") as nm:
                 for line in nm:
                     new = (
                         line.replace("=", " ")
@@ -48,8 +46,7 @@ class DomainFinder:
                     )
                     # print(new)
                     matches = re.findall(
-                        r"(?:[a-zA-Z0-9](?:[a-zA-Z0-9\-]{,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,6}",
-                        new,
+                        r"(?:[a-zA-Z0-9](?:[a-zA-Z0-9\-]{,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,6}", new
                     )
                     # print(matches)
                     for x in matches:
@@ -60,9 +57,7 @@ class DomainFinder:
                         split_line = line.split()
                         last_word = split_line[-1]
                         redirect_domain = (
-                            last_word.replace("http://", "")
-                            .replace("/", "")
-                            .replace("'", "")
+                            last_word.replace("http://", "").replace("/", "").replace("'", "")
                         )
                         print(
                             f"{self.target} is redirecting to: {redirectDomain}, adding {redirectDomain} to /etc/hosts file"
@@ -109,7 +104,9 @@ class DomainFinder:
                 ):
                     pass
                 else:
-                    sslscanFile = f"{self.target}-Report/webSSL/sslscan-color-{self.target}-{sslport}.log"
+                    sslscanFile = (
+                        f"{self.target}-Report/webSSL/sslscan-color-{self.target}-{sslport}.log"
+                    )
                     # print(sslscanFile)
                     domainName = []
                     altDomainNames = []
@@ -125,9 +122,7 @@ class DomainFinder:
                                 alnam = line.lstrip("Altnames:").rstrip("\n")
                                 alname = alnam.lstrip()
                                 alname1 = alname.lstrip("DNS:")
-                                alname2 = (
-                                    alname1.replace("DNS:", "").replace(",", "").split()
-                                )
+                                alname2 = alname1.replace("DNS:", "").replace(",", "").split()
                                 for x in alname2:
                                     altDomainNames.append(x)
                     # print(domainName)
@@ -158,6 +153,9 @@ class DomainFinder:
             if len(allsortedhostnameslist) != 0:
                 for x in allsortedhostnameslist:
                     self.redirect_hostname.append(x)
+                print(
+                    f"{cmd_info} Adding {fg.li_cyan}{allsortedhostnameslist} {fg.rs}to /etc/hosts"
+                )
                 hosts = Hosts(path="/etc/hosts")
                 new_entry = HostsEntry(
                     entry_type="ipv4", address=self.target, names=allsortedhostnameslist
@@ -181,6 +179,7 @@ class DomainFinder:
                     + "| awk '{print $1}' "
                     + f"| sed 's/.$//' | sort -u >{self.target}-Report/dns/zonexfer-domains.log"
                 )
+                call(filterZoneTransferDomainsCMD, shell=True)
                 zxferFile = f"{self.target}-Report/dns/zonexfer-domains.log"
                 if os.path.exists(zxferFile):
                     zonexferDns = []
@@ -196,11 +195,12 @@ class DomainFinder:
                         sortedAllDomainsList.append(x)
                         self.redirect_hostname.append(x)
                     if len(zonexferDns) != 0:
+                        print(
+                            f"{cmd_info} Adding {fg.li_cyan}{sortedAllDomainsList} {fg.rs}to /etc/hosts"
+                        )
                         hosts = Hosts(path="/etc/hosts")
                         new_entry = HostsEntry(
-                            entry_type="ipv4",
-                            address=self.target,
-                            names=sortedAllDomainsList,
+                            entry_type="ipv4", address=self.target, names=sortedAllDomainsList
                         )
                         hosts.add([new_entry])
                         hosts.write()
@@ -229,9 +229,7 @@ class DomainFinder:
             ".cgi",
         ]
         try:
-            with open(
-                f"{self.target}-Report/nmap/top-ports-{self.target}.nmap", "r"
-            ) as nm:
+            with open(f"{self.target}-Report/nmap/top-ports-{self.target}.nmap", "r") as nm:
                 for line in nm:
                     new = (
                         line.replace("=", " ")
@@ -241,8 +239,7 @@ class DomainFinder:
                     )
                     # print(new)
                     matches = re.findall(
-                        r"(?:[a-zA-Z0-9](?:[a-zA-Z0-9\-]{,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,6}",
-                        new,
+                        r"(?:[a-zA-Z0-9](?:[a-zA-Z0-9\-]{,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,6}", new
                     )
                     # print(matches)
                     for x in matches:
@@ -254,9 +251,7 @@ class DomainFinder:
                         split_line2 = line.split()
                         last_word2 = split_line2[-1]
                         redirect_domainName = (
-                            last_word2.replace("http://", "")
-                            .replace("/", "")
-                            .replace("'", "")
+                            last_word2.replace("http://", "").replace("/", "").replace("'", "")
                         )
                         self.redirect_hostname.append(redirect_domainName)
         except FileNotFoundError as fnf_error:

@@ -4,6 +4,7 @@ import os
 from sty import fg, bg, ef, rs, RgbFg
 from lib import nmapParser
 from lib import dnsenum
+import glob
 
 
 class EnumWebSSL:
@@ -28,11 +29,7 @@ class EnumWebSSL:
                 os.makedirs(f"{self.target}-Report/webSSL")
             if not os.path.exists(f"{self.target}-Report/aquatone"):
                 os.makedirs(f"{self.target}-Report/aquatone")
-            b = (
-                fg.li_cyan
-                + "Enumerating HTTPS/SSL Ports, Running the following commands:"
-                + fg.rs
-            )
+            b = fg.li_cyan + "Enumerating HTTPS/SSL Ports, Running the following commands:" + fg.rs
             print(b)
             if len(hostnames) == 0:
                 for sslport in ssl_ports:
@@ -41,7 +38,7 @@ class EnumWebSSL:
                         f"wafw00f https://{self.target}:{sslport} >{self.target}-Report/webSSL/wafw00f-{self.target}-{sslport}.txt",
                         f"curl -sSik https://{self.target}:{sslport}/robots.txt -m 10 -o {self.target}-Report/webSSL/robots-{self.target}-{sslport}.txt &>/dev/null",
                         f"python3 /opt/dirsearch/dirsearch.py -u https://{self.target}:{sslport} -t 30 -e php,asp,aspx,html,txt -x 403,500 -w wordlists/dicc.txt --plain-text-report {self.target}-Report/webSSL/dirsearch-{self.target}-{sslport}.log",
-                        f"python3 /opt/dirsearch/dirsearch.py -u https://{self.target}:{sslport} -t 80 -e php -f -w /usr/share/wordlists/dirbuster/directory-list-2.3-small.txt -x 403,500 --plain-text-report {self.target}-Report/webSSL/dirsearch-dlistsmall-{self.target}-{sslport}.log",
+                        f"python3 /opt/dirsearch/dirsearch.py -u https://{self.target}:{sslport} -t 80 -e php -f -w /usr/share/wordlists/dirb/big.txt -x 403,500 --plain-text-report {self.target}-Report/webSSL/dirsearch-big-{self.target}-{sslport}.log",
                         f"nikto -ask=no -host https://{self.target}:{sslport} -ssl  >{self.target}-Report/webSSL/niktoscan-{self.target}-{sslport}.txt 2>&1 &",
                     )
             else:
@@ -53,7 +50,7 @@ class EnumWebSSL:
                             f"wafw00f https://{i}:{ssl_port2} >{self.target}-Report/webSSL/wafw00f-{i}-{ssl_port2}.txt",
                             f"curl -sSik https://{i}:{ssl_port2}/robots.txt -m 10 -o {self.target}-Report/webSSL/robots-{i}-{ssl_port2}.txt &>/dev/null",
                             f"python3 /opt/dirsearch/dirsearch.py -u https://{i}:{ssl_port2} -t 50 -e php,asp,aspx,txt,html -x 403,500 --plain-text-report {self.target}-Report/webSSL/dirsearch-{i}-{ssl_port2}.log",
-                            f"python3 /opt/dirsearch/dirsearch.py -u https://{i}:{ssl_port2} -t 50 -e php -f -w /usr/share/wordlists/dirbuster/directory-list-2.3-small.txt -x 403,500 --plain-text-report {self.target}-Report/webSSL/dirsearch-dlistsmall-{i}-{ssl_port2}.log",
+                            f"python3 /opt/dirsearch/dirsearch.py -u https://{i}:{ssl_port2} -t 50 -e php -f -w /usr/share/wordlists/dirb/big.txt -x 403,500 --plain-text-report {self.target}-Report/webSSL/dirsearch-big-{i}-{ssl_port2}.log",
                             f"nikto -ask=no -host https://{i}:{ssl_port2} -ssl  >{self.target}-Report/webSSL/niktoscan-{i}-{ssl_port2}.txt 2>&1 &",
                         )
 
@@ -74,11 +71,7 @@ class EnumWebSSL:
                 os.makedirs(f"{self.target}-Report/webSSL")
             if not os.path.exists(f"{self.target}-Report/aquatone"):
                 os.makedirs(f"{self.target}-Report/aquatone")
-            b = (
-                fg.li_cyan
-                + "Enumerating HTTPS/SSL Ports, Running the following commands:"
-                + fg.rs
-            )
+            b = fg.li_cyan + "Enumerating HTTPS/SSL Ports, Running the following commands:" + fg.rs
             print(b)
             if len(hostnames) == 0:
                 for sslport in ssl_ports:
@@ -86,8 +79,10 @@ class EnumWebSSL:
                         f"whatweb -v -a 3 https://{self.target}:{sslport} | tee {self.target}-Report/webSSL/whatweb-{self.target}-{sslport}.txt",
                         f"wafw00f https://{self.target}:{sslport} >{self.target}-Report/webSSL/wafw00f-{self.target}-{sslport}.txt",
                         f"curl -sSik https://{self.target}:{sslport}/robots.txt -m 10 -o {self.target}-Report/webSSL/robots-{self.target}-{sslport}.txt &>/dev/null",
-                        f"python3 /opt/dirsearch/dirsearch.py -u https://{self.target}:{sslport} -t 30 -e php,asp,aspx,html,txt -x 403,500 -w wordlists/dicc.txt --plain-text-report {self.target}-Report/webSSL/dirsearch-{self.target}-{sslport}.log",
-                        f"python3 /opt/dirsearch/dirsearch.py -u https://{self.target}:{sslport} -t 80 -e php -f -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -x 403,500 --plain-text-report {self.target}-Report/webSSL/dirsearch-dlistmedium-{self.target}-{sslport}.log",
+                        f"python3 /opt/dirsearch/dirsearch.py -u https://{self.target}:{sslport} -t 80 -e php,asp,aspx,html -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -x 403,500 --plain-text-report {self.target}-Report/webSSL/dirsearch-dlistmedium-{self.target}-{sslport}.log",
+                        f"python3 /opt/dirsearch/dirsearch.py -u https://{self.target}:{sslport} -t 50 -e php,asp,aspx,html,txt,git,bak,tar,gz,7z,json,zip,rar,bz2,pdf,md,pl,cgi -x 403,500 -w /usr/share/seclists/Discovery/Web-Content/raft-large-files-lowercase.txt --plain-text-report {self.target}-Report/webSSL/dirsearch-raftfiles-{self.target}-{sslport}.log",
+                        f"python3 /opt/dirsearch/dirsearch.py -u https://{self.target}:{sslport} -t 50 -e php,asp,aspx,html,txt -x 403,500 -w /usr/share/seclists/Discovery/Web-Content/raft-large-directories.txt --plain-text-report {self.target}-Report/webSSL/dirsearch-raftdirs-{self.target}-{sslport}.log",
+                        f"python3 /opt/dirsearch/dirsearch.py -u https://{self.target}:{sslport} -t 50 -e php,asp,aspx,txt,html -w wordlists/foreign.txt -x 403,500 --plain-text-report {self.target}-Report/webSSL/dirsearch-foreign-{self.target}-{sslport}.log",
                         f"nikto -ask=no -host https://{self.target}:{sslport} -ssl  >{self.target}-Report/webSSL/niktoscan-{self.target}-{sslport}.txt 2>&1 &",
                     )
             else:
@@ -98,8 +93,10 @@ class EnumWebSSL:
                             f"whatweb -v -a 3 https://{i}:{ssl_port2} >{self.target}-Report/webSSL/whatweb-{i}-{ssl_port2}.txt",
                             f"wafw00f https://{i}:{ssl_port2} >{self.target}-Report/webSSL/wafw00f-{i}-{ssl_port2}.txt",
                             f"curl -sSik https://{i}:{ssl_port2}/robots.txt -m 10 -o {self.target}-Report/webSSL/robots-{i}-{ssl_port2}.txt &>/dev/null",
-                            f"python3 /opt/dirsearch/dirsearch.py -u https://{i}:{ssl_port2} -t 50 -e php,asp,aspx,txt,html -x 403,500 --plain-text-report {self.target}-Report/webSSL/dirsearch-{i}-{ssl_port2}.log",
-                            f"python3 /opt/dirsearch/dirsearch.py -u https://{i}:{ssl_port2} -t 50 -e php -f -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -x 403,500 --plain-text-report {self.target}-Report/webSSL/dirsearch-dlistsmall-{i}-{ssl_port2}.log",
+                            f"python3 /opt/dirsearch/dirsearch.py -u https://{i}:{ssl_port2} -t 50 -e php,asp,aspx,html,txt,git,bak,tar,gz,7z,json,zip,rar,bz2,pdf,md,pl,cgi -x 403,500 -w /usr/share/seclists/Discovery/Web-Content/raft-large-files-lowercase.txt --plain-text-report {self.target}-Report/webSSL/dirsearch-raftfiles-{i}-{ssl_port2}.log",
+                            f"python3 /opt/dirsearch/dirsearch.py -u https://{i}:{ssl_port2} -t 50 -e php,asp,aspx,html,txt -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -x 403,500 --plain-text-report {self.target}-Report/webSSL/dirsearch-dlistmedium-{i}-{ssl_port2}.log",
+                            f"python3 /opt/dirsearch/dirsearch.py -u https://{i}:{ssl_port2} -t 50 -e php,asp,aspx,txt,html -w wordlists/foreign.txt -x 403,500 --plain-text-report {self.target}-Report/webSSL/dirsearch-foreign-{i}-{ssl_port2}.log",
+                            f"python3 /opt/dirsearch/dirsearch.py -u https://{i}:{ssl_port2} -t 50 -e php,asp,aspx,html,txt -x 403,500 -w /usr/share/seclists/Discovery/Web-Content/raft-large-directories.txt --plain-text-report {self.target}-Report/webSSL/dirsearch-raftlargedirs-{i}-{ssl_port2}.log",
                             f"nikto -ask=no -host https://{i}:{ssl_port2} -ssl  >{self.target}-Report/webSSL/niktoscan-{i}-{ssl_port2}.txt 2>&1 &",
                         )
 
@@ -159,9 +156,7 @@ class EnumWebSSL:
                 cms_commands = []
                 whatweb_hostnames = []
                 dir_list = [
-                    d
-                    for d in glob.iglob(f"{reportPath}", recursive=True)
-                    if os.path.isdir(d)
+                    d for d in glob.iglob(f"{reportPath}", recursive=True) if os.path.isdir(d)
                 ]
                 for d in dir_list:
                     reportFile_list = [
@@ -190,11 +185,7 @@ class EnumWebSSL:
                         ]
                         with open(i, "r") as wwf:
                             for word in wwf:
-                                fword = (
-                                    word.replace("[", " ")
-                                    .replace("]", " ")
-                                    .replace(",", " ")
-                                )
+                                fword = word.replace("[", " ").replace("]", " ").replace(",", " ")
                                 for cms in cms_strings:
                                     if cms in fword:
                                         if len(whatweb_hostnames) == 0:
@@ -229,8 +220,7 @@ fi
                                             """.rstrip()
                                             try:
                                                 with open(
-                                                    f"{reportDir}/webSSL/wordpressBrute.sh",
-                                                    "w",
+                                                    f"{reportDir}/webSSL/wordpressBrute.sh", "w"
                                                 ) as wpb:
                                                     print(
                                                         "Creating wordpress Brute Force Script..."
@@ -262,33 +252,21 @@ fi
                                                     if hn in whatweb_hn:
                                                         if "WordPress" in cms:
                                                             wpscan_cmd = f"wpscan --no-update --disable-tls-checks --url https://{hn}:{ssl_port}/ --wp-content-dir wp-content --enumerate vp,vt,cb,dbe,u,m --plugins-detection aggressive | tee {reportDir}/webSSL/wpscan-{hn}-{ssl_port}.log"
-                                                            cms_commands.append(
-                                                                wpscan_cmd
-                                                            )
+                                                            cms_commands.append(wpscan_cmd)
                                                         if "Drupal" in cms:
                                                             drupal_cmd = f"droopescan scan drupal -u https://{hn}:{ssl_port}/ -t 32 | tee {reportDir}/webSSL/drupalscan-{hn}-{ssl_port}.log"
-                                                            cms_commands.append(
-                                                                drupal_cmd
-                                                            )
+                                                            cms_commands.append(drupal_cmd)
                                                         if "Joomla" in cms:
                                                             joomla_cmd = f"joomscan --url https://{hn}:{ssl_port}/ -ec | tee {reportDir}/webSSL/joomlascan-{hn}-{ssl_port}.log"
-                                                            cms_commands.append(
-                                                                joomla_cmd
-                                                            )
+                                                            cms_commands.append(joomla_cmd)
                                                         if "Magento" in cms:
                                                             magento_cmd = f"cd /opt/magescan && bin/magescan scan:all https://{hn}:{ssl_port}/ | tee {reportDir}/webSSL/magentoscan-{hn}-{ssl_port}.log && cd - &>/dev/null"
-                                                            cms_commands.append(
-                                                                magento_cmd
-                                                            )
+                                                            cms_commands.append(magento_cmd)
                                                         if "WebDAV" in cms:
                                                             webdav_cmd = f"davtest -move -sendbd auto -url https://{hn}:{ssl_port}/ | tee {reportDir}/webSSL/davtestscan-{hn}-{ssl_port}.log"
                                                             webdav_cmd2 = f"nmap -Pn -v -sV -p {ssl_port} --script=http-iis-webdav-vuln.nse -oA {reportDir}/nmap/webdav {self.target}"
-                                                            cms_commands.append(
-                                                                webdav_cmd
-                                                            )
-                                                            cms_commands.append(
-                                                                webdav_cmd2
-                                                            )
+                                                            cms_commands.append(webdav_cmd)
+                                                            cms_commands.append(webdav_cmd2)
 
                 sorted_commands = sorted(set(cms_commands))
                 commands_to_run = []
