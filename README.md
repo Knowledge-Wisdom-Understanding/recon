@@ -1,9 +1,9 @@
 # AUTO-RECON
 
 ## Quickly Enumerate a Target in Kali Linux
-<img src="https://github.com/Knowledge-Wisdom-Understanding/recon/blob/devel/auto.gif" />
-### INSTALLATION
+![Recon Loco GIF](img/auto.gif)
 
+### INSTALLATION
 ```
 cd /opt
 git clone https://github.com/Knowledge-Wisdom-Understanding/recon.git
@@ -14,8 +14,7 @@ python3 -m pip install -r requirements.txt
 ```
 
 ### Usage:
-
-```
+```shell
 python3 recon.py -h, --help             show help message and exit
 python3 recon.py -t 10.10.10.10        scan target & enumerate based off nmap results
 python3 recon.py -w 10.10.10.10         Enumerate Web with larger wordlists
