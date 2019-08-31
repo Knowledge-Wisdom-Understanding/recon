@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 
 from termcolor import colored
-import colorama
-from colorama import Fore, Back, Style
 from random import choice
 
 

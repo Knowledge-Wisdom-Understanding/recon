@@ -5,7 +5,6 @@ from sty import fg, bg, ef, rs, RgbFg
 from lib import nmapParser
 from subprocess import call, check_output, STDOUT
 from shutil import which
-import sys
 
 
 class Aquatone:
@@ -28,7 +27,7 @@ class Aquatone:
         cwd = os.getcwd()
         if not os.path.exists(f"{self.target}-Report/aquatone"):
             os.makedirs(f"{self.target}-Report/aquatone")
-        b = fg.cyan + "Opening Aquatone Report" + fg.rs
+        print(f"{fg.cyan}Opening Aquatone Report {fg.rs}")
         urls_path = f"{cwd}/{self.target}-Report/aquatone/urls.txt"
         aqua_path = f"{cwd}/{self.target}-Report/aquatone/aquatone"
         if os.path.exists(urls_path):

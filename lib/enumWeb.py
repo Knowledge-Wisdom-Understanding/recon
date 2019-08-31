@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 
 import os
-import time
-from sty import fg, bg, ef, rs, RgbFg
+from sty import fg, bg, ef, rs
 from lib import nmapParser
 from lib import domainFinder
 from subprocess import call, check_output
 import glob
-from bs4 import BeautifulSoup, SoupStrainer
+from bs4 import BeautifulSoup  # SoupStrainer
 import requests
 
 
@@ -243,6 +242,8 @@ fi
                                             cms_commands.append(webdav_cmd2)
                                         if "tomcat" in cms:
                                             tomcat_cmd = f"hydra -C /usr/share/seclists/Passwords/Default-Credentials/tomcat-betterdefaultpasslist.txt -s {http_port} {self.target} http-get /manager/html"
+                                            print(f"Manual Brute Force Command to run")
+                                            print(tomcat_cmd)
 
                 sorted_commands = sorted(set(cms_commands))
                 commands_to_run = []
@@ -271,7 +272,6 @@ fi
                 a = f"{fg.li_cyan} Enumerating HTTP Ports Through Port: {proxy}, Running the following commands: {fg.rs}"
                 print(a)
                 for proxy_http_port in proxy_http_ports:
-                    proxy_http_string_ports = ",".join(map(str, proxy_http_ports))
                     proxy_whatwebCMD = f"whatweb -v -a 3 --proxy {self.target}:{proxy} http://127.0.0.1:{proxy_http_port} | tee {reportDir}/proxy/web/whatweb-proxy-{proxy_http_port}.txt"
                     web_proxy_cmds.append(proxy_whatwebCMD)
                     proxy_dirsearch_cmd = f"python3 /opt/dirsearch/dirsearch.py -e php,asp,aspx,txt,html -x 403,500 -t 50 -w wordlists/dicc.txt --proxy {self.target}:{proxy} -u http://127.0.0.1:{proxy_http_port} --plain-text-report {reportDir}/proxy/web/dirsearch-127.0.0.1-proxy-{proxy}-{proxy_http_port}.log"
@@ -303,5 +303,5 @@ fi
                 with open(f"{reportDir}/web/links.txt", "w") as l:
                     for link in links:
                         l.write(link)
-            except:
-                pass
+            except FileNotFoundError as fnf_error:
+                print(fnf_error)

@@ -1,10 +1,12 @@
 # AUTO-RECON
 
 ## Quickly Enumerate a Target in Kali Linux
+
 ![Recon Loco GIF](img/auto.gif)
 
 ### INSTALLATION
-```
+
+```bash
 cd /opt
 git clone https://github.com/Knowledge-Wisdom-Understanding/recon.git
 cd recon
@@ -13,7 +15,8 @@ chmod +x setup.sh
 python3 -m pip install -r requirements.txt
 ```
 
-### Usage:
+### Usage
+
 ```shell
 python3 recon.py -h, --help             show help message and exit
 python3 recon.py -t 10.10.10.10        scan target & enumerate based off nmap results

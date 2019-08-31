@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import os
-from sty import fg, bg, ef, rs, RgbFg
+from sty import fg, bg, ef, rs
 from python_hosts.hosts import Hosts, HostsEntry
 import re
 from lib import nmapParser
@@ -91,8 +91,6 @@ class DomainFinder:
                 os.makedirs(f"{self.target}-Report/webSSL")
             if not os.path.exists(f"{self.target}-Report/aquatone"):
                 os.makedirs(f"{self.target}-Report/aquatone")
-            https_string_ports = ",".join(map(str, ssl_ports))
-            # print(https_string_ports)
             for sslport in ssl_ports:
                 sslscanCMD = f"sslscan https://{self.target}:{sslport} | tee {self.target}-Report/webSSL/sslscan-color-{self.target}-{sslport}.log"
                 green_plus = fg.li_green + "+" + fg.rs
@@ -207,10 +205,6 @@ class DomainFinder:
 
     def getRedirect(self):
         """Extra Function for enumWeb HTTP hosts so as not to run Scan() twice."""
-        np = nmapParser.NmapParserFunk(self.target)
-        np.openPorts()
-        http_ports = np.http_ports
-        # dns = []
         ignore = [
             ".nse",
             ".php",
@@ -244,7 +238,6 @@ class DomainFinder:
                     # print(matches)
                     for x in matches:
                         if not any(s in x for s in ignore):
-                            # dns.append(x)
                             self.redirect_hostname.append(x)
                     if "|_http-title: Did not follow redirect to http:" in line:
                         print(line)

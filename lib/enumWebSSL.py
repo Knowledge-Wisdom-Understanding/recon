@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import os
-from sty import fg, bg, ef, rs, RgbFg
+from sty import fg, bg, ef, rs
 from lib import nmapParser
 from lib import dnsenum
 import glob

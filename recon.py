@@ -21,7 +21,7 @@ import time
 import sys
 import random
 import os
-from subprocess import call, Popen, PIPE
+from subprocess import call, Popen
 from multiprocessing import Pool
 from functools import partial
 import socket
@@ -175,10 +175,6 @@ def main():
     def removeColor():
         nocolor = remove_color.Clean(args.target)
         nocolor.listfiles()
-
-    def getOpenPorts():
-        p = topOpenPorts.TopOpenPorts(args.target)
-        p.Scan()
 
     def enumHTTP():
         eweb = enumWeb.EnumWeb(args.target)

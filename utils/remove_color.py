@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
-import re
-from subprocess import call, PIPE
+from subprocess import call
 import os
 import glob
 
@@ -28,16 +27,11 @@ class Clean:
         cwd = os.getcwd()
         reportPath = f"{cwd}/{self.target}-Report/*"
         awkprint = "{print $3}"
-        awkprint2 = "{print $5}"
         dirsearch_files = []
-        dir_list = [
-            d for d in glob.iglob(f"{reportPath}", recursive=True) if os.path.isdir(d)
-        ]
+        dir_list = [d for d in glob.iglob(f"{reportPath}", recursive=True) if os.path.isdir(d)]
         for d in dir_list:
             reportFile_list = [
-                fname
-                for fname in glob.iglob(f"{d}/*", recursive=True)
-                if os.path.isfile(fname)
+                fname for fname in glob.iglob(f"{d}/*", recursive=True) if os.path.isfile(fname)
             ]
             for rf in reportFile_list:
                 if "nmap" not in rf:
@@ -49,15 +43,11 @@ class Clean:
                         if "eyewitness" not in rf:
                             if "wafw00f" in rf:
                                 removeColor(
-                                    self,
-                                    rf,
-                                    f"{os.getcwd()}/{self.target}-Report/web/wafw00f.txt",
+                                    self, rf, f"{os.getcwd()}/{self.target}-Report/web/wafw00f.txt"
                                 )
                             if "whatweb" in rf:
                                 removeColor(
-                                    self,
-                                    rf,
-                                    f"{os.getcwd()}/{self.target}-Report/web/whatweb.txt",
+                                    self, rf, f"{os.getcwd()}/{self.target}-Report/web/whatweb.txt"
                                 )
                             if "sslscan" in rf:
                                 removeColor(
@@ -67,9 +57,7 @@ class Clean:
                                 )
                             if "dnsenum" in rf:
                                 removeColor(
-                                    self,
-                                    rf,
-                                    f"{os.getcwd()}/{self.target}-Report/dns/dnsenum.log",
+                                    self, rf, f"{os.getcwd()}/{self.target}-Report/dns/dnsenum.log"
                                 )
                             if "oracle" in rf:
                                 removeColor(

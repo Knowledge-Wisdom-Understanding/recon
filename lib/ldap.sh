@@ -13,7 +13,7 @@ ldap_enum() {
     ldapsearch -x -h $rhost -s sub -b $dcList | tee $rhost-Report/ldap/ldap-sub.log
     ldapUserNames=$(sed -n -e 's/^.*uid=//p' $rhost-Report/nmap/ldap.nmap | cut -d ',' -f 1)
     sambaNTPassword=$(sed -n -e 's/^.*sambaNTPassword: //p' $rhost-Report/nmap/ldap.nmap)
-    ldapUserPasswords=$(sed -n -e 's/^.*userPassword: //p' $rhost-Report/nmap/ldap.nmap)
+    # ldapUserPasswords=$(sed -n -e 's/^.*userPassword: //p' $rhost-Report/nmap/ldap.nmap)
 
     sortUsers() {
         for user in $ldapUserNames; do

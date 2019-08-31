@@ -29,21 +29,19 @@ class NmapOpenPorts:
         unp.openUdpPorts()
         snmpPorts = unp.snmp_ports
         cwd = os.getcwd()
-        udpPorts = unp.udp_ports
         reportDir = f"{cwd}/{self.target}-Report"
         unsorted_commands = []
-        if len(udpPorts) != 0:
-            snmp_walk_cmd = (
-                f"snmpwalk -c public -v2c {self.target} | tee {reportDir}/snmpwalk.log"
+        if len(snmpPorts) != 0:
+            snmp_walk_cmd = f"snmpwalk -c public -v2c {self.target} | tee {reportDir}/snmpwalk.log"
+            snmp_check_cmd = (
+                f"snmp-check -c public -v 1 -d {self.target} | tee {reportDir}/snmp-check.log"
             )
-            snmp_check_cmd = f"snmp-check -c public -v 1 -d {self.target} | tee {reportDir}/snmp-check.log"
             onesixty_one_cmd = f"onesixtyone -c /usr/share/doc/onesixtyone/dict.txt {self.target} | tee {reportDir}/onesixtyone.log"
-            if len(snmpPorts) != 0:
-                if not os.path.exists(f"{reportDir}/snmp"):
-                    os.makedirs(f"{reportDir}/snmp")
-                unsorted_commands.append(snmp_check_cmd)
-                unsorted_commands.append(snmp_walk_cmd)
-                unsorted_commands.append(onesixty_one_cmd)
+            if not os.path.exists(f"{reportDir}/snmp"):
+                os.makedirs(f"{reportDir}/snmp")
+            unsorted_commands.append(snmp_check_cmd)
+            unsorted_commands.append(snmp_walk_cmd)
+            unsorted_commands.append(onesixty_one_cmd)
         if len(ftpPorts) != 0:
             string_ftp_ports = ",".join(map(str, ftpPorts))
             ftp_enum_cmd = f"nmap -sV -Pn -p {string_ftp_ports} --script=ftp-anon,ftp-bounce,ftp-libopie,ftp-proftpd-backdoor,ftp-vsftpd-backdoor,ftp-vuln-cve2010-4221,ftp-syst -v -oA {reportDir}/nmap/ftp-enum {self.target}"
@@ -63,9 +61,7 @@ class NmapOpenPorts:
         if len(rpcPorts) != 0:
             if not os.path.exists(f"{reportDir}/rpc"):
                 os.makedirs(f"{reportDir}/rpc")
-            rpc_cmds = (
-                f"enum4linux -av {self.target} | tee {reportDir}/rpc/rpc-enum4linux.log"
-            )
+            rpc_cmds = f"enum4linux -av {self.target} | tee {reportDir}/rpc/rpc-enum4linux.log"
             unsorted_commands.append(rpc_cmds)
             if which("impacket-rpcdump"):
                 rpc_cmd_2 = f"impacket-rpcdump @{self.target}"
@@ -77,7 +73,9 @@ class NmapOpenPorts:
         if len(javaRmiPorts) != 0:
             string_java_rmi_ports = ",".join(map(str, javaRmiPorts))
             javaRmi_cmd = f"nmap -v -sV -Pn --script=rmi-vuln-classloader.nse -p {string_java_rmi_ports} -oA {reportDir}/nmap/java-rmi {self.target}"
-            javaRmi_cmd = f"nmap -v -sV -Pn --script=rmi-dumpregistry.nse -p {string_java_rmi_ports} -oA {reportDir}/nmap/java-rmi {self.target}"
+            javaRmi_cmd2 = f"nmap -v -sV -Pn --script=rmi-dumpregistry.nse -p {string_java_rmi_ports} -oA {reportDir}/nmap/java-rmi {self.target}"
+            unsorted_commands.append(javaRmi_cmd)
+            unsorted_commands.append(javaRmi_cmd2)
 
         set_sorted_cmds = sorted(set(unsorted_commands))
         cmds_to_run = []

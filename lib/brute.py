@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 
 import os
-from subprocess import call, check_output, STDOUT
-from sty import fg, bg, ef, rs, RgbFg
-from lib import nmapParser
+from subprocess import call, check_output
+from sty import fg, bg, ef, rs
 import json
+
+# from lib import nmapParser
 
 
 class Brute:

@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import os
-import time
 from sty import fg, bg, ef, rs, RgbFg
 from lib import nmapParser
 from subprocess import call
