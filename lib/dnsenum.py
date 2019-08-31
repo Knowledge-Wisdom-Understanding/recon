@@ -105,7 +105,6 @@ class DnsEnum:
             for x in allsortedhostnames:
                 allsortedhostnameslist.append(x)
         else:
-            https_string_ports = ",".join(map(str, ssl_ports))
             for sslport in ssl_ports:
                 if not os.path.exists(
                     f"{self.target}-Report/webSSL/sslscan-color-{self.target}-{sslport}.log"

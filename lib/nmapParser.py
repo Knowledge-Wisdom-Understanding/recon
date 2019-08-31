@@ -2,7 +2,6 @@
 
 import os
 from libnmap.parser import NmapParser
-import subprocess as su
 
 
 class NmapParserFunk:

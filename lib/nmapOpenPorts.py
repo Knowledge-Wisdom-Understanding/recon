@@ -4,8 +4,6 @@ import os
 from lib import nmapParser
 from shutil import which
 
-# import sys
-
 
 class NmapOpenPorts:
     def __init__(self, target):
@@ -16,7 +14,6 @@ class NmapOpenPorts:
         cwd = os.getcwd()
         np = nmapParser.NmapParserFunk(self.target)
         np.openPorts()
-        tcpPorts = np.tcp_ports
         ftpPorts = np.ftp_ports
         smtpPorts = np.smtp_ports
         nfsPorts = np.nfs_ports

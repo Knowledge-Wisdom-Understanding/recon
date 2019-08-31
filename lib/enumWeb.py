@@ -4,7 +4,7 @@ import os
 from sty import fg, bg, ef, rs
 from lib import nmapParser
 from lib import domainFinder
-from subprocess import call, check_output
+from subprocess import call
 import glob
 from bs4 import BeautifulSoup  # SoupStrainer
 import requests
@@ -38,7 +38,6 @@ class EnumWeb:
                 os.makedirs(f"{self.target}-Report/web")
             if not os.path.exists(f"{self.target}-Report/aquatone"):
                 os.makedirs(f"{self.target}-Report/aquatone")
-            http_string_ports = ",".join(map(str, http_ports))
             if hostnames:
                 sorted_hostnames = sorted(set(hostnames))
                 for hostname in sorted_hostnames:

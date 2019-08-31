@@ -21,7 +21,7 @@ import time
 import sys
 import random
 import os
-from subprocess import call, Popen
+from subprocess import call
 from multiprocessing import Pool
 from functools import partial
 import socket
