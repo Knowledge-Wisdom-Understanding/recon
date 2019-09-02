@@ -17,6 +17,7 @@ class DomainFinder:
         np = nmapParser.NmapParserFunk(self.target)
         np.openPorts()
         ssl_ports = np.ssl_ports
+        cmd_info = "[" + fg.green + "+" + fg.rs + "]"
         ignore = [
             ".nse",
             ".php",
@@ -93,8 +94,6 @@ class DomainFinder:
                 os.makedirs(f"{self.target}-Report/aquatone")
             for sslport in ssl_ports:
                 sslscanCMD = f"sslscan https://{self.target}:{sslport} | tee {self.target}-Report/webSSL/sslscan-color-{self.target}-{sslport}.log"
-                green_plus = fg.li_green + "+" + fg.rs
-                cmd_info = "[" + green_plus + "]"
                 print(cmd_info, sslscanCMD)
                 call(sslscanCMD, shell=True)
                 if not os.path.exists(

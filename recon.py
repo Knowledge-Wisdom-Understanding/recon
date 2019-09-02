@@ -506,16 +506,28 @@ def main():
     ):
         args.target = args.web
         validateIP()
-        scanTop10000Ports()
-        getOpenPorts()
-        enumDNS()
-        enumHTTP2()
-        cmsEnum()
-        enumHTTPS2()
-        cmsEnumSSL()
-        removeColor()
-        aquatone()
-        peace()
+        if os.path.exists(f"{args.target}-Report/nmap/top-ports-{args.target}.nmap"):
+            getOpenPorts()
+            enumDNS()
+            enumHTTP2()
+            cmsEnum()
+            enumHTTPS2()
+            cmsEnumSSL()
+            removeColor()
+            aquatone()
+            peace()
+        else:
+            scanTop10000Ports()
+            getOpenPorts()
+            enumDNS()
+            enumHTTP2()
+            cmsEnum()
+            enumHTTPS2()
+            cmsEnumSSL()
+            removeColor()
+            aquatone()
+            peace()
+
     # This is the Brute forcing option and -t --target argument is required
     elif args.target and (args.file is None) and args.brute:
         if "ssh" in args.brute:
