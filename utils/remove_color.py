@@ -67,6 +67,25 @@ class Clean:
                                 )
                             if "nikto" in rf:
                                 call(f"cat {rf}", shell=True)
+                            if "vulns" in rf:
+                                if "ftp" in rf:
+                                    removeColor(
+                                        self,
+                                        rf,
+                                        f"{os.getcwd()}/{self.target}-Report/vulns/ftpblah.log",
+                                    )
+                                if "ssh" in rf:
+                                    removeColor(
+                                        self,
+                                        rf,
+                                        f"{os.getcwd()}/{self.target}-Report/vulns/sshblah.log",
+                                    )
+                                if "smtp" in rf:
+                                    removeColor(
+                                        self,
+                                        rf,
+                                        f"{os.getcwd()}/{self.target}-Report/vulns/smtpblah.log",
+                                    )
         if len(dirsearch_files) != 0:
             all_dirsearch_files_on_one_line = " ".join(map(str, dirsearch_files))
             url_list_cmd = f"""cat {all_dirsearch_files_on_one_line} | grep -v '400' | awk '{awkprint}' | sort -u > {cwd}/{self.target}-Report/aquatone/urls.txt"""

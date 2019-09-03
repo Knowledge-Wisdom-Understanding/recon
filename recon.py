@@ -12,6 +12,7 @@ from lib import enumProxy
 from lib import ldapEnum
 from lib import oracleEnum
 from lib import brute
+from lib import searchsploits
 from utils import remove_color
 from utils import peaceout_banner
 from termcolor import colored
@@ -427,6 +428,11 @@ def main():
         )
         sb.SshSingleUserBruteCustom()
 
+    def searchSploits():
+        ss = searchsploits.Search(args.target)
+        ss.Scan()
+        ss.Sploits()
+
     # This is the Full Scan option for a Single Target
     if (
         args.target
@@ -453,6 +459,7 @@ def main():
         fullTcpAndTopUdpScan()
         getUdpPorts()
         enumRemainingServices()
+        searchSploits()
         removeColor()
         aquatone()
         peace()
@@ -481,12 +488,13 @@ def main():
                     cmsEnumSSL()
                     getProxyPorts()
                     proxyEnum()
-                    enumLdap()
                     enumSMB()
+                    enumLdap()
                     enumOracle()
                     fullTcpAndTopUdpScan()
                     getUdpPorts()
                     enumRemainingServices()
+                    searchSploits()
                     removeColor()
                     aquatone()
                     peace()

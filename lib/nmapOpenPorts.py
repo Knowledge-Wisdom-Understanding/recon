@@ -39,7 +39,7 @@ class NmapOpenPorts:
             unsorted_commands.append(onesixty_one_cmd)
         if len(ftpPorts) != 0:
             string_ftp_ports = ",".join(map(str, ftpPorts))
-            ftp_enum_cmd = f"nmap -sV -Pn -p {string_ftp_ports} --script=ftp-anon,ftp-bounce,ftp-libopie,ftp-proftpd-backdoor,ftp-vsftpd-backdoor,ftp-vuln-cve2010-4221,ftp-syst -v -oA {reportDir}/nmap/ftp-enum {self.target}"
+            ftp_enum_cmd = f"nmap -sV -Pn -p {string_ftp_ports} --script=ftp-anon.nse,ftp-bounce.nse,ftp-libopie.nse,ftp-proftpd-backdoor.nse,ftp-vsftpd-backdoor.nse,ftp-vuln-cve2010-4221.nse,ftp-syst.nse -v -oA {reportDir}/nmap/ftp-enum {self.target}"
             unsorted_commands.append(ftp_enum_cmd)
         if len(smtpPorts) != 0:
             for p in smtpPorts:

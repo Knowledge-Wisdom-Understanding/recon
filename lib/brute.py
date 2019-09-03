@@ -5,6 +5,7 @@ from subprocess import call
 from sty import fg, bg, ef, rs
 import json
 
+# from lib import searchsploits
 # from lib import nmapParser
 
 
@@ -24,6 +25,10 @@ class Brute:
         # np = nmapParser.NmapParserFunk(self.target)
         # np.openPorts()
         # ssh_ports = np.ssh_ports
+        # ss = searchsploits.Search(self.target)
+        # ss.Scan()
+        # ssh_info = ss.ssh_info
+        # if "OpenSSH" in ssh_info:
         reportDir = f"{cwd}/{self.target}-Report"
         if not os.path.exists(f"{reportDir}/ssh"):
             os.makedirs(f"{reportDir}/ssh")
@@ -134,7 +139,11 @@ class Brute:
         cmd = f"python {cwd}/scripts/ssh_user_enum.py --port {self.port} --userList wordlists/usernames.txt {self.target} --outputFile {reportDir}/ssh/ssh-usernames.json --outputFormat json"
         print(cmd_info, cmd)
         print("This may take a few minutes.")
-        call(cmd, shell=True)
+        try:
+            call(cmd, shell=True)
+        except ConnectionRefusedError as cre_error:
+            print(cre_error)
+            exit()
         try:
             with open(f"{reportDir}/ssh/ssh-usernames.json") as json_file:
                 data = json.load(json_file)

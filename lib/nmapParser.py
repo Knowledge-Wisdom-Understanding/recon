@@ -7,16 +7,19 @@ from libnmap.parser import NmapParser
 class NmapParserFunk:
     def __init__(self, target):
         self.target = target
+        ##### SERVICES ###############
         self.services = []
+        self.nmap_services = []
+        self.udp_nmap_services = []
+        self.udp_services = []
+        ##### PORTS ##################
         self.tcp_ports = []
         self.http_ports = []
         self.ssl_ports = []
         self.smb_ports = []
         self.dns_ports = []
-        self.nmap_services = []
         self.proxy_ports = []
         self.ssh_ports = []
-        self.ssh_version = []
         self.oracle_tns_ports = []
         self.ftp_ports = []
         self.smtp_ports = []
@@ -26,21 +29,22 @@ class NmapParserFunk:
         self.rpc_ports = []
         self.nfs_ports = []
         self.udp_ports = []
-        self.udp_services = []
         self.snmp_ports = []
-        self.udp_nmap_services = []
-        ######## Proxy Ports #########
+        ####### VERSION #############
+        self.ssh_version = []
+        self.ftp_version = []
+        self.smtp_version = []
+        #### Proxy Services #########
         self.proxy_nmap_services = []
         self.proxy_services = []
+        #### Proxy Ports ############
         self.proxy_tcp_ports = []
         self.proxy_http_ports = []
         self.proxy_ssl_ports = []
         self.proxy_smb_ports = []
         self.proxy_dns_ports = []
-        self.proxy_nmap_services = []
         self.proxy_ports2 = []
         self.proxy_ssh_ports = []
-        self.proxy_ssh_version = []
         self.proxy_oracle_tns_ports = []
         self.proxy_ftp_ports = []
         self.proxy_smtp_ports = []
@@ -49,6 +53,8 @@ class NmapParserFunk:
         self.proxy_cups_ports = []
         self.proxy_rpc_ports = []
         self.proxy_nfs_ports = []
+        #### Proxy Versions #########
+        self.proxy_ssh_version = []
 
     def openPorts(self):
         report = NmapParser.parse_fromfile(f"{self.target}-Report/nmap/top-ports-{self.target}.xml")
@@ -97,9 +103,13 @@ class NmapParserFunk:
                 if "ftp" in service[1]:
                     if service[0] not in self.ftp_ports:
                         self.ftp_ports.append(service[0])
+                    if service[4] not in self.ftp_version:
+                        self.ftp_version.append(service[4])
                 if "smtp" in service[1]:
                     if service[0] not in self.smtp_ports:
                         self.smtp_ports.append(service[0])
+                    if service[4] not in self.smtp_version:
+                        self.smtp_version.append(service[4])
                 if "rpcbind" in service[1]:
                     if service[0] not in self.nfs_ports:
                         self.nfs_ports.append(service[0])
@@ -122,6 +132,7 @@ class NmapParserFunk:
         # print("Services:", self.services)
         # print("SSH:", self.ssh_ports)
         # print("SSH VERSION:", self.ssh_version)
+        # print("FTP VERSION:", self.ftp_version)
         # print("Proxy Ports:", self.proxy_ports)
 
     def openProxyPorts(self):
