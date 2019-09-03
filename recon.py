@@ -63,32 +63,6 @@ def banner():
         valid_colors = ("red", "green", "yellow", "blue", "magenta", "cyan")
         return random.choice(valid_colors)
 
-    #     def random_freight():
-    #         valid_frieghts = (
-    #             """
-
-    #            d8888          888            8888888b.
-    #           d88888          888            888   Y88b
-    #          d88P888          888            888    888
-    #         d88P 888 888  888 888888 .d88b.  888   d88P .d88b.   .d8888b .d88b.  88888b.
-    #        d88P  888 888  888 888   d88""88b 8888888P" d8P  Y8b d88P"   d88""88b 888 "88b
-    #       d88P   888 888  888 888   888  888 888 T88b  88888888 888     888  888 888  888
-    #      d8888888888 Y88b 888 Y88b. Y88..88P 888  T88b Y8b.     Y88b.   Y88..88P 888  888
-    #     d88P     888  "Y88888  "Y888 "Y88P"  888   T88b "Y8888   "Y8888P "Y88P"  888  888
-    #                      gtihub.com/Knowledge-Wisdom-Understanding
-    #                     """,
-    #             """
-    #        _____________          ____    ________________
-    #       /___/___      \        /  / |  /___/__          \                   _____
-    #           /  /   _   \______/__/  |______|__|_____ *   \_________________/__/  |___
-    #        __/__/   /_\   \ |  |  \   __\/  _ \|  |       __/ __ \_/ ___\/  _ \|       |
-    #       |   |     ___    \|  |  /|  | (  |_| )  |    |   \  ___/\  \__(  |_| )   |   |
-    #       |___|____/\__\____|____/_|__|\_\____/|__|____|_  /\___  |\___  \____/|___|  /
-    #       gtihub.com/Knowledge-Wisdom-Understanding  \___\/  \__\/  \__\_/      \___\/
-
-    # """,
-    #         )
-    #         return random.choice(valid_frieghts)
     autoRecon = """
        _____________          ____    ________________                               
       /___/___      \        /  / |  /___/__          \                   _____      
@@ -104,7 +78,6 @@ def banner():
         colored_art = colored(msg, color=color)
         print(colored_art)
 
-    # freight = random_freight()
     color = random_color()
     print_art(autoRecon, color)
 
@@ -443,7 +416,7 @@ def main():
     def searchSploits():
         ss = searchsploits.Search(args.target)
         ss.Scan()
-        ss.Sploits()
+        ss.vulnCheck()
 
     # This is the Full Scan option for a Single Target
     if (
@@ -557,7 +530,11 @@ def main():
                     print(
                         f"{teal}Brute Forcing SSH usernames with wordlist: {cwd}/wordlists/usernames.txt on default SSH port, {args.port} {reset}"
                     )
-                    sshUserBrute()
+                    if os.path.exists(f"{args.target}-Report/nmap/top-ports-{args.target}.nmap"):
+                        sshUserBrute()
+                    else:
+                        scanTop10000Ports()
+                        sshUserBrute()
                 elif args.user is None and args.USERS:
                     print(f"Brute Forcing Usernames with userlist {args.USERS}")
                 elif args.user and (args.PASSWORDS is None):

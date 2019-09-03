@@ -12,6 +12,11 @@ class NmapParserFunk:
         self.nmap_services = []
         self.udp_nmap_services = []
         self.udp_services = []
+        #### Products ################
+        self.ssh_product = []
+        self.ftp_product = []
+        self.smtp_product = []
+        self.pop3_product = []
         ##### PORTS ##################
         self.tcp_ports = []
         self.http_ports = []
@@ -66,7 +71,16 @@ class NmapParserFunk:
             if "open" not in service.state:
                 continue
             self.services.append(
-                (service.port, service.service, service.tunnel, service.cpelist, service.banner)
+                (
+                    service.port,
+                    service.service,
+                    service.tunnel,
+                    service.cpelist,
+                    service.banner,
+                    service.service_dict.get("product", ""),
+                    service.service_dict.get("version", ""),
+                    service.service_dict.get("extrainfo", ""),
+                )
             )
             for service in self.services:
                 if service[0] not in self.tcp_ports:
@@ -94,8 +108,10 @@ class NmapParserFunk:
                 if "ssh" in service[1]:
                     if service[0] not in self.ssh_ports:
                         self.ssh_ports.append(service[0])
-                    if service[4] not in self.ssh_version:
-                        self.ssh_version.append(service[4])
+                    if service[5] not in self.ssh_product:
+                        self.ssh_product.append(service[5])
+                    if service[6] not in self.ssh_version:
+                        self.ssh_version.append(service[6])
                 if "oracle-tns" in service[1]:
                     if service[0] != 49160:
                         if service[0] not in self.oracle_tns_ports:
@@ -103,13 +119,17 @@ class NmapParserFunk:
                 if "ftp" in service[1]:
                     if service[0] not in self.ftp_ports:
                         self.ftp_ports.append(service[0])
-                    if service[4] not in self.ftp_version:
-                        self.ftp_version.append(service[4])
+                    if service[5] not in self.ftp_product:
+                        self.ftp_product.append(service[5])
+                    if service[6] not in self.ftp_version:
+                        self.ftp_version.append(service[6])
                 if "smtp" in service[1]:
                     if service[0] not in self.smtp_ports:
                         self.smtp_ports.append(service[0])
                     if service[4] not in self.smtp_version:
                         self.smtp_version.append(service[4])
+                    if service[5] not in self.smtp_product:
+                        self.smtp_product.append(service[5])
                 if "rpcbind" in service[1]:
                     if service[0] not in self.nfs_ports:
                         self.nfs_ports.append(service[0])
@@ -123,6 +143,7 @@ class NmapParserFunk:
                     if service[0] not in self.http_ports:
                         self.http_ports.append(service[0])
 
+        # Print Statements for Debugging Purposes..
         # print("HTTP PORTS:", self.http_ports)
         # print("ORACLE PORTS:", self.oracle_tns_ports)
         # print("OPEN TCP PORTS:", self.tcp_ports)
@@ -133,7 +154,9 @@ class NmapParserFunk:
         # print("SSH:", self.ssh_ports)
         # print("SSH VERSION:", self.ssh_version)
         # print("FTP VERSION:", self.ftp_version)
+        # print("FTP PRODUCT", self.ftp_product)
         # print("Proxy Ports:", self.proxy_ports)
+        # print("SSH-Product", self.ssh_product)
 
     def openProxyPorts(self):
         self.openPorts()
