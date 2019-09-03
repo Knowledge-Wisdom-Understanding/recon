@@ -138,8 +138,8 @@ def main():
     parser.add_argument(
         "-b",
         "--brute",
-        help="Brute Force ssh,smb,ftp,http,https,smtp,or pop3. -t, --target is REQUIRED. Must supply only one protocol at a time",
-        choices=["ftp", "http", "https", "pop3", "smb", "smtp", "ssh"],
+        help="Brute Force ssh,smb,ftp, or http. -t, --target is REQUIRED. Must supply only one protocol at a time",
+        choices=["ftp", "smb", "http", "ssh"],
     )
     parser.add_argument(
         "-p",
@@ -596,19 +596,19 @@ def main():
                 # print(f"Brute Forcing SMB on port {args.port}")
         elif "ftp" in args.brute:
             if args.port is None:
-                args.port = "22"
-                print("ToDo: Impliment SMB brute forcing")
-                # print("Brute Forcing SMB USERS on default port 22")
+                args.port = "21"
+                print("ToDo: Impliment FTP brute forcing")
+                # print("Brute Forcing FTP USERS on default port 21")
             else:
-                print("ToDo: Impliment SMB brute forcing")
-                # print(f"Brute Forcing FTP USERS on port {args.port}")
-        elif "smtp" in args.brute:
+                print("ToDo: Impliment FTP brute forcing")
+                # print(f"Brute Forcing FTP on port {args.port}")
+        elif "http" in args.brute:
             if args.port is None:
-                args.port = "22"
-                print("ToDo: Impliment SMTP brute forcing")
+                args.port = "80"
+                print("ToDo: Impliment http brute forcing")
             else:
-                # print(f"Brute Forcing SMTP USERS on port {args.port}")
-                print("ToDo: Impliment SMTP brute forcing")
+                # print(f"Brute Forcing http on port {args.port}")
+                print("ToDo: Impliment http brute forcing")
 
     elif args.file and args.target:
         print(f"{bad_cmd} Cannot use -t {args.target} and -f {args.file} together")

