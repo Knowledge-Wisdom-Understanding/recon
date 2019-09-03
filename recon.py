@@ -140,7 +140,7 @@ def main():
     parser.add_argument(
         "-b",
         "--brute",
-        help="Experimental! - Brute Force ssh,smb,ftp, or http. -t, --target is REQUIRED. Must supply only one protocol at a time. Since there are already many stand-alone bruteforce tools out there, for ssh, first valid users will be enumerated before password brute is initiated.",
+        help="Experimental! - Brute Force ssh,smb,ftp, or http. -t, --target is REQUIRED. Must supply only one protocol at a time. Since there are already many stand-alone bruteforce tools out there, for ssh, first valid users will be enumerated before password brute is initiated, when no user or passwords are supplied as options.",
         choices=["ftp", "smb", "http", "ssh"],
     )
     parser.add_argument(
