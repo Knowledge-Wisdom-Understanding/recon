@@ -122,6 +122,9 @@ def display_time(seconds, granularity=2):
     return ", ".join(result[:granularity])
 
 
+VERSION = 1.2
+
+
 def main():
     banner()
     startTimer = time.time()
@@ -131,6 +134,13 @@ def main():
         usage="python3 recon.py -t 10.10.10.10",
     )
     parser.add_argument("-t", "--target", help="Single IPv4 Target to Scan")
+    parser.add_argument(
+        "-v",
+        "--version",
+        action="version",
+        help="Show Current Version",
+        version=f"Version {VERSION}",
+    )
     parser.add_argument("-f", "--file", help="File of IPv4 Targets to Scan")
     parser.add_argument(
         "-w",
