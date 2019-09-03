@@ -133,12 +133,14 @@ def main():
     parser.add_argument("-t", "--target", help="Single IPv4 Target to Scan")
     parser.add_argument("-f", "--file", help="File of IPv4 Targets to Scan")
     parser.add_argument(
-        "-w", "--web", help="Get open ports then only Enumerate Web & and Dns Services"
+        "-w",
+        "--web",
+        help="Get open ports for IPv4 address, then only Enumerate Web & and Dns Services",
     )
     parser.add_argument(
         "-b",
         "--brute",
-        help="Brute Force ssh,smb,ftp, or http. -t, --target is REQUIRED. Must supply only one protocol at a time",
+        help="Experimental! - Brute Force ssh,smb,ftp, or http. -t, --target is REQUIRED. Must supply only one protocol at a time. Since there are already many stand-alone bruteforce tools out there, for ssh, first valid users will be enumerated before password brute is initiated.",
         choices=["ftp", "smb", "http", "ssh"],
     )
     parser.add_argument(
