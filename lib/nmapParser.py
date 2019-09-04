@@ -142,8 +142,11 @@ class NmapParserFunk:
                 if "BaseHTTPServer" in service[4]:
                     if service[0] not in self.http_ports:
                         self.http_ports.append(service[0])
+                if "Apache" in service[5]:
+                    if service[0] not in self.http_ports:
+                        self.http_ports.append(service[0])
 
-        # Print Statements for Debugging Purposes..
+        ### Print Statements for Debugging Purposes..
         # print("HTTP PORTS:", self.http_ports)
         # print("ORACLE PORTS:", self.oracle_tns_ports)
         # print("OPEN TCP PORTS:", self.tcp_ports)

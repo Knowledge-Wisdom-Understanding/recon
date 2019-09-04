@@ -26,6 +26,14 @@ apt install php-guzzlehttp-psr7 -y
 php --ini
 apt install php7.3-curl -y
 
+echo -e "${DOPE} Installing Patator"
+apt install patator -y
+cd /opt
+git clone https://github.com/lanjelot/patator.git
+cd patator
+pip install -r requirements.txt
+python setup.py install
+
 echo -e "${DOPE} Installing EyeWitness"
 apt install eyewitness -y
 cd /opt
@@ -79,4 +87,3 @@ fi
 ln -s /opt/fierce/fierce/fierce.py /usr/local/bin/fierce.py
 
 echo -e "${DOPE} Congratulations, All tools installed successfully!"
-

@@ -15,6 +15,16 @@ class Brute:
         self.unique_users = []
 
     def CewlWordlist(self):
+        np = nmapParser.NmapParserFunk(self.target)
+        np.openPorts()
+        http_ports = np.http_ports
+        htports = []
+        if len(http_ports) == 1:
+            htports.append(http_ports[0])
+        ssl_ports = np.ssl_ports
+        slports = []
+        if len(ssl_ports) == 1:
+            slports.append(ssl_ports[0])
         cwd = os.getcwd()
         reportDir = f"{cwd}/{self.target}-Report"
         if os.path.exists(f"{reportDir}/aquatone/urls.txt"):
@@ -29,6 +39,10 @@ class Brute:
                             url_list.append(line.rstrip())
                         if "index.php" in line:
                             url_list.append(line.rstrip())
+                if len(htports) == 1:
+                    url_list.append(f"http://{self.target}:{htports[0]}/")
+                if len(slports) == 1:
+                    url_list.append(f"https://{self.target}:{slports[0]}/")
                 wordlist = sorted(set(url_list))
             except FileNotFoundError as fnf_error:
                 print(fnf_error)
@@ -42,11 +56,14 @@ class Brute:
                         f"cewl {url} -m 3 -w {reportDir}/wordlists/cewl-{counter}-list.txt"
                     )
             if len(cewl_cmds) != 0:
-                for cmd in cewl_cmds:
-                    call(cmd, shell=True)
+                try:
+                    for cmd in cewl_cmds:
+                        call(cmd, shell=True)
+                except ConnectionRefusedError as cre_error:
+                    print(cre_error)
             words = []
             try:
-                with open("/usr/share/seclists/Passwords/probable-v2-top1575.txt", "r") as prob:
+                with open(f"{cwd}/wordlists/probable-v2-top1575.txt", "r") as prob:
                     for line in prob:
                         words.append(line.rstrip())
                 for wl in os.listdir(f"{reportDir}/wordlists"):
@@ -54,21 +71,23 @@ class Brute:
                     with open(wlfile, "r") as wlf:
                         for line in wlf:
                             words.append(line.rstrip())
+                        set_unique_words = sorted(set(words))
+                        unique_words = list(set_unique_words)
                         with open(f"{reportDir}/wordlists/all.txt", "a") as allwls:
-                            string_words = "\n".join(map(str, words))
+                            string_words = "\n".join(map(str, unique_words))
                             allwls.write(str(string_words))
             except FileNotFoundError as fnf_error:
                 print(fnf_error)
 
     def SshUsersBrute(self):
         cmd_info = "[" + fg.green + "+" + fg.rs + "]"
+        cwd = os.getcwd()
         reportDir = f"{cwd}/{self.target}-Report"
         blue = fg.li_blue
         green = fg.li_green
         red = fg.red
         teal = fg.li_cyan
         reset = fg.rs
-        cwd = os.getcwd()
         self.CewlWordlist()
         np = nmapParser.NmapParserFunk(self.target)
         np.openPorts()
@@ -230,7 +249,7 @@ class Brute:
                             print(
                                 f"{teal}Beginning Password Brute Force for User:{reset} {green}{u}{reset}"
                             )
-                            patator_cmd = f"""patator ssh_login host={self.target} port={self.port} user={u} password=FILE0 0=/usr/share/seclists/Passwords/probable-v2-top1575.txt persistent=0 -x ignore:mesg='Authentication failed.'"""
+                            patator_cmd = f"""patator ssh_login host={self.target} port={self.port} user={u} password=FILE0 0={cwd}/wordlists/probable-v2-top1575.txt persistent=0 -x ignore:mesg='Authentication failed.'"""
                             print(f"{cmd_info} {patator_cmd}")
                             call(patator_cmd, shell=True)
         else:

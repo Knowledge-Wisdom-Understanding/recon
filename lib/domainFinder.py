@@ -132,8 +132,10 @@ class DomainFinder:
                         both.append(x)
 
                     tmpdns2 = []
+                    ignore_chars_regex = re.compile("[@_!#$%^&*()<>?/\|}{~:]")
                     for x in both:
-                        tmpdns2.append(x)
+                        if ignore_chars_regex.search(x) == None:
+                            tmpdns2.append(x)
                     for x in tmpdns:
                         tmpdns2.append(x)
 

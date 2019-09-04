@@ -28,6 +28,7 @@ python3 recon.py -t 10.10.10.10 -b ssh  Brute force ssh users on default port 22
                                         If unique valid users found, brute force passwords
 python3 recon.py -t 10.10.10.10 -b ssh -p 2222 Same as above but for ssh on port 2222 etc...
 ```
-
+#### Brute Demo
+![SSH Brute GIF](img/sshBrute.gif)
 This program is intended to be used in kali linux.
 If you notice a bug or have a feature request. Please create an issue or submit a pull request. Thanks!

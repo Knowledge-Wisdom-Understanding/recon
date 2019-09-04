@@ -140,23 +140,30 @@ def main():
         "-U", "--USERS", help="List of usernames to try for brute forcing. Not required for SSH"
     )
     parser.add_argument("-P", "--PASSWORDS", help="List of passwords to try. Not required for SSH")
-    # subparsers = parser.add_subparsers(dest="brute", help="sub-command help")
-    # parser_brute = subparsers.add_parser("b", help="brute help")
-    # parser_brute.add_argument("-p", "--port", help="port help")
-    # parser_brute.add_argument("--", help="port help")
-    # parser_brute.add_argument("--port", help="port help")
 
     args = parser.parse_args()
 
     def validateIP():
-        red = "[" + fg.red + "+" + fg.rs + "]"
         try:
             s = socket.inet_aton(args.target)
         except socket.error:
             print("")
-            print(f"{red} Bad IP address")
+            print(f"{bad_cmd} Bad IP address")
             print("")
             sys.exit()
+
+    def mpRun(commands):
+        for command in commands:
+            print(cmd_info, command)
+        with Pool(processes=2) as p:
+            max_ = len(commands)
+            with tqdm(total=max_) as pbar:
+                for i, returncode in enumerate(
+                    p.imap_unordered(partial(call, shell=True), commands)
+                ):
+                    pbar.update()
+                    if returncode != 0:
+                        print(f"{i} command failed: {returncode}")
 
     def removeColor():
         nocolor = remove_color.Clean(args.target)
@@ -166,115 +173,44 @@ def main():
         eweb = enumWeb.EnumWeb(args.target)
         eweb.Scan()
         web_enum_commands = eweb.processes
-        for command in web_enum_commands:
-            print(cmd_info, command)
-        with Pool(processes=2) as p:
-            max_ = len(web_enum_commands)
-            with tqdm(total=max_) as pbar:
-                for i, returncode in enumerate(
-                    p.imap_unordered(partial(call, shell=True), web_enum_commands)
-                ):
-                    pbar.update()
-                    if returncode != 0:
-                        print(f"{i} command failed: {returncode}")
+        mpRun(web_enum_commands)
 
     def enumHTTPS():
         webssl = enumWebSSL.EnumWebSSL(args.target)
         webssl.Scan()
         web_ssl_enum_commands = webssl.processes
-        for command in web_ssl_enum_commands:
-            print(cmd_info, command)
-        with Pool(processes=2) as p:
-            max_ = len(web_ssl_enum_commands)
-            with tqdm(total=max_) as pbar:
-                for i, returncode in enumerate(
-                    p.imap_unordered(partial(call, shell=True), web_ssl_enum_commands)
-                ):
-                    pbar.update()
-                    if returncode != 0:
-                        print(f"{i} command failed: {returncode}")
+        mpRun(web_ssl_enum_commands)
 
     def enumHTTP2():
         eweb = enumWeb.EnumWeb(args.target)
         eweb.ScanWebOption()
         web_enum_commands = eweb.processes
-        for command in web_enum_commands:
-            print(cmd_info, command)
-        with Pool(processes=2) as p:
-            max_ = len(web_enum_commands)
-            with tqdm(total=max_) as pbar:
-                for i, returncode in enumerate(
-                    p.imap_unordered(partial(call, shell=True), web_enum_commands)
-                ):
-                    pbar.update()
-                    if returncode != 0:
-                        print(f"{i} command failed: {returncode}")
+        mpRun(web_enum_commands)
 
     def enumHTTPS2():
         webssl = enumWebSSL.EnumWebSSL(args.target)
         webssl.ScanWebOption()
         web_ssl_enum_commands = webssl.processes
-        for command in web_ssl_enum_commands:
-            print(cmd_info, command)
-        with Pool(processes=2) as p:
-            max_ = len(web_ssl_enum_commands)
-            with tqdm(total=max_) as pbar:
-                for i, returncode in enumerate(
-                    p.imap_unordered(partial(call, shell=True), web_ssl_enum_commands)
-                ):
-                    pbar.update()
-                    if returncode != 0:
-                        print(f"{i} command failed: {returncode}")
+        mpRun(web_ssl_enum_commands)
 
     def enumDNS():
         dn = dnsenum.DnsEnum(args.target)
         dn.Scan()
         dns_enum_commands = dn.processes
-        for command in dns_enum_commands:
-            print(cmd_info, command)
-        with Pool(processes=2) as p:
-            max_ = len(dns_enum_commands)
-            with tqdm(total=max_) as pbar:
-                for i, returncode in enumerate(
-                    p.imap_unordered(partial(call, shell=True), dns_enum_commands)
-                ):
-                    pbar.update()
-                    if returncode != 0:
-                        print(f"{i} command failed: {returncode}")
+        mpRun(dns_enum_commands)
 
     def enumSMB():
         smb = smbEnum.SmbEnum(args.target)
         smb.Scan()
         smb_enum_commands = smb.processes
-        for command in smb_enum_commands:
-            print(cmd_info, command)
-        with Pool(processes=2) as p:
-            max_ = len(smb_enum_commands)
-            with tqdm(total=max_) as pbar:
-                for i, returncode in enumerate(
-                    p.imap_unordered(partial(call, shell=True), smb_enum_commands)
-                ):
-                    pbar.update()
-                    if returncode != 0:
-                        print(f"{i} command failed: {returncode}")
+        mpRun(smb_enum_commands)
 
     def enumRemainingServices():
-        g = fg.li_cyan + "Enumerating Remaining Services:" + fg.rs
-        print(g)
+        print(f"{teal}Enumerating Remaining Services {reset}")
         nmapRemaing = nmapOpenPorts.NmapOpenPorts(args.target)
         nmapRemaing.Scan()
         remaining_enum_cmds = nmapRemaing.processes
-        for command in remaining_enum_cmds:
-            print(cmd_info, command)
-        with Pool(processes=2) as p:
-            max_ = len(remaining_enum_cmds)
-            with tqdm(total=max_) as pbar:
-                for i, returncode in enumerate(
-                    p.imap_unordered(partial(call, shell=True), remaining_enum_cmds)
-                ):
-                    pbar.update()
-                    if returncode != 0:
-                        print(f"{i} command failed: {returncode}")
+        mpRun(remaining_enum_cmds)
 
     def getOpenPorts():
         np = nmapParser.NmapParserFunk(args.target)
@@ -288,17 +224,7 @@ def main():
         ntp = topOpenPorts.TopOpenPorts(args.target)
         ntp.topUdpAllTcp()
         nmap_commands = ntp.processes
-        for command in nmap_commands:
-            print(cmd_info, command)
-        with Pool(processes=2) as p:
-            max_ = len(nmap_commands)
-            with tqdm(total=max_) as pbar:
-                for i, returncode in enumerate(
-                    p.imap_unordered(partial(call, shell=True), nmap_commands)
-                ):
-                    pbar.update()
-                    if returncode != 0:
-                        print(f"{i} command failed: {returncode}")
+        mpRun(nmap_commands)
 
     def aquatone():
         aq = aqua.Aquatone(args.target)
@@ -312,33 +238,13 @@ def main():
         cm = enumWeb.EnumWeb(args.target)
         cm.CMS()
         cms_commands = cm.cms_processes
-        for command in cms_commands:
-            print(cmd_info, command)
-        with Pool(processes=2) as p:
-            max_ = len(cms_commands)
-            with tqdm(total=max_) as pbar:
-                for i, returncode in enumerate(
-                    p.imap_unordered(partial(call, shell=True), cms_commands)
-                ):
-                    pbar.update()
-                    if returncode != 0:
-                        print(f"{i} command failed: {returncode}")
+        mpRun(cms_commands)
 
     def cmsEnumSSL():
         cms = enumWebSSL.EnumWebSSL(args.target)
         cms.sslEnumCMS()
         cms_ssl_commands = cms.cms_processes
-        for command in cms_ssl_commands:
-            print(cmd_info, command)
-        with Pool(processes=2) as p:
-            max_ = len(cms_ssl_commands)
-            with tqdm(total=max_) as pbar:
-                for i, returncode in enumerate(
-                    p.imap_unordered(partial(call, shell=True), cms_ssl_commands)
-                ):
-                    pbar.update()
-                    if returncode != 0:
-                        print(f"{i} command failed: {returncode}")
+        mpRun(cms_ssl_commands)
 
     def getProxyPorts():
         pr = nmapParser.NmapParserFunk(args.target)
@@ -349,50 +255,20 @@ def main():
         pscan.Scan()
         pscan.Enum()
         proxy_commands = pscan.all_processes
-        for cmd in proxy_commands:
-            print(cmd_info, cmd)
-        with Pool(processes=2) as p:
-            max_ = len(proxy_commands)
-            with tqdm(total=max_) as pbar:
-                for i, returncode in enumerate(
-                    p.imap_unordered(partial(call, shell=True), proxy_commands)
-                ):
-                    pbar.update()
-                    if returncode != 0:
-                        print(f"{i} command failed: {returncode}")
+        mpRun(proxy_commands)
 
     def enumLdap():
         ld = ldapEnum.LdapEnum(args.target)
         ld.Scan()
         ldap_cmds = ld.processes
-        for cmd in ldap_cmds:
-            print(cmd_info, cmd)
-        with Pool(processes=2) as p:
-            max_ = len(ldap_cmds)
-            with tqdm(total=max_) as pbar:
-                for i, returncode in enumerate(
-                    p.imap_unordered(partial(call, shell=True), ldap_cmds)
-                ):
-                    pbar.update()
-                    if returncode != 0:
-                        print(f"{i} command failed: {returncode}")
+        mpRun(ldap_cmds)
         ld.ldapSearch()
 
     def enumOracle():
         oc = oracleEnum.OracleEnum(args.target)
         oc.Scan()
         oracle_cmds = oc.processes
-        for cmd in oracle_cmds:
-            print(cmd_info, cmd)
-        with Pool(processes=2) as p:
-            max_ = len(oracle_cmds)
-            with tqdm(total=max_) as pbar:
-                for i, returncode in enumerate(
-                    p.imap_unordered(partial(call, shell=True), oracle_cmds)
-                ):
-                    pbar.update()
-                    if returncode != 0:
-                        print(f"{i} command failed: {returncode}")
+        mpRun(oracle_cmds)
         oc.OraclePwn()
 
     def getUdpPorts():
