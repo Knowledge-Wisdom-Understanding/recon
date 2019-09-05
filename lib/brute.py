@@ -116,9 +116,7 @@ class BruteSingleUser:
         cl = helper_lists.Cewl(self.target)
         if not os.path.exists(f"{reportDir}/wordlists/all.txt"):
             cl.CewlWordlist()
-        blue = fg.li_blue
         green = fg.li_green
-        red = fg.red
         teal = fg.li_cyan
         reset = fg.rs
         np = nmapParser.NmapParserFunk(self.target)
@@ -153,9 +151,7 @@ class BruteSingleUserCustom:
         cmd_info = "[" + fg.green + "+" + fg.rs + "]"
         cwd = os.getcwd()
         reportDir = f"{cwd}/{self.target}-Report"
-        blue = fg.li_blue
         green = fg.li_green
-        red = fg.red
         teal = fg.li_cyan
         reset = fg.rs
         np = nmapParser.NmapParserFunk(self.target)
@@ -164,3 +160,28 @@ class BruteSingleUserCustom:
         patator_cmd = f"""patator ssh_login host={self.target} port={self.port} user={self.user} password=FILE0 0={self.passList} persistent=0 -x ignore:mesg='Authentication failed.'"""
         print(f"{cmd_info} {patator_cmd}")
         call(patator_cmd, shell=True)
+
+
+# class BruteMultipleUsersCustom:
+#     def __init__(self, target, serviceName, port, userList, passList):
+#         self.target = target
+#         self.serviceName = serviceName
+#         self.port = port
+#         self.userList = userList
+#         self.passList = passList
+
+#     def SshSingleUserBruteCustom(self):
+#         cmd_info = "[" + fg.green + "+" + fg.rs + "]"
+#         cwd = os.getcwd()
+#         reportDir = f"{cwd}/{self.target}-Report"
+#         green = fg.li_green
+#         teal = fg.li_cyan
+#         reset = fg.rs
+#         np = nmapParser.NmapParserFunk(self.target)
+#         np.openPorts()
+#         print(
+#             f"{teal}Beginning Password Brute Force with:{reset} {green}{self.userList}{reset} User List."
+#         )
+#         patator_cmd = f"""patator ssh_login host={self.target} port={self.port} user=FILE0  0={self.userList} password=FILE1 1={self.passList} persistent=0 -x ignore:mesg='Authentication failed.'"""
+#         print(f"{cmd_info} {patator_cmd}")
+#         call(patator_cmd, shell=True)

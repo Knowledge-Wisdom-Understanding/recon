@@ -32,8 +32,9 @@ class EnumWebSSL:
             b = fg.li_cyan + "Enumerating HTTPS/SSL Ports, Running the following commands:" + fg.rs
             print(b)
             if len(hostnames) == 0:
+                commands = ()
                 for sslport in ssl_ports:
-                    commands = (
+                    commands = commands + (
                         f"whatweb -v -a 3 https://{self.target}:{sslport} | tee {self.target}-Report/webSSL/whatweb-{self.target}-{sslport}.txt",
                         f"wafw00f https://{self.target}:{sslport} >{self.target}-Report/webSSL/wafw00f-{self.target}-{sslport}.txt",
                         f"curl -sSik https://{self.target}:{sslport}/robots.txt -m 10 -o {self.target}-Report/webSSL/robots-{self.target}-{sslport}.txt &>/dev/null",
