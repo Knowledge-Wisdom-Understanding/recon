@@ -1,13 +1,11 @@
 james
 guly
-offsec
 security
 alpha
 root
 www-data
 backup
 user
-davtest
 testuser
 mysql
 adm
@@ -16,7 +14,6 @@ administrator
 nobody
 noone
 tryharder
-exam
 daemon
 bin
 games
@@ -150,6 +147,7 @@ antony
 smithers
 jimmy
 hellomynameis
+davtest
 smith
 ysoserious
 siri

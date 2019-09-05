@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import os
-
 import re
 from sty import fg, bg, ef, rs
 from lib import nmapParser

@@ -34,6 +34,10 @@ class DomainFinder:
             ".jpeg",
             ".txt",
             ".cgi",
+            ".pl",
+            ".co",
+            ".eu",
+            ".uk",
         ]
         dns = []
         try:
@@ -222,6 +226,10 @@ class DomainFinder:
             ".jpeg",
             ".txt",
             ".cgi",
+            ".pl",
+            ".co",
+            ".eu",
+            ".uk",
         ]
         try:
             with open(f"{self.target}-Report/nmap/top-ports-{self.target}.nmap", "r") as nm:

@@ -18,6 +18,7 @@ from utils import peaceout_banner
 from termcolor import colored
 from sty import fg, bg, ef, rs
 import argparse
+import signal
 import time
 import sys
 import random
@@ -32,6 +33,7 @@ cmd_info = "[" + fg.li_green + "+" + fg.rs + "]"
 bad_cmd = "[" + fg.li_red + "+" + fg.rs + "]"
 green = fg.li_green
 teal = fg.li_cyan
+purp = fg.li_magenta
 reset = fg.rs
 cwd = os.getcwd()
 
@@ -95,6 +97,12 @@ def display_time(seconds, granularity=2):
     return ", ".join(result[:granularity])
 
 
+def signal_handler(sig, frame):
+    print(" ")
+    print(f"{purp}See you Space Cowboy...{reset}")
+    sys.exit(0)
+
+
 VERSION = 1.2
 
 
@@ -137,7 +145,7 @@ def main():
         help="Single user name for brute forcing, for SSH, if no user specified, will default to wordlists/usernames.txt and bruteforce usernames",
     )
     parser.add_argument(
-        "-U", "--USERS", help="List of usernames to try for brute forcing. Not required for SSH"
+        "-U", "--USERS", help="List of usernames to try for brute forcing. Not yet implimented"
     )
     parser.add_argument("-P", "--PASSWORDS", help="List of passwords to try. Not required for SSH")
 
@@ -404,7 +412,7 @@ def main():
                 args.port = "22"
                 if args.user is None and (args.PASSWORDS is None) and (args.USERS is None):
                     print(
-                        f"{teal}Brute Forcing SSH usernames with wordlist: {cwd}/wordlists/usernames.txt on default SSH port, {args.port} {reset}"
+                        f"{teal}Brute Forcing SSH usernames with wordlist: {cwd}/wordlists/usernames.txt on default SSH port,{reset} {args.port}"
                     )
                     if os.path.exists(f"{args.target}-Report/nmap/top-ports-{args.target}.nmap"):
                         sshUserBrute()
@@ -432,16 +440,23 @@ def main():
                 else:
                     print(EXAMPLES)
             else:
-                if args.user is None and (args.PASSWORDS is None):
-                    print(f"Brute Forcing SSH usernames on port, {args.port}")
+                if args.user is None and (args.PASSWORDS is None) and (args.USERS is None):
+                    print(f"{teal}Brute Forcing SSH usernames on port,{reset} {args.port}")
+                    if os.path.exists(f"{args.target}-Report/nmap/top-ports-{args.target}.nmap"):
+                        sshUserBrute()
+                    else:
+                        scanTop10000Ports()
+                        sshUserBrute()
                 elif args.user and (args.PASSWORDS is None):
                     print(
                         f"Brute Forcing {args.user}'s password with default wordlist on port, {args.port}"
                     )
+                    sshSingleUserBrute()
                 elif args.user and args.PASSWORDS:
                     print(
                         f"Brute Forcing username, {args.user} with password list, {args.PASSWORDS} on port, {args.port}"
                     )
+                    sshSingleUserBruteCustom()
                 elif args.USERS and (args.PASSWORDS is None):
                     print(
                         f"Brute Forcing SSH with username list, {args.USERS} and default password list on port, {args.port}"
@@ -490,4 +505,5 @@ def main():
 
 
 if __name__ == "__main__":
+    signal.signal(signal.SIGINT, signal_handler)
     main()

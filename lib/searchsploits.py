@@ -26,6 +26,7 @@ class Search:
         ssh_version = np.ssh_version
         smtp_product = np.smtp_product
         smtp_version = np.smtp_version
+        http_title = np.http_script_title
 
         ### FTP searchsploit product ###
         if len(ftp_product) == 1:
@@ -56,6 +57,39 @@ class Search:
             smtp_cmd = f"searchsploit {lowercase_string_smtp} > {self.target}-Report/vulns/smtp.log"
             print(cmd_info, smtp_cmd)
             call(smtp_cmd, shell=True)
+
+        #### HTTP Title searchsploit (hoping for CMS in title) ##########
+        if len(http_title) >= 1:
+            if not os.path.exists(f"{self.target}-Report/vulns"):
+                os.makedirs(f"{self.target}-Report/vulns")
+            if len(http_title) > 1:
+                for title in http_title:
+                    string_title = " ".join(map(str, title))
+                    lowercase_title = str(string_title).lower()
+                    first_word = lowercase_title.split(" ", 1)[0]
+                    http_cmd = f"searchsploit {lowercase_title} >> {self.target}-Report/vulns/http-title.log"
+                    http_cmd2 = (
+                        f"searchsploit {first_word} >> {self.target}-Report/vulns/http-title.log"
+                    )
+                    print(cmd_info, http_cmd)
+                    print(cmd_info, http_cmd2)
+                    call(http_cmd, shell=True)
+                    call(http_cmd2, shell=True)
+
+            else:
+                string_title = " ".join(map(str, http_title))
+                lowercase_title = str(string_title).lower()
+                first_word = lowercase_title.split(" ", 1)[0]
+                http_cmd = (
+                    f"searchsploit {lowercase_title} >> {self.target}-Report/vulns/http-title.log"
+                )
+                http_cmd2 = (
+                    f"searchsploit {first_word} >> {self.target}-Report/vulns/http-title.log"
+                )
+                print(cmd_info, http_cmd)
+                print(cmd_info, http_cmd2)
+                call(http_cmd, shell=True)
+                call(http_cmd2, shell=True)
 
     def vulnCheck(self):
         cmd_info = "[" + fg.green + "+" + fg.rs + "]"

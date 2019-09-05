@@ -86,6 +86,18 @@ class Clean:
                                         rf,
                                         f"{os.getcwd()}/{self.target}-Report/vulns/smtpblah.log",
                                     )
+                                if "http" in rf:
+                                    removeColor(
+                                        self,
+                                        rf,
+                                        f"{os.getcwd()}/{self.target}-Report/vulns/http-title-blah.log",
+                                    )
+                                if "https" in rf:
+                                    removeColor(
+                                        self,
+                                        rf,
+                                        f"{os.getcwd()}/{self.target}-Report/vulns/https-title-blah.log",
+                                    )
         if len(dirsearch_files) != 0:
             all_dirsearch_files_on_one_line = " ".join(map(str, dirsearch_files))
             url_list_cmd = f"""cat {all_dirsearch_files_on_one_line} | grep -v '400' | awk '{awkprint}' | sort -u > {cwd}/{self.target}-Report/aquatone/urls.txt"""

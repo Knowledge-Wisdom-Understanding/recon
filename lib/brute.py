@@ -5,6 +5,7 @@ from subprocess import call
 from sty import fg, bg, ef, rs
 import json
 from lib import nmapParser
+from utils import helper_lists
 
 
 class Brute:
@@ -14,81 +15,20 @@ class Brute:
         self.port = port
         self.unique_users = []
 
-    def CewlWordlist(self):
-        np = nmapParser.NmapParserFunk(self.target)
-        np.openPorts()
-        http_ports = np.http_ports
-        htports = []
-        if len(http_ports) == 1:
-            htports.append(http_ports[0])
-        ssl_ports = np.ssl_ports
-        slports = []
-        if len(ssl_ports) == 1:
-            slports.append(ssl_ports[0])
-        cwd = os.getcwd()
-        reportDir = f"{cwd}/{self.target}-Report"
-        if os.path.exists(f"{reportDir}/aquatone/urls.txt"):
-            if not os.path.exists(f"{reportDir}/wordlists"):
-                os.makedirs(f"{reportDir}/wordlists")
-            url_list = []
-            try:
-                urls_file = f"{reportDir}/aquatone/urls.txt"
-                with open(urls_file, "r") as uf:
-                    for line in uf:
-                        if "index.html" in line:
-                            url_list.append(line.rstrip())
-                        if "index.php" in line:
-                            url_list.append(line.rstrip())
-                if len(htports) == 1:
-                    url_list.append(f"http://{self.target}:{htports[0]}/")
-                if len(slports) == 1:
-                    url_list.append(f"https://{self.target}:{slports[0]}/")
-                wordlist = sorted(set(url_list))
-            except FileNotFoundError as fnf_error:
-                print(fnf_error)
-                exit()
-            cewl_cmds = []
-            if len(wordlist) != 0:
-                counter = 0
-                for url in wordlist:
-                    counter += 1
-                    cewl_cmds.append(
-                        f"cewl {url} -m 3 -w {reportDir}/wordlists/cewl-{counter}-list.txt"
-                    )
-            if len(cewl_cmds) != 0:
-                try:
-                    for cmd in cewl_cmds:
-                        call(cmd, shell=True)
-                except ConnectionRefusedError as cre_error:
-                    print(cre_error)
-            words = []
-            try:
-                with open(f"{cwd}/wordlists/probable-v2-top1575.txt", "r") as prob:
-                    for line in prob:
-                        words.append(line.rstrip())
-                for wl in os.listdir(f"{reportDir}/wordlists"):
-                    wlfile = f"{reportDir}/wordlists/{wl}"
-                    with open(wlfile, "r") as wlf:
-                        for line in wlf:
-                            words.append(line.rstrip())
-                        set_unique_words = sorted(set(words))
-                        unique_words = list(set_unique_words)
-                        with open(f"{reportDir}/wordlists/all.txt", "a") as allwls:
-                            string_words = "\n".join(map(str, unique_words))
-                            allwls.write(str(string_words))
-            except FileNotFoundError as fnf_error:
-                print(fnf_error)
-
     def SshUsersBrute(self):
         cmd_info = "[" + fg.green + "+" + fg.rs + "]"
         cwd = os.getcwd()
         reportDir = f"{cwd}/{self.target}-Report"
+        dlu = helper_lists.DefaultLinuxUsers(self.target)
+        default_linux_users = dlu.default_linux_users
+        cl = helper_lists.Cewl(self.target)
+        if not os.path.exists(f"{reportDir}/wordlists/all.txt"):
+            cl.CewlWordlist()
         blue = fg.li_blue
         green = fg.li_green
         red = fg.red
         teal = fg.li_cyan
         reset = fg.rs
-        self.CewlWordlist()
         np = nmapParser.NmapParserFunk(self.target)
         np.openPorts()
         ssh_product = np.ssh_product
@@ -102,109 +42,6 @@ class Brute:
                 if not os.path.exists(f"{reportDir}/ssh"):
                     os.makedirs(f"{reportDir}/ssh")
                 # print(f"Target:{self.target} serviceName:{self.serviceName} port:{self.port}")
-                default_linux_users = [
-                    "root",
-                    "adm",
-                    "nobody",
-                    "mysql",
-                    "daemon",
-                    "bin",
-                    "games",
-                    "sync",
-                    "lp",
-                    "mail",
-                    "sshd",
-                    "ftp",
-                    "man",
-                    "sys",
-                    "news",
-                    "uucp",
-                    "proxy",
-                    "list",
-                    "backup",
-                    "www-data",
-                    "irc",
-                    "gnats",
-                    "systemd-timesync",
-                    "systemd",
-                    "systemd-network",
-                    "systemd-resolve",
-                    "systemd-bus-proxy",
-                    "_apt",
-                    "apt",
-                    "messagebus",
-                    "mysqld",
-                    "ntp",
-                    "arpwatch",
-                    "Debian-exim",
-                    "uuid",
-                    "uuidd",
-                    "dnsmasq",
-                    "postgres",
-                    "usbmux",
-                    "rtkit",
-                    "stunnel4",
-                    "Debian-snmp",
-                    "sslh",
-                    "pulse",
-                    "avahi",
-                    "saned",
-                    "inetsim",
-                    "colord",
-                    "_rpc",
-                    "statd",
-                    "shutdown",
-                    "halt",
-                    "operator",
-                    "gopher",
-                    "rpm",
-                    "dbus",
-                    "rpc",
-                    "postfix",
-                    "mailman",
-                    "named",
-                    "exim",
-                    "rpcuser",
-                    "ftpuser",
-                    "nfsnobody",
-                    "xfs",
-                    "gdm",
-                    "htt",
-                    "webalizer",
-                    "mailnull",
-                    "smmsp",
-                    "squid",
-                    "netdump",
-                    "pcap",
-                    "radiusd",
-                    "radvd",
-                    "quagga",
-                    "wnn",
-                    "dovecot",
-                    "avahi-autoipd",
-                    "libuid",
-                    "hplip",
-                    "statd",
-                    "bind",
-                    "haldaemon",
-                    "vcsa",
-                    "abrt",
-                    "saslauth",
-                    "apache",
-                    "nginx",
-                    "tcpdump",
-                    "memcached",
-                    "liquidsoap",
-                    "dhcpd",
-                    "clamav",
-                    "lxc-dnsmasq",
-                    "xrdp",
-                    "speech-dispatcher",
-                    "kernoops",
-                    "whoopsie",
-                    "lightdm",
-                    "syslog",
-                ]
                 cmd = f"python {cwd}/scripts/ssh_user_enum.py --port {self.port} --userList wordlists/usernames.txt {self.target} --outputFile {reportDir}/ssh/ssh-usernames.json --outputFormat json"
                 print(cmd_info, cmd)
                 print("This may take a few minutes.")
@@ -273,12 +110,35 @@ class BruteSingleUser:
         self.user = user
 
     def SshSingleUserBrute(self):
-        # cwd = os.getcwd()
-        # reportDir = f"{cwd}/{self.target}-Report"
-        print("Not yet implimented")
-        print(
-            f"Target:{self.target} serviceName:{self.serviceName} port:{self.port} user:{self.user}"
-        )
+        cmd_info = "[" + fg.green + "+" + fg.rs + "]"
+        cwd = os.getcwd()
+        reportDir = f"{cwd}/{self.target}-Report"
+        cl = helper_lists.Cewl(self.target)
+        if not os.path.exists(f"{reportDir}/wordlists/all.txt"):
+            cl.CewlWordlist()
+        blue = fg.li_blue
+        green = fg.li_green
+        red = fg.red
+        teal = fg.li_cyan
+        reset = fg.rs
+        np = nmapParser.NmapParserFunk(self.target)
+        np.openPorts()
+        if os.path.exists(f"{reportDir}/wordlists/all.txt"):
+            cewl_wordlist = f"{reportDir}/wordlists/all.txt"
+            if os.path.getsize(cewl_wordlist) > 0:
+                print(
+                    f"{teal}Beginning Password Brute Force for User:{reset} {green}{self.user}{reset}"
+                )
+                patator_cmd = f"""patator ssh_login host={self.target} port={self.port} user={self.user} password=FILE0 0={cewl_wordlist} persistent=0 -x ignore:mesg='Authentication failed.'"""
+                print(f"{cmd_info} {patator_cmd}")
+                call(patator_cmd, shell=True)
+        else:
+            print(
+                f"{teal}Beginning Password Brute Force for User:{reset} {green}{self.user}{reset}"
+            )
+            patator_cmd = f"""patator ssh_login host={self.target} port={self.port} user={self.user} password=FILE0 0={cwd}/wordlists/probable-v2-top1575.txt persistent=0 -x ignore:mesg='Authentication failed.'"""
+            print(f"{cmd_info} {patator_cmd}")
+            call(patator_cmd, shell=True)
 
 
 class BruteSingleUserCustom:
@@ -290,9 +150,17 @@ class BruteSingleUserCustom:
         self.passList = passList
 
     def SshSingleUserBruteCustom(self):
-        # cwd = os.getcwd()
-        # reportDir = f"{cwd}/{self.target}-Report"
-        print("Not yet implimented")
-        print(
-            f"Target:{self.target} serviceName:{self.serviceName} port:{self.port} user:{self.user} password list: {self.passList}"
-        )
+        cmd_info = "[" + fg.green + "+" + fg.rs + "]"
+        cwd = os.getcwd()
+        reportDir = f"{cwd}/{self.target}-Report"
+        blue = fg.li_blue
+        green = fg.li_green
+        red = fg.red
+        teal = fg.li_cyan
+        reset = fg.rs
+        np = nmapParser.NmapParserFunk(self.target)
+        np.openPorts()
+        print(f"{teal}Beginning Password Brute Force for User:{reset} {green}{self.user}{reset}")
+        patator_cmd = f"""patator ssh_login host={self.target} port={self.port} user={self.user} password=FILE0 0={self.passList} persistent=0 -x ignore:mesg='Authentication failed.'"""
+        print(f"{cmd_info} {patator_cmd}")
+        call(patator_cmd, shell=True)

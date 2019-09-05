@@ -39,6 +39,13 @@ class NmapParserFunk:
         self.ssh_version = []
         self.ftp_version = []
         self.smtp_version = []
+        ####### Extra Info ##########
+        self.http_extra = []
+        ###### Script Results #######
+        self.http_script_results = []
+        self.http_script_title = []
+        self.ssl_script_results = []
+        self.ssh_script_results = []
         #### Proxy Services #########
         self.proxy_nmap_services = []
         self.proxy_services = []
@@ -80,6 +87,7 @@ class NmapParserFunk:
                     service.service_dict.get("product", ""),
                     service.service_dict.get("version", ""),
                     service.service_dict.get("extrainfo", ""),
+                    service.scripts_results,
                 )
             )
             for service in self.services:
@@ -88,11 +96,15 @@ class NmapParserFunk:
                 if "ssl" in service[2]:
                     if service[0] not in self.ssl_ports:
                         self.ssl_ports.append(service[0])
+                    if service[8] not in self.ssl_script_results:
+                        self.ssl_script_results.append(service[8])
                 if "http" in service[1]:
                     if "ssl" not in service[2]:
                         if service[0] not in ignored_windows_http_ports:
                             if service[0] not in self.http_ports:
                                 self.http_ports.append(service[0])
+                            if service[8] not in self.http_script_results:
+                                self.http_script_results.append(service[8])
                 if "netbios-ssn" in service[1]:
                     if service[0] not in self.smb_ports:
                         self.smb_ports.append(service[0])
@@ -112,6 +124,8 @@ class NmapParserFunk:
                         self.ssh_product.append(service[5])
                     if service[6] not in self.ssh_version:
                         self.ssh_version.append(service[6])
+                    if service[8] not in self.ssh_script_results:
+                        self.ssh_script_results.append(service[8])
                 if "oracle-tns" in service[1]:
                     if service[0] != 49160:
                         if service[0] not in self.oracle_tns_ports:
@@ -146,8 +160,14 @@ class NmapParserFunk:
                     if service[0] not in self.http_ports:
                         self.http_ports.append(service[0])
 
+        for t in self.http_script_results[0]:
+            result = t["id"], t["output"]
+            if "http-title" in result:
+                if result[1] not in self.http_script_title:
+                    self.http_script_title.append(result[1])
         ### Print Statements for Debugging Purposes..
         # print("HTTP PORTS:", self.http_ports)
+        # print("HTTP-Script-Results:", self.http_script_results[0])
         # print("ORACLE PORTS:", self.oracle_tns_ports)
         # print("OPEN TCP PORTS:", self.tcp_ports)
         # print("SSL:", self.ssl_ports)
