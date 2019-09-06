@@ -25,14 +25,12 @@ class EnumWeb:
         dn = domainFinder.DomainFinder(self.target)
         dn.getRedirect()
         hostnames = dn.redirect_hostname
-        # print(hostnames)
         cwd = os.getcwd()
         reportDir = f"{cwd}/{self.target}-Report"
         if len(http_ports) == 0:
             pass
         else:
             a = f"{fg.li_cyan} Enumerating HTTP Ports, Running the following commands: {fg.rs}"
-
             print(a)
             if not os.path.exists(f"{self.target}-Report/web"):
                 os.makedirs(f"{self.target}-Report/web")
@@ -89,7 +87,6 @@ class EnumWeb:
             pass
         else:
             a = f"{fg.li_cyan} Enumerating HTTP Ports, Running the following commands: {fg.rs}"
-
             print(a)
             if not os.path.exists(f"{self.target}-Report/web"):
                 os.makedirs(f"{self.target}-Report/web")
@@ -140,6 +137,7 @@ class EnumWeb:
         np = nmapParser.NmapParserFunk(self.target)
         np.openPorts()
         http_ports = np.http_ports
+        cms_commands = []
         if len(http_ports) == 0:
             pass
         else:
@@ -148,7 +146,6 @@ class EnumWeb:
                 reportPath = f"{cwd}/{self.target}-Report/*"
                 reportDir = f"{cwd}/{self.target}-Report"
                 whatweb_files = []
-                cms_commands = []
                 dir_list = [
                     d for d in glob.iglob(f"{reportPath}", recursive=True) if os.path.isdir(d)
                 ]
@@ -241,18 +238,20 @@ fi
                                             print(f"Manual Brute Force Command to run")
                                             print(tomcat_cmd)
 
-                sorted_commands = sorted(set(cms_commands))
-                commands_to_run = []
-                for i in sorted_commands:
-                    commands_to_run.append(i)
-                mpCmds = tuple(commands_to_run)
-                self.cms_processes = mpCmds
+            sorted_commands = sorted(set(cms_commands))
+            commands_to_run = []
+            for i in sorted_commands:
+                commands_to_run.append(i)
+            mpCmds = tuple(commands_to_run)
+            self.cms_processes = mpCmds
 
     def proxyScan(self):
+        np = nmapParser.NmapParserFunk(self.target)
+        np.openPorts()
         npp = nmapParser.NmapParserFunk(self.target)
         npp.openProxyPorts()
         proxy_http_ports = npp.proxy_http_ports
-        proxy_ports = npp.proxy_ports
+        proxy_ports = np.proxy_ports
         web_proxy_cmds = []
         cwd = os.getcwd()
         reportDir = f"{cwd}/{self.target}-Report"
@@ -264,25 +263,28 @@ fi
                 os.makedirs(f"{self.target}-Report/proxy")
             if not os.path.exists(f"{self.target}-Report/proxy/web"):
                 os.makedirs(f"{self.target}-Report/proxy/web")
+            proxy_commands = ()
             for proxy in proxy_ports:
-                a = f"{fg.li_cyan} Enumerating HTTP Ports Through Port: {proxy}, Running the following commands: {fg.rs}"
-                print(a)
-                for proxy_http_port in proxy_http_ports:
-                    proxy_whatwebCMD = f"whatweb -v -a 3 --proxy {self.target}:{proxy} http://127.0.0.1:{proxy_http_port} | tee {reportDir}/proxy/web/whatweb-proxy-{proxy_http_port}.txt"
-                    web_proxy_cmds.append(proxy_whatwebCMD)
-                    proxy_dirsearch_cmd = f"python3 /opt/dirsearch/dirsearch.py -e php,asp,aspx,txt,html -x 403,500 -t 50 -w wordlists/dicc.txt --proxy {self.target}:{proxy} -u http://127.0.0.1:{proxy_http_port} --plain-text-report {reportDir}/proxy/web/dirsearch-127.0.0.1-proxy-{proxy}-{proxy_http_port}.log"
-                    web_proxy_cmds.append(proxy_dirsearch_cmd)
-                    proxy_dirsearch_cmd2 = f"python3 /opt/dirsearch/dirsearch.py -u http://{self.target}:{proxy_http_port} -t 80 -e php,asp,aspx -w /usr/share/wordlists/dirbuster/directory-list-2.3-small.txt -x 403,500 --plain-text-report {reportDir}/proxy/web/dirsearch-dlistsmall-127.0.0.1-proxy-{proxy_http_port}.log"
-                    web_proxy_cmds.append(proxy_dirsearch_cmd2)
-                    proxy_nikto_cmd = f"nikto -ask=no -host http://127.0.0.1:{proxy_http_port}/ -useproxy http://{self.target}:{proxy}/ > {reportDir}/proxy/web/nikto-port-{proxy_http_port}-proxy-scan.txt 2>&1 &"
-                    web_proxy_cmds.append(proxy_nikto_cmd)
-
-                    sorted_commands = sorted(set(web_proxy_cmds), reverse=True)
-                    commands_to_run = []
-                    for i in sorted_commands:
-                        commands_to_run.append(i)
-                    wpCmds = tuple(commands_to_run)
-                    self.proxy_processes = wpCmds
+                print(
+                    f"{fg.li_cyan} Enumerating HTTP Ports Through Port: {proxy}, Running the following commands: {fg.rs}"
+                )
+                if not os.path.exists(
+                    f"{self.target}-Report/proxy/web/eyewitness-{self.target}-{proxy}"
+                ):
+                    os.makedirs(f"{self.target}-Report/proxy/web/eyewitness-{self.target}-{proxy}")
+                proxy_commands = proxy_commands + (
+                    f"cd /opt/EyeWitness && echo 'http://{self.target}:{proxy}' > eyefile.txt && ./EyeWitness.py --threads 5 --ocr --no-prompt --active-scan --all-protocols --web -f eyefile.txt -d {reportDir}/proxy/web/eyewitness-{self.target}-{proxy} && cd - &>/dev/null",
+                    f"whatweb -v -a 3 http://{self.target}:{proxy} | tee {reportDir}/proxy/web/whatweb-{self.target}-{proxy}.txt",
+                )
+                if len(proxy_http_ports) != 0:
+                    for proxy_http_port in proxy_http_ports:
+                        proxy_commands = proxy_commands + (
+                            f"whatweb -v -a 3 --proxy {self.target}:{proxy} http://127.0.0.1:{proxy_http_port} | tee {reportDir}/proxy/web/whatweb-proxy-{proxy_http_port}.txt",
+                            f"python3 /opt/dirsearch/dirsearch.py -e php,asp,aspx,txt,html -x 403,500 -t 50 -w wordlists/dicc.txt --proxy {self.target}:{proxy} -u http://127.0.0.1:{proxy_http_port} --plain-text-report {reportDir}/proxy/web/dirsearch-127.0.0.1-proxy-{proxy}-{proxy_http_port}.log",
+                            f"python3 /opt/dirsearch/dirsearch.py -e php,asp,aspx,txt,html -x 403,500 -t 50 -w /usr/share/wordlists/dirb/big.txt --proxy {self.target}:{proxy} -u http://127.0.0.1:{proxy_http_port} --plain-text-report {reportDir}/proxy/web/dirsearch-127.0.0.1-proxy-big-{proxy}-{proxy_http_port}.log",
+                            f"nikto -ask=no -host http://127.0.0.1:{proxy_http_port}/ -useproxy http://{self.target}:{proxy}/ > {reportDir}/proxy/web/nikto-port-{proxy_http_port}-proxy-scan.txt 2>&1 &",
+                        )
+            self.proxy_processes = proxy_commands
 
     def getLinks(self):
         url = f"http://{self.target}"

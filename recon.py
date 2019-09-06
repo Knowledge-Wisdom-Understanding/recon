@@ -13,8 +13,10 @@ from lib import ldapEnum
 from lib import oracleEnum
 from lib import brute
 from lib import searchsploits
+from lib import enumProxyCMS
 from utils import remove_color
 from utils import peaceout_banner
+from utils import helper_lists
 from termcolor import colored
 from sty import fg, bg, ef, rs
 import argparse
@@ -176,6 +178,7 @@ def main():
     def removeColor():
         nocolor = remove_color.Clean(args.target)
         nocolor.listfiles()
+        nocolor.listFilesProxy()
 
     def enumHTTP():
         eweb = enumWeb.EnumWeb(args.target)
@@ -254,16 +257,20 @@ def main():
         cms_ssl_commands = cms.cms_processes
         mpRun(cms_ssl_commands)
 
-    def getProxyPorts():
-        pr = nmapParser.NmapParserFunk(args.target)
-        pr.openProxyPorts()
-
     def proxyEnum():
         pscan = enumProxy.CheckProxy(args.target)
         pscan.Scan()
+        pr = nmapParser.NmapParserFunk(args.target)
+        pr.openProxyPorts()
         pscan.Enum()
         proxy_commands = pscan.all_processes
         mpRun(proxy_commands)
+
+    def proxyEnumCMS():
+        pcms = enumProxyCMS.EnumProxyCMS(args.target)
+        pcms.proxyCMS()
+        proxy_cms_commands = pcms.cms_processes
+        mpRun(proxy_cms_commands)
 
     def enumLdap():
         ld = ldapEnum.LdapEnum(args.target)
@@ -302,6 +309,14 @@ def main():
         ss.Scan()
         ss.vulnCheck()
 
+    def sortFoundUrls():
+        ds = helper_lists.DirsearchURLS(args.target)
+        ds.genDirsearchUrlList()
+
+    def sortFoundProxyUrls():
+        ds = helper_lists.DirsearchURLS(args.target)
+        ds.genProxyDirsearchUrlList()
+
     # This is the Full Scan option for a Single Target
     if (
         args.target
@@ -320,8 +335,11 @@ def main():
         cmsEnum()
         enumHTTPS()
         cmsEnumSSL()
-        getProxyPorts()
+        sortFoundUrls()
         proxyEnum()
+        sortFoundProxyUrls()
+        proxyEnumCMS()
+        aquatone()
         enumSMB()
         enumLdap()
         enumOracle()
@@ -330,7 +348,6 @@ def main():
         enumRemainingServices()
         searchSploits()
         removeColor()
-        aquatone()
         peace()
     # This is for the -f --file Option and will run all scans on all IP addresses
     # In the provided file. Should be 1 IPv4 address per line

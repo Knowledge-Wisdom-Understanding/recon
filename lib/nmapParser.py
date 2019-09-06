@@ -100,11 +100,12 @@ class NmapParserFunk:
                         self.ssl_script_results.append(service[8])
                 if "http" in service[1]:
                     if "ssl" not in service[2]:
-                        if service[0] not in ignored_windows_http_ports:
-                            if service[0] not in self.http_ports:
-                                self.http_ports.append(service[0])
-                            if service[8] not in self.http_script_results:
-                                self.http_script_results.append(service[8])
+                        if "http-proxy" not in service[1]:
+                            if service[0] not in ignored_windows_http_ports:
+                                if service[0] not in self.http_ports:
+                                    self.http_ports.append(service[0])
+                                if service[8] not in self.http_script_results:
+                                    self.http_script_results.append(service[8])
                 if "netbios-ssn" in service[1]:
                     if service[0] not in self.smb_ports:
                         self.smb_ports.append(service[0])
@@ -160,14 +161,16 @@ class NmapParserFunk:
                     if service[0] not in self.http_ports:
                         self.http_ports.append(service[0])
 
-        for t in self.http_script_results[0]:
-            result = t["id"], t["output"]
-            if "http-title" in result:
-                if result[1] not in self.http_script_title:
-                    self.http_script_title.append(result[1])
+        if len(self.http_script_results) != 0:
+            for t in self.http_script_results[0]:
+                result = t["id"], t["output"]
+                if "http-title" in result:
+                    if result[1] not in self.http_script_title:
+                        self.http_script_title.append(result[1])
         ### Print Statements for Debugging Purposes..
         # print("HTTP PORTS:", self.http_ports)
-        # print("HTTP-Script-Results:", self.http_script_results[0])
+        # if len(self.http_script_results) != 0:
+        #     print("HTTP-Script-Results:", self.http_script_results[0])
         # print("ORACLE PORTS:", self.oracle_tns_ports)
         # print("OPEN TCP PORTS:", self.tcp_ports)
         # print("SSL:", self.ssl_ports)
@@ -207,9 +210,10 @@ class NmapParserFunk:
                             self.proxy_ssl_ports.append(service[0])
                     if "http" in service[1]:
                         if "ssl" not in service[2]:
-                            if service[0] not in ignored_windows_http_ports:
-                                if service[0] not in self.proxy_http_ports:
-                                    self.proxy_http_ports.append(service[0])
+                            if "http-proxy" not in service[1]:
+                                if service[0] not in ignored_windows_http_ports:
+                                    if service[0] not in self.proxy_http_ports:
+                                        self.proxy_http_ports.append(service[0])
                     if "netbios-ssn" in service[1]:
                         if service[0] not in self.proxy_smb_ports:
                             self.proxy_smb_ports.append(service[0])

@@ -7,6 +7,7 @@ from sty import fg, bg, ef, rs
 from lib import nmapParser
 from lib import enumWeb
 from lib import enumWebSSL
+from collections import deque
 
 
 class CheckProxy:
@@ -26,24 +27,27 @@ class CheckProxy:
             add_line_cmd = (
                 f"""sed -e "\$ahttp {self.target} {proxyPorts[0]}" -i /etc/proxychains.conf"""
             )
+            comment_out_line_cmd = f"""sed -e '/socks5/ s/^#*/#/' -i  /etc/proxychains.conf"""
             proxy_config_file = "/etc/proxychains.conf"
             try:
                 pcCF = open(proxy_config_file, "r")
                 for line in pcCF:
-                    parsed_lines = (
-                        line.replace("#", "")
-                        .replace("socks4 ", "")
-                        .replace("socks5 ", "")
-                        .replace("http ", "")
-                    )
-                matches = re.findall(self.target, parsed_lines)
-                sorted_matches = sorted(set(matches), reverse=True)
-                if self.target not in sorted_matches:
-                    duplicate_cmds.append(add_line_cmd)
+                    parsed_lines = line.rstrip()
+                    if not parsed_lines.startswith("#"):
+                        tor_match = re.findall("socks5", parsed_lines)
+                        sorted_tor_matches = sorted(set(tor_match), reverse=True)
+                        if "socks5" in sorted_tor_matches:
+                            duplicate_cmds.append(comment_out_line_cmd)
+                if not parsed_lines.startswith("#"):
+                    matches = re.findall(f"http {self.target}", parsed_lines)
+                    sorted_matches = sorted(set(matches), reverse=True)
+                    if f"http {self.target}" not in sorted_matches:
+                        duplicate_cmds.append(add_line_cmd)
                 pcCF.close()
                 sorted_cmds = sorted(set(duplicate_cmds))
-                if len(sorted_cmds) == 1:
-                    call(sorted_cmds[0], shell=True)
+                if len(sorted_cmds) != 0:
+                    for cmd in sorted_cmds:
+                        call(cmd, shell=True)
             except FileNotFoundError as fnf_error:
                 print(fnf_error)
                 exit()
@@ -58,7 +62,9 @@ class CheckProxy:
     def Enum(self):
         npp = nmapParser.NmapParserFunk(self.target)
         npp.openProxyPorts()
-        open_proxy_ports = npp.proxy_ports2
+        np = nmapParser.NmapParserFunk(self.target)
+        np.openPorts()
+        open_proxy_ports = np.proxy_ports
         if len(open_proxy_ports) == 0:
             pass
         else:

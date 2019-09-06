@@ -4,6 +4,7 @@ import os
 from subprocess import call
 from sty import fg, bg, ef, rs
 from lib import nmapParser
+import glob
 
 
 class DefaultLinuxUsers:
@@ -182,3 +183,59 @@ class Cewl:
                             allwls.write(str(string_words))
             except FileNotFoundError as fnf_error:
                 print(fnf_error)
+
+
+class Wordpress:
+    def __init__(self, target):
+        self.target = target
+        self.wordpress_dirs = ["wordpress", "WordPress", "wp-content"]
+
+
+class DirsearchURLS:
+    def __init__(self, target):
+        self.target = target
+
+    def genDirsearchUrlList(self):
+        cwd = os.getcwd()
+        reportPath = f"{cwd}/{self.target}-Report/*"
+        awkprint = "{print $3}"
+        dirsearch_files = []
+        dir_list = [d for d in glob.iglob(f"{reportPath}", recursive=True) if os.path.isdir(d)]
+        for d in dir_list:
+            reportFile_list = [
+                fname for fname in glob.iglob(f"{d}/*", recursive=True) if os.path.isfile(fname)
+            ]
+            for rf in reportFile_list:
+                if "nmap" not in rf:
+                    if "dirsearch" in rf:
+                        if not os.path.exists(f"{self.target}-Report/aquatone"):
+                            os.makedirs(f"{self.target}-Report/aquatone")
+                        dirsearch_files.append(rf)
+
+        if len(dirsearch_files) != 0:
+            all_dirsearch_files_on_one_line = " ".join(map(str, dirsearch_files))
+            url_list_cmd = f"""cat {all_dirsearch_files_on_one_line} | grep -v '400' | awk '{awkprint}' | sort -u > {cwd}/{self.target}-Report/aquatone/urls.txt"""
+            call(url_list_cmd, shell=True)
+
+    def genProxyDirsearchUrlList(self):
+        cwd = os.getcwd()
+        if os.path.exists(f"{cwd}/{self.target}-Report/proxy"):
+            reportPath = f"{cwd}/{self.target}-Report/proxy/*"
+            awkprint = "{print $3}"
+            dirsearch_files = []
+            dir_list = [d for d in glob.iglob(f"{reportPath}", recursive=True) if os.path.isdir(d)]
+            for d in dir_list:
+                reportFile_list = [
+                    fname for fname in glob.iglob(f"{d}/*", recursive=True) if os.path.isfile(fname)
+                ]
+                for rf in reportFile_list:
+                    if "nmap" not in rf:
+                        if "dirsearch" in rf:
+                            if not os.path.exists(f"{self.target}-Report/aquatone"):
+                                os.makedirs(f"{self.target}-Report/aquatone")
+                            dirsearch_files.append(rf)
+
+            if len(dirsearch_files) != 0:
+                all_dirsearch_files_on_one_line = " ".join(map(str, dirsearch_files))
+                url_list_cmd = f"""cat {all_dirsearch_files_on_one_line} | grep -v '400' | awk '{awkprint}' | sort -u > {cwd}/{self.target}-Report/aquatone/proxy-urls.txt"""
+                call(url_list_cmd, shell=True)

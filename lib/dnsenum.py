@@ -27,11 +27,7 @@ class DnsEnum:
         if not os.path.exists(f"{self.target}-Report/aquatone"):
             os.makedirs(f"{self.target}-Report/aquatone")
 
-        if len(redirect_hostname) and (len(dnsPorts) == 0):
-            pass
-        elif len(dnsPorts) == 0:
-            pass
-        elif redirect_hostname:
+        if len(redirect_hostname) != 0 and (len(dnsPorts) != 0):
             commands = ()
             for d in redirect_hostname:
                 self.hostnames.append(d)
@@ -41,7 +37,7 @@ class DnsEnum:
                     commands = commands + (
                         f"dnsenum --dnsserver {self.target} --enum -f /usr/share/seclists/Discovery/DNS/subdomains-top1mil-5000.txt -r {d} | tee {self.target}-Report/dns/dnsenum-{self.target}-{d}.log",
                     )
-                    self.processes = commands
+            self.processes = commands
 
     def GetHostNames(self):
         np = nmapParser.NmapParserFunk(self.target)

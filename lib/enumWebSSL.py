@@ -38,8 +38,8 @@ class EnumWebSSL:
                         f"whatweb -v -a 3 https://{self.target}:{sslport} | tee {self.target}-Report/webSSL/whatweb-{self.target}-{sslport}.txt",
                         f"wafw00f https://{self.target}:{sslport} >{self.target}-Report/webSSL/wafw00f-{self.target}-{sslport}.txt",
                         f"curl -sSik https://{self.target}:{sslport}/robots.txt -m 10 -o {self.target}-Report/webSSL/robots-{self.target}-{sslport}.txt &>/dev/null",
-                        f"python3 /opt/dirsearch/dirsearch.py -u https://{self.target}:{sslport} -t 30 -e php,asp,aspx,html,txt -x 403,500 -w wordlists/dicc.txt --plain-text-report {self.target}-Report/webSSL/dirsearch-{self.target}-{sslport}.log",
-                        f"python3 /opt/dirsearch/dirsearch.py -u https://{self.target}:{sslport} -t 80 -e php,asp,aspx,html,txt -w /usr/share/wordlists/dirb/big.txt -x 403,500 --plain-text-report {self.target}-Report/webSSL/dirsearch-big-{self.target}-{sslport}.log",
+                        f"python3 /opt/dirsearch/dirsearch.py -u https://{self.target}:{sslport}/ -t 30 -e php,asp,aspx,html,txt -x 403,500 -w wordlists/dicc.txt --plain-text-report {self.target}-Report/webSSL/dirsearch-{self.target}-{sslport}.log",
+                        f"python3 /opt/dirsearch/dirsearch.py -u https://{self.target}:{sslport}/ -t 80 -e php,asp,aspx,html,txt -w /usr/share/wordlists/dirb/big.txt -x 403,500 --plain-text-report {self.target}-Report/webSSL/dirsearch-big-{self.target}-{sslport}.log",
                         f"nikto -ask=no -host https://{self.target}:{sslport} -ssl  >{self.target}-Report/webSSL/niktoscan-{self.target}-{sslport}.txt 2>&1 &",
                     )
             else:
@@ -50,8 +50,8 @@ class EnumWebSSL:
                             f"whatweb -v -a 3 https://{i}:{ssl_port2} >{self.target}-Report/webSSL/whatweb-{i}-{ssl_port2}.txt",
                             f"wafw00f https://{i}:{ssl_port2} >{self.target}-Report/webSSL/wafw00f-{i}-{ssl_port2}.txt",
                             f"curl -sSik https://{i}:{ssl_port2}/robots.txt -m 10 -o {self.target}-Report/webSSL/robots-{i}-{ssl_port2}.txt &>/dev/null",
-                            f"python3 /opt/dirsearch/dirsearch.py -u https://{i}:{ssl_port2} -t 50 -e php,asp,aspx,txt,html -x 403,500 --plain-text-report {self.target}-Report/webSSL/dirsearch-{i}-{ssl_port2}.log",
-                            f"python3 /opt/dirsearch/dirsearch.py -u https://{i}:{ssl_port2} -t 50 -e php,asp,aspx,txt,html -w /usr/share/wordlists/dirb/big.txt -x 403,500 --plain-text-report {self.target}-Report/webSSL/dirsearch-big-{i}-{ssl_port2}.log",
+                            f"python3 /opt/dirsearch/dirsearch.py -u https://{i}:{ssl_port2}/ -t 50 -e php,asp,aspx,txt,html -x 403,500 --plain-text-report {self.target}-Report/webSSL/dirsearch-{i}-{ssl_port2}.log",
+                            f"python3 /opt/dirsearch/dirsearch.py -u https://{i}:{ssl_port2}/ -t 50 -e php,asp,aspx,txt,html -w /usr/share/wordlists/dirb/big.txt -x 403,500 --plain-text-report {self.target}-Report/webSSL/dirsearch-big-{i}-{ssl_port2}.log",
                             f"nikto -ask=no -host https://{i}:{ssl_port2} -ssl  >{self.target}-Report/webSSL/niktoscan-{i}-{ssl_port2}.txt 2>&1 &",
                         )
 
@@ -106,9 +106,10 @@ class EnumWebSSL:
     def sslProxyScan(self):
         npp = nmapParser.NmapParserFunk(self.target)
         npp.openProxyPorts()
+        np = nmapParser.NmapParserFunk(self.target)
+        np.openPorts()
         proxy_ssl_ports = npp.proxy_ssl_ports
-        proxy_ports2 = npp.proxy_ports
-        ssl_proxy_cmds = []
+        proxy_ports = np.proxy_ports
         # cwd = os.getcwd()
         if len(proxy_ssl_ports) == 0:
             pass
@@ -117,26 +118,20 @@ class EnumWebSSL:
                 os.makedirs(f"{self.target}-Report/proxy")
             if not os.path.exists(f"{self.target}-Report/proxy/webSSL"):
                 os.makedirs(f"{self.target}-Report/proxy/webSSL")
-            for proxy in proxy_ports2:
+            proxy_commands = ()
+            for proxy in proxy_ports:
+                print(
+                    f"{fg.li_cyan} Enumerating HTTPS Ports Through {proxy}, Running the following commands: {fg.rs}"
+                )
                 for proxy_ssl_port in proxy_ssl_ports:
-                    print(
-                        f"{fg.li_cyan} Enumerating HTTPS Ports Through {proxy}, Running the following commands: {fg.rs}"
+                    proxy_commands = proxy_commands + (
+                        f"whatweb -v -a 3 --proxy {self.target}:{proxy} https://127.0.0.1:{proxy_ssl_port} | tee {self.target}-Report/proxy/webSSL/whatweb-proxy-{self.target}-{proxy_ssl_port}.txt",
+                        f"python3 /opt/dirsearch/dirsearch.py -e php,asp,aspx,txt,html -x 403,500 -t 50 -w wordlists/dicc.txt --proxy {self.target}:{proxy} -u https://127.0.0.1:{proxy_http_port} --plain-text-report {self.target}-Report/proxy/webSSL/dirsearch-127.0.0.1-{proxy}-{proxy_http_port}.log",
+                        f"python3 /opt/dirsearch/dirsearch.py -e php,asp,aspx,txt,html -x 403,500 -t 50 -w /usr/share/wordlists/dirb/big.txt --proxy {self.target}:{proxy} -u https://127.0.0.1:{proxy_http_port} --plain-text-report {self.target}-Report/proxy/webSSL/dirsearch-127.0.0.1-big-{proxy}-{proxy_http_port}.log",
+                        f"nikto -ask=no -host https://127.0.0.1:{proxy_ssl_port}/ -ssl -useproxy https://{self.target}:{proxy}/ > {self.target}-Report/proxy/webSSL/nikto-{self.target}-{proxy_ssl_port}-proxy-scan.txt 2>&1 &",
                     )
-                    proxy_whatwebCMD = f"whatweb -v -a 3 --proxy {self.target}:{proxy} https://127.0.0.1:{proxy_ssl_port} | tee {self.target}-Report/proxy/webSSL/whatweb-proxy-{self.target}-{proxy_ssl_port}.txt"
-                    ssl_proxy_cmds.append(proxy_whatwebCMD)
-                    proxy_dirsearch_cmd = f"python3 /opt/dirsearch/dirsearch.py -e php,asp,aspx,txt,html -x 403,500 -t 50 -w wordlists/dicc.txt --proxy {self.target}:{proxy} -u https://127.0.0.1:{proxy_http_port} --plain-text-report {self.target}-Report/proxy/webSSL/dirsearch-127.0.0.1-{proxy}-{proxy_http_port}.log"
-                    ssl_proxy_cmds.append(proxy_dirsearch_cmd)
-                    proxy_dirsearch_cmd2 = f"python3 /opt/dirsearch/dirsearch.py -u https://{self.target}:{port} -t 80 -e php -w /usr/share/wordlists/dirbuster/directory-list-2.3-small.txt -f -x 403,500 --plain-text-report {self.target}-Report/proxy/webSSL/dirsearch-dlistsmall-{self.target}-{port}.log"
-                    ssl_proxy_cmds.append(proxy_dirsearch_cmd2)
-                    proxy_nikto_cmd = f"nikto -ask=no -host https://127.0.0.1:{proxy_ssl_port}/ -useproxy https://{self.target}:{proxy}/ > {self.target}-Report/proxy/webSSL/nikto-{self.target}-{proxy_ssl_port}-proxy-scan.txt 2>&1 &"
-                    ssl_proxy_cmds.append(proxy_nikto_cmd)
 
-            sorted_commands = sorted(set(ssl_proxy_cmds))
-            commands_to_run = []
-            for i in sorted_commands:
-                commands_to_run.append(i)
-            wpSslCmds = tuple(commands_to_run)
-            self.proxy_processes = wpSslCmds
+            self.proxy_processes = proxy_commands
             # print(self.processes)
 
     def sslEnumCMS(self):
@@ -146,6 +141,7 @@ class EnumWebSSL:
         df.GetHostNames()
         hostnames = df.hostnames
         ssl_ports = np.ssl_ports
+        cms_commands = []
         if len(ssl_ports) == 0:
             pass
         else:
@@ -154,7 +150,6 @@ class EnumWebSSL:
                 reportPath = f"{cwd}/{self.target}-Report/webSSL/*"
                 reportDir = f"{cwd}/{self.target}-Report"
                 whatweb_files = []
-                cms_commands = []
                 whatweb_hostnames = []
                 dir_list = [
                     d for d in glob.iglob(f"{reportPath}", recursive=True) if os.path.isdir(d)
@@ -270,9 +265,9 @@ fi
                                                             cms_commands.append(webdav_cmd)
                                                             cms_commands.append(webdav_cmd2)
 
-                sorted_commands = sorted(set(cms_commands))
-                commands_to_run = []
-                for i in sorted_commands:
-                    commands_to_run.append(i)
-                mpCmds = tuple(commands_to_run)
-                self.cms_processes = mpCmds
+            sorted_commands = sorted(set(cms_commands))
+            commands_to_run = []
+            for i in sorted_commands:
+                commands_to_run.append(i)
+            mpCmds = tuple(commands_to_run)
+            self.cms_processes = mpCmds
