@@ -16,6 +16,7 @@ noone
 tryharder
 daemon
 bin
+noulis
 games
 sys
 sync

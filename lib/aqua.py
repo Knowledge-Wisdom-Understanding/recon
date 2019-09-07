@@ -38,7 +38,6 @@ class Aquatone:
         cwd = os.getcwd()
         if not os.path.exists(f"{self.target}-Report/aquatone"):
             os.makedirs(f"{self.target}-Report/aquatone")
-        print(f"{fg.cyan}Opening Aquatone Report {fg.rs}")
         urls_path = f"{cwd}/{self.target}-Report/aquatone/urls.txt"
         proxy_urls_path = f"{cwd}/{self.target}-Report/aquatone/proxy-urls.txt"
         aqua_path = f"{cwd}/{self.target}-Report/aquatone/aquatone"
@@ -57,6 +56,7 @@ class Aquatone:
                     if os.path.exists(
                         f"{cwd}/{self.target}-Report/aquatone/aquatone/aquatone_report.html"
                     ):
+                        print(f"{fg.cyan}Opening Aquatone Report {fg.rs}")
                         open_in_ff_cmd = f"firefox {cwd}/{self.target}-Report/aquatone/aquatone/aquatone_report.html &"
                         call(open_in_ff_cmd, shell=True)
         if os.path.exists(proxy_urls_path):
