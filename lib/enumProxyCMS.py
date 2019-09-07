@@ -3,7 +3,6 @@
 import os
 from sty import fg, bg, ef, rs
 from lib import nmapParser
-from lib import domainFinder
 from utils import helper_lists
 from subprocess import call
 import glob

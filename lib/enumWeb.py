@@ -250,7 +250,6 @@ fi
         npp.openProxyPorts()
         proxy_http_ports = npp.proxy_http_ports
         proxy_ports = np.proxy_ports
-        web_proxy_cmds = []
         cwd = os.getcwd()
         reportDir = f"{cwd}/{self.target}-Report"
         cwd = os.getcwd()

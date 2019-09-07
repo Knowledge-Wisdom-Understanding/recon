@@ -150,7 +150,6 @@ class BruteSingleUserCustom:
     def SshSingleUserBruteCustom(self):
         cmd_info = "[" + fg.green + "+" + fg.rs + "]"
         cwd = os.getcwd()
-        reportDir = f"{cwd}/{self.target}-Report"
         green = fg.li_green
         teal = fg.li_cyan
         reset = fg.rs

@@ -7,7 +7,6 @@ from sty import fg, bg, ef, rs
 from lib import nmapParser
 from lib import enumWeb
 from lib import enumWebSSL
-from collections import deque
 
 
 class CheckProxy:
