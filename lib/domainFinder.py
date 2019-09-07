@@ -5,6 +5,7 @@ from sty import fg, bg, ef, rs
 from python_hosts.hosts import Hosts, HostsEntry
 import re
 from lib import nmapParser
+from utils import dig_parser
 from subprocess import call
 
 
@@ -12,12 +13,16 @@ class DomainFinder:
     def __init__(self, target):
         self.target = target
         self.redirect_hostname = []
+        self.fqdn_hostname = []
 
     def Scan(self):
         np = nmapParser.NmapParserFunk(self.target)
         np.openPorts()
         ssl_ports = np.ssl_ports
-        cmd_info = "[" + fg.green + "+" + fg.rs + "]"
+        dnsPort = np.dns_ports
+        cmd_info = "[" + fg.li_green + "+" + fg.rs + "]"
+        cwd = os.getcwd()
+        reportDir = f"{cwd}/{self.target}-Report"
         ignore = [
             ".nse",
             ".php",
@@ -151,7 +156,6 @@ class DomainFinder:
                     for x in allsortedhostnames:
                         allsortedhostnameslist.append(x)
 
-        dnsPort = np.dns_ports
         if len(dnsPort) == 0:
             if len(allsortedhostnameslist) != 0:
                 for x in allsortedhostnameslist:
@@ -169,47 +173,57 @@ class DomainFinder:
         else:
             if not os.path.exists(f"{self.target}-Report/dns"):
                 os.makedirs(f"{self.target}-Report/dns")
+            dig_cmd = (
+                f"dig -x {self.target} @{self.target} | tee {reportDir}/dns/dig-{self.target}.log"
+            )
+            print(cmd_info, dig_cmd)
+            dp = dig_parser.digParse(self.target, dig_cmd)
+            dp.parseDig()
+            dig_hosts = dp.hosts
+            sub_hosts = dp.subdomains
+            # print(dig_hosts)
+            # print(sub_hosts)
+            if len(dig_hosts) != 0:
+                for x in dig_hosts:
+                    allsortedhostnameslist.append(x)
+                    self.fqdn_hostname.append(x)
+            if len(sub_hosts) != 0:
+                for x in sub_hosts:
+                    allsortedhostnameslist.append(x)
+
             ######## Check For Zone Transfer: Running dig ###############
             if len(allsortedhostnameslist) != 0:
                 alldns = " ".join(map(str, allsortedhostnameslist))
-                # print(alldns)
-                dig_command = f"dig axfr @{self.target} {alldns} | tee {self.target}-Report/dns/dig-zonexfer-{self.target}.log"
+                zonexferDns = []
+                dig_command = f"dig axfr @{self.target} {alldns} | tee {reportDir}/dns/dig-axfr-{self.target}.log"
                 print(cmd_info, dig_command)
-                call(dig_command, shell=True)
-                filterZoneTransferDomainsCMD = (
-                    f"grep -v ';' {self.target}-Report/dns/dig-zonexfer-{self.target}.log "
-                    + "| grep -v -e '^[[:space:]]*$' "
-                    + "| awk '{print $1}' "
-                    + f"| sed 's/.$//' | sort -u >{self.target}-Report/dns/zonexfer-domains.log"
-                )
-                call(filterZoneTransferDomainsCMD, shell=True)
-                zxferFile = f"{self.target}-Report/dns/zonexfer-domains.log"
-                if os.path.exists(zxferFile):
-                    zonexferDns = []
-                    with open(zxferFile, "r") as zf:
-                        for line in zf:
-                            zonexferDns.append(line.rstrip())
-                    if len(allsortedhostnameslist) != 0:
-                        for x in allsortedhostnameslist:
-                            zonexferDns.append(x)
-                    sortedAllDomains = sorted(set(zonexferDns))
-                    sortedAllDomainsList = []
-                    for x in sortedAllDomains:
-                        sortedAllDomainsList.append(x)
-                        self.redirect_hostname.append(x)
-                    if len(zonexferDns) != 0:
-                        print(
-                            f"{cmd_info} Adding {fg.li_cyan}{sortedAllDomainsList} {fg.rs}to /etc/hosts"
-                        )
-                        hosts = Hosts(path="/etc/hosts")
-                        new_entry = HostsEntry(
-                            entry_type="ipv4", address=self.target, names=sortedAllDomainsList
-                        )
-                        hosts.add([new_entry])
-                        hosts.write()
+                dp2 = dig_parser.digParse(self.target, dig_command)
+                dp2.parseDigAxfr()
+                subdomains = dp2.subdomains
+                # print(subdomains)
+                for x in subdomains:
+                    zonexferDns.append(x)
+                sortedAllDomains = sorted(set(zonexferDns))
+                sortedAllDomainsList = []
+                for x in sortedAllDomains:
+                    sortedAllDomainsList.append(x)
+                    self.redirect_hostname.append(x)
+                if len(zonexferDns) != 0:
+                    print(
+                        f"{cmd_info} Adding {fg.li_cyan}{sortedAllDomainsList} {fg.rs}to /etc/hosts"
+                    )
+                    hosts = Hosts(path="/etc/hosts")
+                    new_entry = HostsEntry(
+                        entry_type="ipv4", address=self.target, names=sortedAllDomainsList
+                    )
+                    hosts.add([new_entry])
+                    hosts.write()
 
     def getRedirect(self):
         """Extra Function for enumWeb HTTP hosts so as not to run Scan() twice."""
+        np = nmapParser.NmapParserFunk(self.target)
+        np.openPorts()
+        dnsPort = np.dns_ports
         ignore = [
             ".nse",
             ".php",
@@ -240,11 +254,9 @@ class DomainFinder:
                         .replace("commonName=", "")
                         .replace("/organizationName=", " ")
                     )
-                    # print(new)
                     matches = re.findall(
                         r"(?:[a-zA-Z0-9](?:[a-zA-Z0-9\-]{,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,6}", new
                     )
-                    # print(matches)
                     for x in matches:
                         if not any(s in x for s in ignore):
                             self.redirect_hostname.append(x)
@@ -258,3 +270,29 @@ class DomainFinder:
                         self.redirect_hostname.append(redirect_domainName)
         except FileNotFoundError as fnf_error:
             print(fnf_error)
+        if len(dnsPort) != 0:
+            if not os.path.exists(f"{self.target}-Report/dns"):
+                os.makedirs(f"{self.target}-Report/dns")
+            dig_cmd = f"dig -x {self.target} @{self.target}"
+            dp = dig_parser.digParse(self.target, dig_cmd)
+            dp.parseDig()
+            dig_hosts = dp.hosts
+            sub_hosts = dp.subdomains
+            if len(dig_hosts) != 0:
+                for x in dig_hosts:
+                    self.redirect_hostname.append(x)
+            if len(sub_hosts) != 0:
+                for x in sub_hosts:
+                    self.redirect_hostname.append(x)
+            if len(self.redirect_hostname) != 0:
+                alldns = " ".join(map(str, self.redirect_hostname))
+                zonexferDns = []
+                dig_command = f"dig axfr @{self.target} {alldns}"
+                dp2 = dig_parser.digParse(self.target, dig_command)
+                dp2.parseDigAxfr()
+                subdomains = dp2.subdomains
+                for x in subdomains:
+                    zonexferDns.append(x)
+                sortedAllDomains = sorted(set(zonexferDns))
+                for x in sortedAllDomains:
+                    self.redirect_hostname.append(x)

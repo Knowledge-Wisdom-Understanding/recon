@@ -16,7 +16,6 @@ class EnumWeb:
         self.processes = ""
         self.cms_processes = ""
         self.proxy_processes = ""
-        self.redirect_hostname = []
 
     def Scan(self):
         np = nmapParser.NmapParserFunk(self.target)
@@ -36,10 +35,10 @@ class EnumWeb:
                 os.makedirs(f"{self.target}-Report/web")
             if not os.path.exists(f"{self.target}-Report/aquatone"):
                 os.makedirs(f"{self.target}-Report/aquatone")
-            if hostnames:
+            commands = ()
+            if len(hostnames) != 0:
                 sorted_hostnames = sorted(set(hostnames))
                 for hostname in sorted_hostnames:
-                    commands = ()
                     for port in http_ports:
                         if not os.path.exists(
                             f"{self.target}-Report/web/eyewitness-{hostname}-{port}"
@@ -55,7 +54,6 @@ class EnumWeb:
                             f"nikto -ask=no -host http://{hostname}:{port} >{reportDir}/web/niktoscan-{hostname}-{port}.txt 2>&1 &",
                         )
             else:
-                commands = ()
                 for port in http_ports:
                     if not os.path.exists(
                         f"{self.target}-Report/web/eyewitness-{self.target}-{port}"

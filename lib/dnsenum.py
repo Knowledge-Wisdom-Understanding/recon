@@ -5,6 +5,7 @@ import re
 from sty import fg, bg, ef, rs
 from lib import nmapParser
 from lib import domainFinder
+from utils import dig_parser
 
 
 class DnsEnum:
@@ -22,27 +23,38 @@ class DnsEnum:
         dn = domainFinder.DomainFinder(self.target)
         dn.Scan()
         redirect_hostname = dn.redirect_hostname
+        fqdn_hostname = dn.fqdn_hostname
+        cwd = os.getcwd()
+        reportDir = f"{cwd}/{self.target}-Report"
         if not os.path.exists(f"{self.target}-Report/dns"):
             os.makedirs(f"{self.target}-Report/dns")
         if not os.path.exists(f"{self.target}-Report/aquatone"):
             os.makedirs(f"{self.target}-Report/aquatone")
 
+        commands = ()
         if len(redirect_hostname) != 0 and (len(dnsPorts) != 0):
-            commands = ()
             for d in redirect_hostname:
                 self.hostnames.append(d)
-                if "www" in d:
-                    continue
-                else:
-                    commands = commands + (
-                        f"dnsenum --dnsserver {self.target} --enum -f /usr/share/seclists/Discovery/DNS/subdomains-top1mil-5000.txt -r {d} | tee {self.target}-Report/dns/dnsenum-{self.target}-{d}.log",
-                    )
-            self.processes = commands
+            if len(fqdn_hostname) != 0:
+                for d in fqdn_hostname:
+                    self.hostnames.append(d)
+                commands = commands + (
+                    f"cd {reportDir} && dnsenum --dnsserver {self.target} --enum -f /usr/share/seclists/Discovery/DNS/subdomains-top1million-5000.txt -r {d} | tee {self.target}-Report/dns/dnsenum-{self.target}.log && cd - &>/dev/null",
+                )
+            else:
+                string_hosts = " ".join(map(str, redirect_hostname))
+                commands = commands + (
+                    f"cd {reportDir} && dnsenum --dnsserver {self.target} --enum -f /usr/share/seclists/Discovery/DNS/subdomains-top1million-5000.txt -r {string_hosts} | tee {self.target}-Report/dns/dnsenum-{self.target}.log && cd - &>/dev/null",
+                )
+
+        self.processes = commands
 
     def GetHostNames(self):
+        """This Function is for HTTPS/SSL enumWebSSL Class to enumerate found hostnames."""
         np = nmapParser.NmapParserFunk(self.target)
         np.openPorts()
         ssl_ports = np.ssl_ports
+        dnsPort = np.dns_ports
         ignore = [
             ".nse",
             ".php",
@@ -69,17 +81,13 @@ class DnsEnum:
                         .replace("commonName=", "")
                         .replace("/organizationName=", " ")
                     )
-                    # print(new)
                     matches = re.findall(
                         r"(?:[a-zA-Z0-9](?:[a-zA-Z0-9\-]{,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,6}", new
                     )
-                    # print(matches)
                     for x in matches:
                         if not any(s in x for s in ignore):
                             dns.append(x)
-            # print(dns)
             sdns = sorted(set(dns))
-            # print(sdns)
             tmpdns = []
             for x in sdns:
                 tmpdns.append(x)
@@ -146,27 +154,35 @@ class DnsEnum:
                     for x in allsortedhostnames:
                         allsortedhostnameslist.append(x)
 
-        dnsPort = np.dns_ports
         if len(dnsPort) == 0:
             if len(allsortedhostnameslist) != 0:
                 for x in allsortedhostnameslist:
                     self.hostnames.append(x)
 
         else:
-            ######## Check For Zone Transfer from dig output ###############
-            if len(allsortedhostnameslist) != 0:
-                zxferFile = f"{self.target}-Report/dns/zonexfer-domains.log"
-                if os.path.exists(zxferFile):
-                    zonexferDns = []
-                    with open(zxferFile, "r") as zf:
-                        for line in zf:
-                            zonexferDns.append(line.rstrip())
-                    if len(allsortedhostnameslist) != 0:
-                        for x in allsortedhostnameslist:
-                            zonexferDns.append(x)
-                    sortedAllDomains = sorted(set(zonexferDns))
-                    sortedAllDomainsList = []
-                    for x in sortedAllDomains:
-                        sortedAllDomainsList.append(x)
-                        self.hostnames.append(x)
-
+            ######## Check For Zone Transfer ###############
+            if not os.path.exists(f"{self.target}-Report/dns"):
+                os.makedirs(f"{self.target}-Report/dns")
+            dig_cmd = f"dig -x {self.target} @{self.target}"
+            dp = dig_parser.digParse(self.target, dig_cmd)
+            dp.parseDig()
+            dig_hosts = dp.hosts
+            sub_hosts = dp.subdomains
+            if len(dig_hosts) != 0:
+                for x in dig_hosts:
+                    self.hostnames.append(x)
+            if len(sub_hosts) != 0:
+                for x in sub_hosts:
+                    self.hostnames.append(x)
+            if len(self.hostnames) != 0:
+                alldns = " ".join(map(str, self.hostnames))
+                zonexferDns = []
+                dig_command = f"dig axfr @{self.target} {alldns}"
+                dp2 = dig_parser.digParse(self.target, dig_command)
+                dp2.parseDigAxfr()
+                subdomains = dp2.subdomains
+                for x in subdomains:
+                    zonexferDns.append(x)
+                sortedAllDomains = sorted(set(zonexferDns))
+                for x in sortedAllDomains:
+                    self.hostnames.append(x)

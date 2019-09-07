@@ -136,53 +136,54 @@ class Cewl:
             if not os.path.exists(f"{reportDir}/wordlists"):
                 os.makedirs(f"{reportDir}/wordlists")
             url_list = []
-            try:
-                urls_file = f"{reportDir}/aquatone/urls.txt"
-                with open(urls_file, "r") as uf:
-                    for line in uf:
-                        if "index.html" in line:
-                            url_list.append(line.rstrip())
-                        if "index.php" in line:
-                            url_list.append(line.rstrip())
-                if len(htports) == 1:
-                    url_list.append(f"http://{self.target}:{htports[0]}/")
-                if len(slports) == 1:
-                    url_list.append(f"https://{self.target}:{slports[0]}/")
-                wordlist = sorted(set(url_list))
-            except FileNotFoundError as fnf_error:
-                print(fnf_error)
-                exit()
-            cewl_cmds = []
-            if len(wordlist) != 0:
-                counter = 0
-                for url in wordlist:
-                    counter += 1
-                    cewl_cmds.append(
-                        f"cewl {url} -m 3 -w {reportDir}/wordlists/cewl-{counter}-list.txt"
-                    )
-            if len(cewl_cmds) != 0:
+            urls_file = f"{reportDir}/aquatone/urls.txt"
+            if os.path.exists(urls_file):
                 try:
-                    for cmd in cewl_cmds:
-                        call(cmd, shell=True)
-                except ConnectionRefusedError as cre_error:
-                    print(cre_error)
-            words = []
-            try:
-                with open(f"{cwd}/wordlists/probable-v2-top1575.txt", "r") as prob:
-                    for line in prob:
-                        words.append(line.rstrip())
-                for wl in os.listdir(f"{reportDir}/wordlists"):
-                    wlfile = f"{reportDir}/wordlists/{wl}"
-                    with open(wlfile, "r") as wlf:
-                        for line in wlf:
+                    with open(urls_file, "r") as uf:
+                        for line in uf:
+                            if "index.html" in line:
+                                url_list.append(line.rstrip())
+                            if "index.php" in line:
+                                url_list.append(line.rstrip())
+                    if len(htports) == 1:
+                        url_list.append(f"http://{self.target}:{htports[0]}/")
+                    if len(slports) == 1:
+                        url_list.append(f"https://{self.target}:{slports[0]}/")
+                    wordlist = sorted(set(url_list))
+                except FileNotFoundError as fnf_error:
+                    print(fnf_error)
+                    exit()
+                cewl_cmds = []
+                if len(wordlist) != 0:
+                    counter = 0
+                    for url in wordlist:
+                        counter += 1
+                        cewl_cmds.append(
+                            f"cewl {url} -m 3 -w {reportDir}/wordlists/cewl-{counter}-list.txt"
+                        )
+                if len(cewl_cmds) != 0:
+                    try:
+                        for cmd in cewl_cmds:
+                            call(cmd, shell=True)
+                    except ConnectionRefusedError as cre_error:
+                        print(cre_error)
+                words = []
+                try:
+                    with open(f"{cwd}/wordlists/probable-v2-top1575.txt", "r") as prob:
+                        for line in prob:
                             words.append(line.rstrip())
-                        set_unique_words = sorted(set(words))
-                        unique_words = list(set_unique_words)
-                        with open(f"{reportDir}/wordlists/all.txt", "a") as allwls:
-                            string_words = "\n".join(map(str, unique_words))
-                            allwls.write(str(string_words))
-            except FileNotFoundError as fnf_error:
-                print(fnf_error)
+                    for wl in os.listdir(f"{reportDir}/wordlists"):
+                        wlfile = f"{reportDir}/wordlists/{wl}"
+                        with open(wlfile, "r") as wlf:
+                            for line in wlf:
+                                words.append(line.rstrip())
+                    set_unique_words = sorted(set(words))
+                    unique_words = list(set_unique_words)
+                    with open(f"{reportDir}/wordlists/all.txt", "a") as allwls:
+                        string_words = "\n".join(map(str, unique_words))
+                        allwls.write(str(string_words))
+                except FileNotFoundError as fnf_error:
+                    print(fnf_error)
 
 
 class Wordpress:

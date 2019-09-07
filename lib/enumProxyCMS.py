@@ -24,8 +24,6 @@ class EnumProxyCMS:
         npp.openProxyPorts()
         proxy_http_ports = npp.proxy_http_ports
         proxy_ports = np.proxy_ports
-        cmd_info = "[" + fg.li_green + "+" + fg.rs + "]"
-        green = fg.li_green
         teal = fg.li_cyan
         hasPrinted = False
         cms_commands = []
@@ -66,7 +64,7 @@ class EnumProxyCMS:
                                 call(whatweb_proxy_cmd, shell=True)
                                 if count >= 2:
                                     break
-                            except:
+                            except OSError:
                                 pass
 
                 dir_list = [

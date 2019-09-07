@@ -31,8 +31,8 @@ class EnumWebSSL:
                 os.makedirs(f"{self.target}-Report/aquatone")
             b = fg.li_cyan + "Enumerating HTTPS/SSL Ports, Running the following commands:" + fg.rs
             print(b)
+            commands = ()
             if len(hostnames) == 0:
-                commands = ()
                 for sslport in ssl_ports:
                     commands = commands + (
                         f"whatweb -v -a 3 https://{self.target}:{sslport} | tee {self.target}-Report/webSSL/whatweb-{self.target}-{sslport}.txt",
@@ -44,7 +44,6 @@ class EnumWebSSL:
                     )
             else:
                 for ssl_port2 in ssl_ports:
-                    commands = ()
                     for i in hostnames:
                         commands = commands + (
                             f"whatweb -v -a 3 https://{i}:{ssl_port2} >{self.target}-Report/webSSL/whatweb-{i}-{ssl_port2}.txt",
