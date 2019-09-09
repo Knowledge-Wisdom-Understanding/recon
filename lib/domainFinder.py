@@ -43,6 +43,10 @@ class DomainFinder:
             ".co",
             ".eu",
             ".uk",
+            ".localdomain",
+            "localhost.localdomain",
+            ".localhost",
+            ".local",
         ]
         dns = []
         try:
@@ -53,10 +57,12 @@ class DomainFinder:
                         .replace("/", " ")
                         .replace("commonName=", "")
                         .replace("/organizationName=", " ")
+                        .replace(",", " ")
+                        .replace("_", " ")
                     )
                     # print(new)
                     matches = re.findall(
-                        r"(?:[a-zA-Z0-9](?:[a-zA-Z0-9\-]{,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,6}", new
+                        r"(?:[a-zA-Z0-9](?:[a-zA-Z0-9\-]{,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{3,6}", new
                     )
                     # print(matches)
                     for x in matches:
@@ -123,14 +129,16 @@ class DomainFinder:
                                 # print(n)
                                 na = n.lstrip()
                                 # print(na)
-                                domainName.append(na)
+                                if na not in ignore:
+                                    domainName.append(na)
                             if "Altnames:" in line:
                                 alnam = line.lstrip("Altnames:").rstrip("\n")
                                 alname = alnam.lstrip()
                                 alname1 = alname.lstrip("DNS:")
                                 alname2 = alname1.replace("DNS:", "").replace(",", "").split()
                                 for x in alname2:
-                                    altDomainNames.append(x)
+                                    if x not in ignore:
+                                        altDomainNames.append(x)
                     # print(domainName)
                     # print(altDomainNames)
                     # print(alname2)
@@ -146,7 +154,8 @@ class DomainFinder:
                         if ignore_chars_regex.search(x) == None:
                             tmpdns2.append(x)
                     for x in tmpdns:
-                        tmpdns2.append(x)
+                        if x not in ignore:
+                            tmpdns2.append(x)
 
                     unsortedhostnames = []
                     for x in tmpdns2:
@@ -154,12 +163,14 @@ class DomainFinder:
                     allsortedhostnames = sorted(set(tmpdns2))
                     allsortedhostnameslist = []
                     for x in allsortedhostnames:
-                        allsortedhostnameslist.append(x)
+                        if x not in ignore:
+                            allsortedhostnameslist.append(x)
 
         if len(dnsPort) == 0:
             if len(allsortedhostnameslist) != 0:
                 for x in allsortedhostnameslist:
-                    self.redirect_hostname.append(x)
+                    if x not in ignore:
+                        self.redirect_hostname.append(x)
                 print(
                     f"{cmd_info} Adding {fg.li_cyan}{allsortedhostnameslist} {fg.rs}to /etc/hosts"
                 )
@@ -244,6 +255,10 @@ class DomainFinder:
             ".co",
             ".eu",
             ".uk",
+            ".localdomain",
+            "localhost.localdomain",
+            ".localhost",
+            ".local",
         ]
         try:
             with open(f"{self.target}-Report/nmap/top-ports-{self.target}.nmap", "r") as nm:
@@ -253,9 +268,11 @@ class DomainFinder:
                         .replace("/", " ")
                         .replace("commonName=", "")
                         .replace("/organizationName=", " ")
+                        .replace(",", " ")
+                        .replace("_", " ")
                     )
                     matches = re.findall(
-                        r"(?:[a-zA-Z0-9](?:[a-zA-Z0-9\-]{,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,6}", new
+                        r"(?:[a-zA-Z0-9](?:[a-zA-Z0-9\-]{,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{3,6}", new
                     )
                     for x in matches:
                         if not any(s in x for s in ignore):

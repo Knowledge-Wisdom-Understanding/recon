@@ -70,6 +70,15 @@ class DnsEnum:
             ".jpg",
             ".jpeg",
             ".txt",
+            ".cgi",
+            ".pl",
+            ".co",
+            ".eu",
+            ".uk",
+            ".localdomain",
+            "localhost.localdomain",
+            ".localhost",
+            ".local",
         ]
         dns = []
         try:
@@ -80,9 +89,11 @@ class DnsEnum:
                         .replace("/", " ")
                         .replace("commonName=", "")
                         .replace("/organizationName=", " ")
+                        .replace(",", " ")
+                        .replace("_", " ")
                     )
                     matches = re.findall(
-                        r"(?:[a-zA-Z0-9](?:[a-zA-Z0-9\-]{,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,6}", new
+                        r"(?:[a-zA-Z0-9](?:[a-zA-Z0-9\-]{,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{3,6}", new
                     )
                     for x in matches:
                         if not any(s in x for s in ignore):
@@ -124,14 +135,16 @@ class DnsEnum:
                             if "Subject:" in line:
                                 n = line.lstrip("Subject:").rstrip("\n")
                                 na = n.lstrip()
-                                domainName.append(na)
+                                if na not in ignore:
+                                    domainName.append(na)
                             if "Altnames:" in line:
                                 alnam = line.lstrip("Altnames:").rstrip("\n")
                                 alname = alnam.lstrip()
                                 alname1 = alname.lstrip("DNS:")
                                 alname2 = alname1.replace("DNS:", "").replace(",", "").split()
                                 for x in alname2:
-                                    altDomainNames.append(x)
+                                    if x not in ignore:
+                                        altDomainNames.append(x)
                     both = []
                     for x in domainName:
                         both.append(x)

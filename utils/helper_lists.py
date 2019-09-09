@@ -240,3 +240,9 @@ class DirsearchURLS:
                 all_dirsearch_files_on_one_line = " ".join(map(str, dirsearch_files))
                 url_list_cmd = f"""cat {all_dirsearch_files_on_one_line} | grep -v '400' | awk '{awkprint}' | sort -u > {cwd}/{self.target}-Report/aquatone/proxy-urls.txt"""
                 call(url_list_cmd, shell=True)
+
+
+class ignoreDomains:
+    def __init__(self):
+        self.ignored = ["localhost", "localdomain"]
+

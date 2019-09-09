@@ -94,10 +94,13 @@ class NmapParserFunk:
                 if service[0] not in self.tcp_ports:
                     self.tcp_ports.append(service[0])
                 if "ssl" in service[2]:
-                    if service[0] not in self.ssl_ports:
-                        self.ssl_ports.append(service[0])
-                    if service[8] not in self.ssl_script_results:
-                        self.ssl_script_results.append(service[8])
+                    if "imap" not in service[1]:
+                        if "pop3" not in service[1]:
+                            if "ldap" not in service[1]:
+                                if service[0] not in self.ssl_ports:
+                                    self.ssl_ports.append(service[0])
+                                if service[8] not in self.ssl_script_results:
+                                    self.ssl_script_results.append(service[8])
                 if "http" in service[1]:
                     if "ssl" not in service[2]:
                         if "http-proxy" not in service[1]:
