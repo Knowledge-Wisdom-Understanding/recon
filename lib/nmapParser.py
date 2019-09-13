@@ -17,6 +17,7 @@ class NmapParserFunk:
         self.ftp_product = []
         self.smtp_product = []
         self.pop3_product = []
+        self.all_products = []
         ##### PORTS ##################
         self.tcp_ports = []
         self.http_ports = []
@@ -34,11 +35,18 @@ class NmapParserFunk:
         self.rpc_ports = []
         self.nfs_ports = []
         self.udp_ports = []
+        self.sip_ports = []
+        self.telnet_ports = []
+        self.vnc_ports = []
+        ###### UDP PORTS ############
         self.snmp_ports = []
+        self.sip_udp_ports = []
         ####### VERSION #############
         self.ssh_version = []
         self.ftp_version = []
         self.smtp_version = []
+        ####### BANNER ##############
+        self.banners = []
         ####### Extra Info ##########
         self.http_extra = []
         ###### Script Results #######
@@ -76,6 +84,8 @@ class NmapParserFunk:
         ignored_windows_http_ports = [5985, 47001]
         for service in self.nmap_services:
             if "open" not in service.state:
+                continue
+            if "open|filtered" in service.state:
                 continue
             self.services.append(
                 (
@@ -163,6 +173,19 @@ class NmapParserFunk:
                 if "Apache" in service[5]:
                     if service[0] not in self.http_ports:
                         self.http_ports.append(service[0])
+                if "telnet" in service[1]:
+                    if service[0] not in self.telnet_ports:
+                        self.telnet_ports.append(service[0])
+                if "asterisk" in service[1]:
+                    if service[0] not in self.sip_ports:
+                        self.sip_ports.append(service[0])
+                if "vnc" in service[1]:
+                    if service[0] not in self.vnc_ports:
+                        self.vnc_ports.append(service[0])
+                if service[4] not in self.banners:
+                    self.banners.append(service[4])
+                if service[5] not in self.all_products:
+                    self.all_products.append(service[5])
 
         if len(self.http_script_results) != 0:
             for t in self.http_script_results[0]:
@@ -170,6 +193,7 @@ class NmapParserFunk:
                 if "http-title" in result:
                     if result[1] not in self.http_script_title:
                         self.http_script_title.append(result[1])
+
         ### Print Statements for Debugging Purposes..
         # print("HTTP PORTS:", self.http_ports)
         # if len(self.http_script_results) != 0:
@@ -186,6 +210,128 @@ class NmapParserFunk:
         # print("FTP PRODUCT", self.ftp_product)
         # print("Proxy Ports:", self.proxy_ports)
         # print("SSH-Product", self.ssh_product)
+
+    def allOpenPorts(self):
+        report = NmapParser.parse_fromfile(
+            f"{self.target}-Report/nmap/full-tcp-scan-{self.target}.xml"
+        )
+        self.nmap_services += report.hosts[0].services
+        self.nmap_services = sorted(self.nmap_services, key=lambda s: s.port)
+        # print(self.nmap_services)
+        ignored_windows_http_ports = [5985, 47001]
+        for service in self.nmap_services:
+            if "open" not in service.state:
+                continue
+            if "open|filtered" in service.state:
+                continue
+            self.services.append(
+                (
+                    service.port,
+                    service.service,
+                    service.tunnel,
+                    service.cpelist,
+                    service.banner,
+                    service.service_dict.get("product", ""),
+                    service.service_dict.get("version", ""),
+                    service.service_dict.get("extrainfo", ""),
+                    service.scripts_results,
+                )
+            )
+            for service in self.services:
+                if service[0] not in self.tcp_ports:
+                    self.tcp_ports.append(service[0])
+                if "ssl" in service[2]:
+                    if "imap" not in service[1]:
+                        if "pop3" not in service[1]:
+                            if "ldap" not in service[1]:
+                                if service[0] not in self.ssl_ports:
+                                    self.ssl_ports.append(service[0])
+                                if service[8] not in self.ssl_script_results:
+                                    self.ssl_script_results.append(service[8])
+                if "http" in service[1]:
+                    if "ssl" not in service[2]:
+                        if "http-proxy" not in service[1]:
+                            if service[0] not in ignored_windows_http_ports:
+                                if service[0] not in self.http_ports:
+                                    self.http_ports.append(service[0])
+                                if service[8] not in self.http_script_results:
+                                    self.http_script_results.append(service[8])
+                if "netbios-ssn" in service[1]:
+                    if service[0] not in self.smb_ports:
+                        self.smb_ports.append(service[0])
+                if "microsoft-ds" in service[1]:
+                    if service[0] not in self.smb_ports:
+                        self.smb_ports.append(service[0])
+                if "domain" in service[1]:
+                    if service[0] not in self.dns_ports:
+                        self.dns_ports.append(service[0])
+                if "http-proxy" in service[1]:
+                    if service[0] not in self.proxy_ports:
+                        self.proxy_ports.append(service[0])
+                if "ssh" in service[1]:
+                    if service[0] not in self.ssh_ports:
+                        self.ssh_ports.append(service[0])
+                    if service[5] not in self.ssh_product:
+                        self.ssh_product.append(service[5])
+                    if service[6] not in self.ssh_version:
+                        self.ssh_version.append(service[6])
+                    if service[8] not in self.ssh_script_results:
+                        self.ssh_script_results.append(service[8])
+                if "oracle-tns" in service[1]:
+                    if service[0] != 49160:
+                        if service[0] not in self.oracle_tns_ports:
+                            self.oracle_tns_ports.append(service[0])
+                if "ftp" in service[1]:
+                    if service[0] not in self.ftp_ports:
+                        self.ftp_ports.append(service[0])
+                    if service[5] not in self.ftp_product:
+                        self.ftp_product.append(service[5])
+                    if service[6] not in self.ftp_version:
+                        self.ftp_version.append(service[6])
+                if "smtp" in service[1]:
+                    if service[0] not in self.smtp_ports:
+                        self.smtp_ports.append(service[0])
+                    if service[4] not in self.smtp_version:
+                        self.smtp_version.append(service[4])
+                    if service[5] not in self.smtp_product:
+                        self.smtp_product.append(service[5])
+                if "rpcbind" in service[1]:
+                    if service[0] not in self.nfs_ports:
+                        self.nfs_ports.append(service[0])
+                if "msrpc" in service[1]:
+                    if service[0] not in self.rpc_ports:
+                        self.rpc_ports.append(service[0])
+                if "ldap" in service[1]:
+                    if service[0] not in self.ldap_ports:
+                        self.ldap_ports.append(service[0])
+                if "BaseHTTPServer" in service[4]:
+                    if service[0] not in self.http_ports:
+                        self.http_ports.append(service[0])
+                if "Apache" in service[5]:
+                    if service[0] not in self.http_ports:
+                        self.http_ports.append(service[0])
+                if "telnet" in service[1]:
+                    if service[0] not in self.telnet_ports:
+                        self.telnet_ports.append(service[0])
+                if "asterisk" in service[1]:
+                    if service[0] not in self.sip_ports:
+                        self.sip_ports.append(service[0])
+                if "vnc" in service[1]:
+                    if service[0] not in self.vnc_ports:
+                        self.vnc_ports.append(service[0])
+                if service[4] not in self.banners:
+                    self.banners.append(service[4])
+                if service[5] not in self.all_products:
+                    self.all_products.append(service[5])
+
+        if len(self.http_script_results) != 0:
+            for t in self.http_script_results[0]:
+                result = t["id"], t["output"]
+                if "http-title" in result:
+                    if result[1] not in self.http_script_title:
+                        self.http_script_title.append(result[1])
+
+        # print("Products", self.all_products)
 
     def openProxyPorts(self):
         self.openPorts()
@@ -276,13 +422,21 @@ class NmapParserFunk:
         for service in self.udp_nmap_services:
             if "open" not in service.state:
                 continue
+            if "open|filtered" in service.state:
+                continue
             self.udp_services.append(
                 (service.port, service.service, service.tunnel, service.cpelist, service.banner)
             )
             for service in self.udp_services:
                 if service[0] not in self.udp_ports:
                     self.udp_ports.append(service[0])
-                if "snmp" in service[2]:
+                if "snmp" in service[1]:
                     if service[0] not in self.snmp_ports:
                         self.snmp_ports.append(service[0])
+                if "sip" in service[1]:
+                    if service[0] not in self.sip_udp_ports:
+                        self.sip_udp_ports.append(service[0])
 
+        # print("SNMP PORTS", self.snmp_ports)
+        # print("UDP SERVICES", self.udp_services)
+        # print("UDP OPEN PORTS", self.udp_ports)

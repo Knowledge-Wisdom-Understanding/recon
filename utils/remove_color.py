@@ -103,6 +103,12 @@ class Clean:
                                         rf,
                                         f"{os.getcwd()}/{self.target}-Report/vulns/https-title-blah.log",
                                     )
+                                if "all-services" in rf:
+                                    removeColor(
+                                        self,
+                                        rf,
+                                        f"{os.getcwd()}/{self.target}-Report/vulns/all-services-blah.log",
+                                    )
 
     def listFilesProxy(self):
         """

@@ -19,14 +19,16 @@ class Search:
     def Scan(self):
         cmd_info = "[" + fg.green + "+" + fg.rs + "]"
         np = nmapParser.NmapParserFunk(self.target)
-        np.openPorts()
+        np.allOpenPorts()
         ftp_version = np.ftp_version
         ftp_product = np.ftp_product
         ssh_product = np.ssh_product
         ssh_version = np.ssh_version
         smtp_product = np.smtp_product
         smtp_version = np.smtp_version
+        products = np.all_products
         http_title = np.http_script_title
+        ignore = ["apache", "mysql"]
 
         ### FTP searchsploit product ###
         if len(ftp_product) == 1:
@@ -66,6 +68,23 @@ class Search:
                 for title in http_title:
                     string_title = " ".join(map(str, title))
                     lowercase_title = str(string_title).lower()
+                    if lowercase_title.find("redirect") != -1:
+                        pass
+                    else:
+                        first_word = lowercase_title.split(" ", 1)[0]
+                        http_cmd = f"searchsploit {lowercase_title} >> {self.target}-Report/vulns/http-title.log"
+                        http_cmd2 = f"searchsploit {first_word} >> {self.target}-Report/vulns/http-title.log"
+                        print(cmd_info, http_cmd)
+                        print(cmd_info, http_cmd2)
+                        call(http_cmd, shell=True)
+                        call(http_cmd2, shell=True)
+
+            else:
+                string_title = " ".join(map(str, http_title))
+                lowercase_title = str(string_title).lower()
+                if lowercase_title.find("redirect") != -1:
+                    pass
+                else:
                     first_word = lowercase_title.split(" ", 1)[0]
                     http_cmd = f"searchsploit {lowercase_title} >> {self.target}-Report/vulns/http-title.log"
                     http_cmd2 = (
@@ -75,24 +94,31 @@ class Search:
                     print(cmd_info, http_cmd2)
                     call(http_cmd, shell=True)
                     call(http_cmd2, shell=True)
-
-            else:
-                string_title = " ".join(map(str, http_title))
-                lowercase_title = str(string_title).lower()
-                first_word = lowercase_title.split(" ", 1)[0]
-                http_cmd = (
-                    f"searchsploit {lowercase_title} >> {self.target}-Report/vulns/http-title.log"
-                )
-                http_cmd2 = (
-                    f"searchsploit {first_word} >> {self.target}-Report/vulns/http-title.log"
-                )
-                print(cmd_info, http_cmd)
-                print(cmd_info, http_cmd2)
-                call(http_cmd, shell=True)
-                call(http_cmd2, shell=True)
+        if len(products) != 0:
+            for p in products:
+                lowercase_product = str(p).lower()
+                fw = lowercase_product.split(" ", 1)[0]
+                if not lowercase_product:
+                    pass
+                if not fw:
+                    pass
+                else:
+                    if lowercase_product in ignore:
+                        pass
+                    if fw in ignore:
+                        pass
+                    else:
+                        product_cmd = f"echo {cmd_info} {lowercase_product} >> {self.target}-Report/vulns/all-services.log"
+                        product_cmd2 = f"searchsploit {lowercase_product} >> {self.target}-Report/vulns/all-services.log"
+                        product_cmd3 = f"echo {cmd_info} {fw} >> {self.target}-Report/vulns/all-services.log && searchsploit {fw} >> {self.target}-Report/vulns/all-services.log"
+                        print(cmd_info, product_cmd2)
+                        call(product_cmd, shell=True)
+                        call(product_cmd2, shell=True)
+                        call(product_cmd3, shell=True)
 
     def vulnCheck(self):
         cmd_info = "[" + fg.green + "+" + fg.rs + "]"
+        manual_cmd_info = "[" + fg.li_yellow + "+" + fg.rs + "]"
         blue = fg.li_blue
         red = fg.red
         green = fg.li_green
@@ -122,7 +148,7 @@ class Search:
                     )
                     print(f"{green}Consider running:{reset}")
                     print(
-                        f"{cmd_info} python /root/Documents/PYTHONPROJECTS/scripts/ssh_user_enum.py --port 22 --userList wordlists/usernames.txt {self.target} --outputFile /root/Documents/PYTHONPROJECTS/{self.target}-Report/ssh/ssh-usernames.json --outputFormat json"
+                        f"{manual_cmd_info} python /root/Documents/PYTHONPROJECTS/scripts/ssh_user_enum.py --port 22 --userList wordlists/usernames.txt {self.target} --outputFile /root/Documents/PYTHONPROJECTS/{self.target}-Report/ssh/ssh-usernames.json --outputFormat json"
                     )
                     # sb = brute.Brute(self.target, "ssh", ssh_port)
                     # sb.SshUsersBrute()

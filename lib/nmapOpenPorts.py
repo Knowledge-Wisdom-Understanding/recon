@@ -13,27 +13,33 @@ class NmapOpenPorts:
     def Scan(self):
         cwd = os.getcwd()
         np = nmapParser.NmapParserFunk(self.target)
-        np.openPorts()
+        np.allOpenPorts()
         ftpPorts = np.ftp_ports
         smtpPorts = np.smtp_ports
         nfsPorts = np.nfs_ports
         rpcPorts = np.rpc_ports
+        telnetPorts = np.telnet_ports
+        sipPorts = np.sip_ports
+        vncPorts = np.vnc_ports
         cupsPorts = np.cups_ports
         javaRmiPorts = np.java_rmi_ports
         unp = nmapParser.NmapParserFunk(self.target)
         unp.openUdpPorts()
         snmpPorts = unp.snmp_ports
+        sipUdpPorts = unp.sip_udp_ports
         cwd = os.getcwd()
         reportDir = f"{cwd}/{self.target}-Report"
         unsorted_commands = []
         if len(snmpPorts) != 0:
-            snmp_walk_cmd = f"snmpwalk -c public -v2c {self.target} | tee {reportDir}/snmpwalk.log"
-            snmp_check_cmd = (
-                f"snmp-check -c public -v 1 -d {self.target} | tee {reportDir}/snmp-check.log"
-            )
-            onesixty_one_cmd = f"onesixtyone -c /usr/share/doc/onesixtyone/dict.txt {self.target} | tee {reportDir}/onesixtyone.log"
             if not os.path.exists(f"{reportDir}/snmp"):
                 os.makedirs(f"{reportDir}/snmp")
+            snmp_walk_cmd = (
+                f"snmpwalk -c public -v2c {self.target} | tee {reportDir}/snmp/snmpwalk.log"
+            )
+            snmp_check_cmd = (
+                f"snmp-check -c public -v 1 -d {self.target} | tee {reportDir}/snmp/snmp-check.log"
+            )
+            onesixty_one_cmd = f"onesixtyone -c /usr/share/doc/onesixtyone/dict.txt {self.target} | tee {reportDir}/snmp/onesixtyone.log"
             unsorted_commands.append(snmp_check_cmd)
             unsorted_commands.append(snmp_walk_cmd)
             unsorted_commands.append(onesixty_one_cmd)
@@ -42,8 +48,10 @@ class NmapOpenPorts:
             ftp_enum_cmd = f"nmap -vv -sV -Pn -p {string_ftp_ports} --script=ftp-anon.nse,ftp-bounce.nse,ftp-libopie.nse,ftp-proftpd-backdoor.nse,ftp-vsftpd-backdoor.nse,ftp-vuln-cve2010-4221.nse,ftp-syst.nse -v -oA {reportDir}/nmap/ftp-enum {self.target}"
             unsorted_commands.append(ftp_enum_cmd)
         if len(smtpPorts) != 0:
+            if not os.path.exists(f"{reportDir}/smtp"):
+                os.makedirs(f"{reportDir}/smtp")
             for p in smtpPorts:
-                smtp_cmd = f"smtp-user-enum -M VRFY -U /usr/share/metasploit-framework/data/wordlists/unix_users.txt -t {self.target} -p {p} 2>&1 | tee {reportDir}/smtp-user-enum-port-{p}.log"
+                smtp_cmd = f"smtp-user-enum -M VRFY -U /usr/share/metasploit-framework/data/wordlists/unix_users.txt -t {self.target} -p {p} 2>&1 | tee {reportDir}/smtp/smtp-user-enum-port-{p}.log"
                 unsorted_commands.append(smtp_cmd)
         if len(nfsPorts) != 0:
             if not os.path.exists(f"{reportDir}/nfs"):
@@ -71,6 +79,24 @@ class NmapOpenPorts:
             javaRmi_cmd2 = f"nmap -vv -sV -Pn --script=rmi-dumpregistry.nse -p {string_java_rmi_ports} -oA {reportDir}/nmap/java-rmi {self.target}"
             unsorted_commands.append(javaRmi_cmd)
             unsorted_commands.append(javaRmi_cmd2)
+        if len(sipPorts) != 0:
+            if not os.path.exists(f"{reportDir}/sip"):
+                os.makedirs(f"{reportDir}/sip")
+            string_sip_ports = ",".join(map(str, sipPorts))
+            sip_nmap_cmd = f"nmap -sV -p {string_sip_ports} --script='banner,sip-enum-users,sip-methods' -oA {reportDir}/nmap/sip {self.target}"
+            sip_svwar_cmd2 = (
+                f"svwar -D -m INVITE {self.target} 2>&1 | tee {reportDir}/sip/svwar.txt"
+            )
+            unsorted_commands.append(sip_nmap_cmd)
+            unsorted_commands.append(sip_svwar_cmd2)
+        if len(vncPorts) != 0:
+            string_vnc_ports = ",".join(map(str, vncPorts))
+            vnc_nmap_cmd = f"nmap -Pn -sV -p {string_vnc_ports} --script='banner,(vnc* or realvnc* or ssl*) and not (brute or broadcast or dos or external or fuzzer) --script-args='unsafe=1' -oA {reportDir}/nmap/vnc {self.target}"
+            unsorted_commands.append(vnc_nmap_cmd)
+        if len(telnetPorts) != 0:
+            string_telnet_ports = ",".join(map(str, telnetPorts))
+            telnet_nmap_cmd = f"nmap -Pn -sV -p {string_telnet_ports} --script='banner,telnet-encryption,telnet-ntlm-info' -oA {reportDir}/nmap/telnet {self.target}"
+            unsorted_commands.append(telnet_nmap_cmd)
 
         set_sorted_cmds = sorted(set(unsorted_commands))
         cmds_to_run = []
