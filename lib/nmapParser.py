@@ -38,6 +38,12 @@ class NmapParserFunk:
         self.sip_ports = []
         self.telnet_ports = []
         self.vnc_ports = []
+        self.cassandra_ports = []
+        self.mssql_ports = []
+        self.mysql_ports = []
+        self.mongo_ports = []
+        self.pop3_ports = []
+        self.kerberos_ports = []
         ###### UDP PORTS ############
         self.snmp_ports = []
         self.sip_udp_ports = []
@@ -182,6 +188,27 @@ class NmapParserFunk:
                 if "vnc" in service[1]:
                     if service[0] not in self.vnc_ports:
                         self.vnc_ports.append(service[0])
+                if "cassandra" in service[1]:
+                    if service[0] not in self.cassandra_ports:
+                        self.cassandra_ports.append(service[0])
+                if "ms-sql" in service[1]:
+                    if service[0] not in self.mssql_ports:
+                        self.mssql_ports.append(service[0])
+                if "mysql" in service[1]:
+                    if service[0] not in self.mysql_ports:
+                        self.mysql_ports.append(service[0])
+                if "mongod" in service[1]:
+                    if service[0] not in self.mongo_ports:
+                        self.mongo_ports.append(service[0])
+                if "pop3" in service[1]:
+                    if service[0] not in self.pop3_ports:
+                        self.pop3_ports.append(service[0])
+                if "kerberos" in service[1]:
+                    if service[0] not in self.kerberos_ports:
+                        self.kerberos_ports.append(service[0])
+                if "kpasswd" in service[1]:
+                    if service[0] not in self.kerberos_ports:
+                        self.kerberos_ports.append(service[0])
                 if service[4] not in self.banners:
                     self.banners.append(service[4])
                 if service[5] not in self.all_products:
@@ -319,6 +346,27 @@ class NmapParserFunk:
                 if "vnc" in service[1]:
                     if service[0] not in self.vnc_ports:
                         self.vnc_ports.append(service[0])
+                if "cassandra" in service[1]:
+                    if service[0] not in self.cassandra_ports:
+                        self.cassandra_ports.append(service[0])
+                if "ms-sql" in service[1]:
+                    if service[0] not in self.mssql_ports:
+                        self.mssql_ports.append(service[0])
+                if "mysql" in service[1]:
+                    if service[0] not in self.mysql_ports:
+                        self.mysql_ports.append(service[0])
+                if "mongod" in service[1]:
+                    if service[0] not in self.mongo_ports:
+                        self.mongo_ports.append(service[0])
+                if "pop3" in service[1]:
+                    if service[0] not in self.pop3_ports:
+                        self.pop3_ports.append(service[0])
+                if "kerberos" in service[1]:
+                    if service[0] not in self.kerberos_ports:
+                        self.kerberos_ports.append(service[0])
+                if "kpasswd" in service[1]:
+                    if service[0] not in self.kerberos_ports:
+                        self.kerberos_ports.append(service[0])
                 if service[4] not in self.banners:
                     self.banners.append(service[4])
                 if service[5] not in self.all_products:

@@ -23,6 +23,12 @@ class NmapOpenPorts:
         vncPorts = np.vnc_ports
         cupsPorts = np.cups_ports
         javaRmiPorts = np.java_rmi_ports
+        mssqlPorts = np.mssql_ports
+        mysqlPorts = np.mysql_ports
+        cassandraPorts = np.cassandra_ports
+        mongoPorts = np.mongo_ports
+        pop3Ports = np.pop3_ports
+        kerberosPorts = np.kerberos_ports
         unp = nmapParser.NmapParserFunk(self.target)
         unp.openUdpPorts()
         snmpPorts = unp.snmp_ports
@@ -97,6 +103,30 @@ class NmapOpenPorts:
             string_telnet_ports = ",".join(map(str, telnetPorts))
             telnet_nmap_cmd = f"nmap -Pn -sV -p {string_telnet_ports} --script='banner,telnet-encryption,telnet-ntlm-info' -oA {reportDir}/nmap/telnet {self.target}"
             unsorted_commands.append(telnet_nmap_cmd)
+        if len(cassandraPorts) != 0:
+            string_cassandra_ports = ",".join(map(str, cassandraPorts))
+            cassandra_nmap_cmd = f"""nmap -Pn -sV -p {string_cassandra_ports} --script="banner,(cassandra* or ssl*) and not (brute or broadcast or dos or external or fuzzer)" -oA {reportDir}/nmap/cassandra {self.target}"""
+            unsorted_commands.append(cassandra_nmap_cmd)
+        if len(mssqlPorts) != 0:
+            string_mssql_ports = ",".join(map(str, mssqlPorts))
+            mssql_nmap_cmd = f"""nmap -Pn -sV -p {string_mssql_ports} --script="banner,(ms-sql* or ssl*) and not (brute or broadcast or dos or external or fuzzer)" --script-args="mssql.instance-port={mssqlPorts[0]},mssql.username=sa,mssql.password=sa" -oA {reportDir}/nmap/mssql {self.target}"""
+            unsorted_commands.append(mssql_nmap_cmd)
+        if len(mysqlPorts) != 0:
+            string_mysql_ports = ",".join(map(str, mysqlPorts))
+            mysql_nmap_cmd = f"""nmap -Pn -sV -p {string_mysql_ports} --script="banner,(mysql* or ssl*) and not (brute or broadcast or dos or external or fuzzer)" -oA {reportDir}/nmap/mysql {self.target}"""
+            unsorted_commands.append(mysql_nmap_cmd)
+        if len(mongoPorts) != 0:
+            string_mongo_ports = ",".join(map(str, mongoPorts))
+            mongo_nmap_cmd = f"""nmap -Pn -sV -p {string_mongo_ports} --script="banner,(mongodb* or ssl*) and not (brute or broadcast or dos or external or fuzzer)" -oA {reportDir}/nmap/mongo {self.target}"""
+            unsorted_commands.append(mongo_nmap_cmd)
+        if len(pop3Ports) != 0:
+            string_pop3_ports = ",".join(map(str, pop3Ports))
+            pop3_nmap_cmd = f"""nmap -Pn -sV -p {string_pop3_ports} --script="banner,(pop3* or ssl*) and not (brute or broadcast or dos or external or fuzzer)" -oA {reportDir}/nmap/pop3 {self.target}"""
+            unsorted_commands.append(pop3_nmap_cmd)
+        if len(kerberosPorts) != 0:
+            string_kerberos_ports = ",".join(map(str, kerberosPorts))
+            kerberos_nmap_cmd = f"""nmap -Pn -sV -p {string_kerberos_ports} --script="banner,krb5-enum-users" -oA {reportDir}/nmap/kerberos {self.target}"""
+            unsorted_commands.append(kerberos_nmap_cmd)
 
         set_sorted_cmds = sorted(set(unsorted_commands))
         cmds_to_run = []
