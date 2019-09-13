@@ -120,9 +120,12 @@ class Search:
                     print(
                         f"{cmd_info} {blue}{ssh_product[0]} {ssh_version[0]}{reset} is {red}vulnerable to username Enumeration{reset}"
                     )
-                    print(f"{green}Running SSH User Enumeration !!!{reset}")
-                    sb = brute.Brute(self.target, "ssh", ssh_port)
-                    sb.SshUsersBrute()
+                    print(f"{green}Consider running:{reset}")
+                    print(
+                        f"{cmd_info} python /root/Documents/PYTHONPROJECTS/scripts/ssh_user_enum.py --port 22 --userList wordlists/usernames.txt {self.target} --outputFile /root/Documents/PYTHONPROJECTS/{self.target}-Report/ssh/ssh-usernames.json --outputFormat json"
+                    )
+                    # sb = brute.Brute(self.target, "ssh", ssh_port)
+                    # sb.SshUsersBrute()
                 else:
                     print(
                         f"{cmd_info} {blue}{ssh_product[0]} {ssh_version[0]}{reset} is {red}NOT{reset} vulnerable to username Enumeration"
