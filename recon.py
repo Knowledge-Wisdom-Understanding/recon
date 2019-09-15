@@ -348,7 +348,7 @@ def main():
         enumRemainingServices()
         searchSploits()
         removeColor()
-        # peace()
+        peace()
     # This is for the -f --file Option and will run all scans on all IP addresses
     # In the provided file. Should be 1 IPv4 address per line
     elif (
