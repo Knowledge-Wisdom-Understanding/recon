@@ -163,17 +163,18 @@ def main():
             sys.exit()
 
     def mpRun(commands):
-        for command in commands:
-            print(cmd_info, command)
-        with Pool(processes=2) as p:
-            max_ = len(commands)
-            with tqdm(total=max_) as pbar:
-                for i, returncode in enumerate(
-                    p.imap_unordered(partial(call, shell=True), commands)
-                ):
-                    pbar.update()
-                    if returncode != 0:
-                        print(f"{i} command failed: {returncode}")
+        if len(commands) != 0:
+            for command in commands:
+                print(cmd_info, command)
+            with Pool(processes=2) as p:
+                max_ = len(commands)
+                with tqdm(total=max_) as pbar:
+                    for i, returncode in enumerate(
+                        p.imap_unordered(partial(call, shell=True), commands)
+                    ):
+                        pbar.update()
+                        if returncode != 0:
+                            print(f"{i} command failed: {returncode}")
 
     def removeColor():
         nocolor = remove_color.Clean(args.target)

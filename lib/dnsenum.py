@@ -15,7 +15,7 @@ class DnsEnum:
         self.hostnames = []
 
     def Scan(self):
-        info = fg.cyan + "Checking Virtual Host Routing and DNS" + fg.rs
+        info = fg.cyan + "Checking For Virtual Host Routing and DNS" + fg.rs
         print(info)
         np = nmapParser.NmapParserFunk(self.target)
         np.openPorts()

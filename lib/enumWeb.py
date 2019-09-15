@@ -84,7 +84,7 @@ class EnumWeb:
         if len(http_ports) == 0:
             pass
         else:
-            a = f"{fg.li_cyan} Enumerating HTTP Ports, Running the following commands: {fg.rs}"
+            a = f"{fg.li_cyan}Enumerating HTTP Ports, Running the following commands: {fg.rs}"
             print(a)
             if not os.path.exists(f"{self.target}-Report/web"):
                 os.makedirs(f"{self.target}-Report/web")
