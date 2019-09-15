@@ -47,6 +47,9 @@ apt install odat -y
 cd /opt
 git clone https://github.com/quentinhardy/odat.git
 
+echo -e "${DOPE} Installing Seclists"
+apt install seclists -y
+
 echo -e "${DOPE} Installing Nmap Vulners & Vulscan scripts"
 cd /usr/share/nmap/scripts/
 git clone https://github.com/vulnersCom/nmap-vulners.git
