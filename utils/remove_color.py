@@ -65,13 +65,6 @@ class Clean:
                                     rf,
                                     f"{os.getcwd()}/{self.target}-Report/web/wpscanblah.log",
                                 )
-                            if "nikto" in rf:
-                                check_nikto_lines = f"""wc -l {rf} | cut -d ' ' -f 1"""
-                                num_lines_nikto = check_output(
-                                    check_nikto_lines, stderr=STDOUT, shell=True
-                                ).rstrip()
-                                if int(num_lines_nikto) < 50:
-                                    call(f"cat {rf}", shell=True)
                             if "vulns" in rf:
                                 if "ftp" in rf:
                                     removeColor(

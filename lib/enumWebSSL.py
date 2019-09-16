@@ -38,8 +38,8 @@ class EnumWebSSL:
                         f"whatweb -v -a 3 https://{self.target}:{sslport} | tee {self.target}-Report/webSSL/whatweb-{self.target}-{sslport}.txt",
                         f"wafw00f https://{self.target}:{sslport} >{self.target}-Report/webSSL/wafw00f-{self.target}-{sslport}.txt",
                         f"curl -sSik https://{self.target}:{sslport}/robots.txt -m 10 -o {self.target}-Report/webSSL/robots-{self.target}-{sslport}.txt &>/dev/null",
-                        f"python3 /opt/dirsearch/dirsearch.py -u https://{self.target}:{sslport}/ -t 30 -e php,asp,aspx,html,txt -x 403,500 -w wordlists/dicc.txt --plain-text-report {self.target}-Report/webSSL/dirsearch-{self.target}-{sslport}.log",
-                        f"python3 /opt/dirsearch/dirsearch.py -u https://{self.target}:{sslport}/ -t 80 -e php,asp,aspx,html,txt -w /usr/share/wordlists/dirb/big.txt -x 403,500 --plain-text-report {self.target}-Report/webSSL/dirsearch-big-{self.target}-{sslport}.log",
+                        f"python3 /opt/dirsearch/dirsearch.py -u https://{self.target}:{sslport}/ -t 30 -e php,asp,aspx,html,txt -x 400,403,405,500,502 -w wordlists/dicc.txt --plain-text-report {self.target}-Report/webSSL/dirsearch-{self.target}-{sslport}.log",
+                        f"python3 /opt/dirsearch/dirsearch.py -u https://{self.target}:{sslport}/ -t 80 -e php,asp,aspx,html,txt -w /usr/share/wordlists/dirb/big.txt -x 400,403,405,500,502 --plain-text-report {self.target}-Report/webSSL/dirsearch-big-{self.target}-{sslport}.log",
                         f"nikto -ask=no -host https://{self.target}:{sslport} -ssl  >{self.target}-Report/webSSL/niktoscan-{self.target}-{sslport}.txt 2>&1 &",
                     )
             else:
@@ -49,8 +49,8 @@ class EnumWebSSL:
                             f"whatweb -v -a 3 https://{i}:{ssl_port2} >{self.target}-Report/webSSL/whatweb-{i}-{ssl_port2}.txt",
                             f"wafw00f https://{i}:{ssl_port2} >{self.target}-Report/webSSL/wafw00f-{i}-{ssl_port2}.txt",
                             f"curl -sSik https://{i}:{ssl_port2}/robots.txt -m 10 -o {self.target}-Report/webSSL/robots-{i}-{ssl_port2}.txt &>/dev/null",
-                            f"python3 /opt/dirsearch/dirsearch.py -u https://{i}:{ssl_port2}/ -t 50 -e php,asp,aspx,txt,html -x 403,500 --plain-text-report {self.target}-Report/webSSL/dirsearch-{i}-{ssl_port2}.log",
-                            f"python3 /opt/dirsearch/dirsearch.py -u https://{i}:{ssl_port2}/ -t 50 -e php,asp,aspx,txt,html -w /usr/share/wordlists/dirb/big.txt -x 403,500 --plain-text-report {self.target}-Report/webSSL/dirsearch-big-{i}-{ssl_port2}.log",
+                            f"python3 /opt/dirsearch/dirsearch.py -u https://{i}:{ssl_port2}/ -t 50 -e php,asp,aspx,txt,html -x 400,403,405,500,502 --plain-text-report {self.target}-Report/webSSL/dirsearch-{i}-{ssl_port2}.log",
+                            f"python3 /opt/dirsearch/dirsearch.py -u https://{i}:{ssl_port2}/ -t 50 -e php,asp,aspx,txt,html -w /usr/share/wordlists/dirb/big.txt -x 400,403,405,500,502 --plain-text-report {self.target}-Report/webSSL/dirsearch-big-{i}-{ssl_port2}.log",
                             f"nikto -ask=no -host https://{i}:{ssl_port2} -ssl  >{self.target}-Report/webSSL/niktoscan-{i}-{ssl_port2}.txt 2>&1 &",
                         )
 
@@ -79,10 +79,10 @@ class EnumWebSSL:
                         f"whatweb -v -a 3 https://{self.target}:{sslport} | tee {self.target}-Report/webSSL/whatweb-{self.target}-{sslport}.txt",
                         f"wafw00f https://{self.target}:{sslport} >{self.target}-Report/webSSL/wafw00f-{self.target}-{sslport}.txt",
                         f"curl -sSik https://{self.target}:{sslport}/robots.txt -m 10 -o {self.target}-Report/webSSL/robots-{self.target}-{sslport}.txt &>/dev/null",
-                        f"python3 /opt/dirsearch/dirsearch.py -u https://{self.target}:{sslport} -t 80 -e php,asp,aspx,html -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -x 403,500 --plain-text-report {self.target}-Report/webSSL/dirsearch-dlistmedium-{self.target}-{sslport}.log",
-                        f"python3 /opt/dirsearch/dirsearch.py -u https://{self.target}:{sslport} -t 50 -e php,asp,aspx,html,txt,git,bak,tar,gz,7z,json,zip,rar,bz2,pdf,md,pl,cgi -x 403,500 -w /usr/share/seclists/Discovery/Web-Content/raft-large-files-lowercase.txt --plain-text-report {self.target}-Report/webSSL/dirsearch-raftfiles-{self.target}-{sslport}.log",
-                        f"python3 /opt/dirsearch/dirsearch.py -u https://{self.target}:{sslport} -t 50 -e php,asp,aspx,html,txt -x 403,500 -w /usr/share/seclists/Discovery/Web-Content/raft-large-directories.txt --plain-text-report {self.target}-Report/webSSL/dirsearch-raftdirs-{self.target}-{sslport}.log",
-                        f"python3 /opt/dirsearch/dirsearch.py -u https://{self.target}:{sslport} -t 50 -e php,asp,aspx,txt,html -w wordlists/foreign.txt -x 403,500 --plain-text-report {self.target}-Report/webSSL/dirsearch-foreign-{self.target}-{sslport}.log",
+                        f"python3 /opt/dirsearch/dirsearch.py -u https://{self.target}:{sslport} -t 80 -e php,asp,aspx,html -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -x 400,403,405,500,502 --plain-text-report {self.target}-Report/webSSL/dirsearch-dlistmedium-{self.target}-{sslport}.log",
+                        f"python3 /opt/dirsearch/dirsearch.py -u https://{self.target}:{sslport} -t 50 -e php,asp,aspx,html,txt,git,bak,tar,gz,7z,json,zip,rar,bz2,pdf,md,pl,cgi -x 400,403,405,500,502 -w /usr/share/seclists/Discovery/Web-Content/raft-large-files-lowercase.txt --plain-text-report {self.target}-Report/webSSL/dirsearch-raftfiles-{self.target}-{sslport}.log",
+                        f"python3 /opt/dirsearch/dirsearch.py -u https://{self.target}:{sslport} -t 50 -e php,asp,aspx,html,txt -x 400,403,405,500,502 -w /usr/share/seclists/Discovery/Web-Content/raft-large-directories.txt --plain-text-report {self.target}-Report/webSSL/dirsearch-raftdirs-{self.target}-{sslport}.log",
+                        f"python3 /opt/dirsearch/dirsearch.py -u https://{self.target}:{sslport} -t 50 -e php,asp,aspx,txt,html -w wordlists/foreign.txt -x 400,403,405,500,502 --plain-text-report {self.target}-Report/webSSL/dirsearch-foreign-{self.target}-{sslport}.log",
                         f"nikto -ask=no -host https://{self.target}:{sslport} -ssl  >{self.target}-Report/webSSL/niktoscan-{self.target}-{sslport}.txt 2>&1 &",
                     )
             else:
@@ -93,10 +93,10 @@ class EnumWebSSL:
                             f"whatweb -v -a 3 https://{i}:{ssl_port2} >{self.target}-Report/webSSL/whatweb-{i}-{ssl_port2}.txt",
                             f"wafw00f https://{i}:{ssl_port2} >{self.target}-Report/webSSL/wafw00f-{i}-{ssl_port2}.txt",
                             f"curl -sSik https://{i}:{ssl_port2}/robots.txt -m 10 -o {self.target}-Report/webSSL/robots-{i}-{ssl_port2}.txt &>/dev/null",
-                            f"python3 /opt/dirsearch/dirsearch.py -u https://{i}:{ssl_port2} -t 50 -e php,asp,aspx,html,txt,git,bak,tar,gz,7z,json,zip,rar,bz2,pdf,md,pl,cgi -x 403,500 -w /usr/share/seclists/Discovery/Web-Content/raft-large-files-lowercase.txt --plain-text-report {self.target}-Report/webSSL/dirsearch-raftfiles-{i}-{ssl_port2}.log",
-                            f"python3 /opt/dirsearch/dirsearch.py -u https://{i}:{ssl_port2} -t 50 -e php,asp,aspx,html,txt -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -x 403,500 --plain-text-report {self.target}-Report/webSSL/dirsearch-dlistmedium-{i}-{ssl_port2}.log",
-                            f"python3 /opt/dirsearch/dirsearch.py -u https://{i}:{ssl_port2} -t 50 -e php,asp,aspx,txt,html -w wordlists/foreign.txt -x 403,500 --plain-text-report {self.target}-Report/webSSL/dirsearch-foreign-{i}-{ssl_port2}.log",
-                            f"python3 /opt/dirsearch/dirsearch.py -u https://{i}:{ssl_port2} -t 50 -e php,asp,aspx,html,txt -x 403,500 -w /usr/share/seclists/Discovery/Web-Content/raft-large-directories.txt --plain-text-report {self.target}-Report/webSSL/dirsearch-raftlargedirs-{i}-{ssl_port2}.log",
+                            f"python3 /opt/dirsearch/dirsearch.py -u https://{i}:{ssl_port2} -t 50 -e php,asp,aspx,html,txt,git,bak,tar,gz,7z,json,zip,rar,bz2,pdf,md,pl,cgi -x 400,403,405,500,502 -w /usr/share/seclists/Discovery/Web-Content/raft-large-files-lowercase.txt --plain-text-report {self.target}-Report/webSSL/dirsearch-raftfiles-{i}-{ssl_port2}.log",
+                            f"python3 /opt/dirsearch/dirsearch.py -u https://{i}:{ssl_port2} -t 50 -e php,asp,aspx,html,txt -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -x 400,403,405,500,502 --plain-text-report {self.target}-Report/webSSL/dirsearch-dlistmedium-{i}-{ssl_port2}.log",
+                            f"python3 /opt/dirsearch/dirsearch.py -u https://{i}:{ssl_port2} -t 50 -e php,asp,aspx,txt,html -w wordlists/foreign.txt -x 400,403,405,500,502 --plain-text-report {self.target}-Report/webSSL/dirsearch-foreign-{i}-{ssl_port2}.log",
+                            f"python3 /opt/dirsearch/dirsearch.py -u https://{i}:{ssl_port2} -t 50 -e php,asp,aspx,html,txt -x 400,403,405,500,502 -w /usr/share/seclists/Discovery/Web-Content/raft-large-directories.txt --plain-text-report {self.target}-Report/webSSL/dirsearch-raftlargedirs-{i}-{ssl_port2}.log",
                             f"nikto -ask=no -host https://{i}:{ssl_port2} -ssl  >{self.target}-Report/webSSL/niktoscan-{i}-{ssl_port2}.txt 2>&1 &",
                         )
 
@@ -125,8 +125,8 @@ class EnumWebSSL:
                 for proxy_ssl_port in proxy_ssl_ports:
                     proxy_commands = proxy_commands + (
                         f"whatweb -v -a 3 --proxy {self.target}:{proxy} https://127.0.0.1:{proxy_ssl_port} | tee {self.target}-Report/proxy/webSSL/whatweb-proxy-{self.target}-{proxy_ssl_port}.txt",
-                        f"python3 /opt/dirsearch/dirsearch.py -e php,asp,aspx,txt,html -x 403,500 -t 50 -w wordlists/dicc.txt --proxy {self.target}:{proxy} -u https://127.0.0.1:{proxy_http_port} --plain-text-report {self.target}-Report/proxy/webSSL/dirsearch-127.0.0.1-{proxy}-{proxy_http_port}.log",
-                        f"python3 /opt/dirsearch/dirsearch.py -e php,asp,aspx,txt,html -x 403,500 -t 50 -w /usr/share/wordlists/dirb/big.txt --proxy {self.target}:{proxy} -u https://127.0.0.1:{proxy_http_port} --plain-text-report {self.target}-Report/proxy/webSSL/dirsearch-127.0.0.1-big-{proxy}-{proxy_http_port}.log",
+                        f"python3 /opt/dirsearch/dirsearch.py -e php,asp,aspx,txt,html -x 400,403,405,500,502 -t 50 -w wordlists/dicc.txt --proxy {self.target}:{proxy} -u https://127.0.0.1:{proxy_http_port} --plain-text-report {self.target}-Report/proxy/webSSL/dirsearch-127.0.0.1-{proxy}-{proxy_http_port}.log",
+                        f"python3 /opt/dirsearch/dirsearch.py -e php,asp,aspx,txt,html -x 400,403,405,500,502 -t 50 -w /usr/share/wordlists/dirb/big.txt --proxy {self.target}:{proxy} -u https://127.0.0.1:{proxy_http_port} --plain-text-report {self.target}-Report/proxy/webSSL/dirsearch-127.0.0.1-big-{proxy}-{proxy_http_port}.log",
                         f"nikto -ask=no -host https://127.0.0.1:{proxy_ssl_port}/ -ssl -useproxy https://{self.target}:{proxy}/ > {self.target}-Report/proxy/webSSL/nikto-{self.target}-{proxy_ssl_port}-proxy-scan.txt 2>&1 &",
                     )
 

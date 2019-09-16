@@ -105,7 +105,7 @@ def signal_handler(sig, frame):
     sys.exit(0)
 
 
-VERSION = 2.0
+VERSION = 2.1
 
 
 def main():
@@ -152,6 +152,18 @@ def main():
     parser.add_argument("-P", "--PASSWORDS", help="List of passwords to try. Not required for SSH")
 
     args = parser.parse_args()
+
+    target_time = []
+    def reset_timer():
+        resetTimer = time.time()
+        target_time.clear()
+        target_time.append(resetTimer)
+
+    def check_timer():
+        end = time.time()
+        time_elapsed = end - target_time[0]
+        durationMSG = fg.cyan + f"Scans Completed for {args.target} in: " + fg.rs
+        print(durationMSG, display_time(time_elapsed))
 
     def validateIP():
         try:
@@ -366,6 +378,7 @@ def main():
                 for ip in ips:
                     args.target = ip.rstrip()
                     validateIP()
+                    reset_timer()
                     scanTop10000Ports()
                     getOpenPorts()  # Must Always be ON
                     enumDNS()
@@ -373,8 +386,11 @@ def main():
                     cmsEnum()
                     enumHTTPS()
                     cmsEnumSSL()
-                    getProxyPorts()
+                    sortFoundUrls()
                     proxyEnum()
+                    sortFoundProxyUrls()
+                    proxyEnumCMS()
+                    aquatone()
                     enumSMB()
                     enumLdap()
                     enumOracle()
@@ -383,8 +399,8 @@ def main():
                     enumRemainingServices()
                     searchSploits()
                     removeColor()
-                    aquatone()
                     peace()
+                    check_timer()
         except FileNotFoundError as fnf_error:
             print(fnf_error)
             exit()
@@ -518,7 +534,7 @@ def main():
 
     end = time.time()
     time_elapsed = end - startTimer
-    durationMSG = fg.cyan + f"All Scans Completed for {args.target} in: " + fg.rs
+    durationMSG = fg.cyan + f"All Scans Completed in: " + fg.rs
     print(durationMSG, display_time(time_elapsed))
 
 

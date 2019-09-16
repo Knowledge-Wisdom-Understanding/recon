@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import os
-from subprocess import call
+from subprocess import call, check_output, STDOUT
 from sty import fg, bg, ef, rs
 from lib import nmapParser
 import glob
@@ -212,6 +212,13 @@ class DirsearchURLS:
                         if not os.path.exists(f"{self.target}-Report/aquatone"):
                             os.makedirs(f"{self.target}-Report/aquatone")
                         dirsearch_files.append(rf)
+                    if "nikto" in rf:
+                        check_nikto_lines = f"""wc -l {rf} | cut -d ' ' -f 1"""
+                        num_lines_nikto = check_output(
+                            check_nikto_lines, stderr=STDOUT, shell=True
+                        ).rstrip()
+                        if int(num_lines_nikto) < 50:
+                            call(f"cat {rf}", shell=True)
 
         if len(dirsearch_files) != 0:
             all_dirsearch_files_on_one_line = " ".join(map(str, dirsearch_files))

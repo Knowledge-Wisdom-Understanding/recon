@@ -84,6 +84,12 @@ class Search:
                 lowercase_title = str(string_title).lower()
                 if lowercase_title.find("redirect") != -1:
                     pass
+                elif lowercase_title.find("site doesn't have a title") != -1:
+                    pass
+                elif lowercase_title.find("apache2") != -1:
+                    pass
+                elif lowercase_title.find("nginx") != -1:
+                    pass
                 else:
                     first_word = lowercase_title.split(" ", 1)[0]
                     http_cmd = f"searchsploit {lowercase_title} >> {self.target}-Report/vulns/http-title.log"
