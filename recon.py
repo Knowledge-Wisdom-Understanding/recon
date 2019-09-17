@@ -147,13 +147,18 @@ def main():
         help="Single user name for brute forcing, for SSH, if no user specified, will default to wordlists/usernames.txt and bruteforce usernames",
     )
     parser.add_argument(
-        "-U", "--USERS", help="List of usernames to try for brute forcing. Not yet implimented"
+        "-U",
+        "--USERS",
+        help="List of usernames to try for brute forcing. Not yet implimented",
     )
-    parser.add_argument("-P", "--PASSWORDS", help="List of passwords to try. Not required for SSH")
+    parser.add_argument(
+        "-P", "--PASSWORDS", help="List of passwords to try. Not required for SSH"
+    )
 
     args = parser.parse_args()
 
     target_time = []
+
     def reset_timer():
         resetTimer = time.time()
         target_time.clear()
@@ -240,7 +245,7 @@ def main():
         np = nmapParser.NmapParserFunk(args.target)
         np.openPorts()
 
-    def scanTop10000Ports():
+    def scanTopTcpPorts():
         ntp = topOpenPorts.TopOpenPorts(args.target)
         ntp.Scan()
 
@@ -341,7 +346,7 @@ def main():
         and (args.PASSWORDS is None)
     ):
         validateIP()
-        scanTop10000Ports()
+        scanTopTcpPorts()
         getOpenPorts()  # Must Always be ON
         enumDNS()
         enumHTTP()
@@ -379,7 +384,7 @@ def main():
                     args.target = ip.rstrip()
                     validateIP()
                     reset_timer()
-                    scanTop10000Ports()
+                    scanTopTcpPorts()
                     getOpenPorts()  # Must Always be ON
                     enumDNS()
                     enumHTTP()
@@ -428,7 +433,7 @@ def main():
             aquatone()
             peace()
         else:
-            scanTop10000Ports()
+            scanTopTcpPorts()
             getOpenPorts()
             enumDNS()
             enumHTTP2()
@@ -444,14 +449,20 @@ def main():
         if "ssh" in args.brute:
             if args.port is None:
                 args.port = "22"
-                if args.user is None and (args.PASSWORDS is None) and (args.USERS is None):
+                if (
+                    args.user is None
+                    and (args.PASSWORDS is None)
+                    and (args.USERS is None)
+                ):
                     print(
                         f"{teal}Brute Forcing SSH usernames with wordlist: {cwd}/wordlists/usernames.txt on default SSH port,{reset} {args.port}"
                     )
-                    if os.path.exists(f"{args.target}-Report/nmap/top-ports-{args.target}.nmap"):
+                    if os.path.exists(
+                        f"{args.target}-Report/nmap/top-ports-{args.target}.nmap"
+                    ):
                         sshUserBrute()
                     else:
-                        scanTop10000Ports()
+                        scanTopTcpPorts()
                         sshUserBrute()
                 elif args.user is None and args.USERS:
                     print(f"Brute Forcing Usernames with userlist {args.USERS}")
@@ -474,12 +485,20 @@ def main():
                 else:
                     print(EXAMPLES)
             else:
-                if args.user is None and (args.PASSWORDS is None) and (args.USERS is None):
-                    print(f"{teal}Brute Forcing SSH usernames on port,{reset} {args.port}")
-                    if os.path.exists(f"{args.target}-Report/nmap/top-ports-{args.target}.nmap"):
+                if (
+                    args.user is None
+                    and (args.PASSWORDS is None)
+                    and (args.USERS is None)
+                ):
+                    print(
+                        f"{teal}Brute Forcing SSH usernames on port,{reset} {args.port}"
+                    )
+                    if os.path.exists(
+                        f"{args.target}-Report/nmap/top-ports-{args.target}.nmap"
+                    ):
                         sshUserBrute()
                     else:
-                        scanTop10000Ports()
+                        scanTopTcpPorts()
                         sshUserBrute()
                 elif args.user and (args.PASSWORDS is None):
                     print(
