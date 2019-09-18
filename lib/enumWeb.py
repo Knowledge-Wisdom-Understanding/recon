@@ -8,6 +8,7 @@ from subprocess import call
 import glob
 from bs4 import BeautifulSoup  # SoupStrainer
 import requests
+from lib import dnsCrawl
 
 
 class EnumWeb:
@@ -24,6 +25,9 @@ class EnumWeb:
         dn = domainFinder.DomainFinder(self.target)
         dn.getRedirect()
         hostnames = dn.redirect_hostname
+        dc = dnsCrawl.checkSource(self.target)
+        dc.getLinks()
+        htb_source_domains = dc.htb_source_domains
         cwd = os.getcwd()
         reportDir = f"{cwd}/{self.target}-Report"
         if len(http_ports) == 0:
@@ -36,14 +40,23 @@ class EnumWeb:
             if not os.path.exists(f"{self.target}-Report/aquatone"):
                 os.makedirs(f"{self.target}-Report/aquatone")
             commands = ()
+            another_array_of_hostnames = []
+            if len(htb_source_domains) != 0:
+                for d in htb_source_domains:
+                    another_array_of_hostnames.append(d)
             if len(hostnames) != 0:
-                sorted_hostnames = sorted(set(hostnames))
+                for d in hostnames:
+                    another_array_of_hostnames.append(d)
+            if len(another_array_of_hostnames) != 0:
+                sorted_hostnames = sorted(set(another_array_of_hostnames))
                 for hostname in sorted_hostnames:
                     for port in http_ports:
                         if not os.path.exists(
                             f"{self.target}-Report/web/eyewitness-{hostname}-{port}"
                         ):
-                            os.makedirs(f"{self.target}-Report/web/eyewitness-{hostname}-{port}")
+                            os.makedirs(
+                                f"{self.target}-Report/web/eyewitness-{hostname}-{port}"
+                            )
                         commands = commands + (
                             f"whatweb -v -a 3 http://{hostname}:{port} | tee {reportDir}/web/whatweb-{hostname}-{port}.txt",
                             f"cd /opt/EyeWitness && echo 'http://{hostname}:{port}' > eyefile.txt && ./EyeWitness.py --threads 5 --ocr --no-prompt --active-scan --all-protocols --web -f eyefile.txt -d {reportDir}/web/eyewitness-{hostname}-{port} && cd - &>/dev/null",
@@ -58,7 +71,9 @@ class EnumWeb:
                     if not os.path.exists(
                         f"{self.target}-Report/web/eyewitness-{self.target}-{port}"
                     ):
-                        os.makedirs(f"{self.target}-Report/web/eyewitness-{self.target}-{port}")
+                        os.makedirs(
+                            f"{self.target}-Report/web/eyewitness-{self.target}-{port}"
+                        )
                     commands = commands + (
                         f"whatweb -v -a 3 http://{self.target}:{port} | tee {reportDir}/web/whatweb-{port}.txt",
                         f"cd /opt/EyeWitness && echo 'http://{self.target}:{port}' >eyefile.txt && ./EyeWitness.py --threads 5 --ocr --no-prompt --active-scan --all-protocols --web -f eyefile.txt -d {reportDir}/web/eyewitness-{self.target}-{port} && cd - &>/dev/null",
@@ -98,7 +113,9 @@ class EnumWeb:
                         if not os.path.exists(
                             f"{self.target}-Report/web/eyewitness-{hostname}-{port}"
                         ):
-                            os.makedirs(f"{self.target}-Report/web/eyewitness-{hostname}-{port}")
+                            os.makedirs(
+                                f"{self.target}-Report/web/eyewitness-{hostname}-{port}"
+                            )
                         commands = commands + (
                             f"whatweb -v -a 3 http://{hostname}:{port} | tee {reportDir}/web/whatweb-{hostname}-{port}.txt",
                             f"cd /opt/EyeWitness && echo 'http://{hostname}:{port}' > eyefile.txt && ./EyeWitness.py --threads 5 --ocr --no-prompt --active-scan --all-protocols --web -f eyefile.txt -d {reportDir}/web/eyewitness-{hostname}-{port} && cd - &>/dev/null",
@@ -116,7 +133,9 @@ class EnumWeb:
                     if not os.path.exists(
                         f"{self.target}-Report/web/eyewitness-{self.target}-{port}"
                     ):
-                        os.makedirs(f"{self.target}-Report/web/eyewitness-{self.target}-{port}")
+                        os.makedirs(
+                            f"{self.target}-Report/web/eyewitness-{self.target}-{port}"
+                        )
                     commands = commands + (
                         f"whatweb -v -a 3 http://{self.target}:{port} | tee {reportDir}/web/whatweb-{port}.txt",
                         f"cd /opt/EyeWitness && echo 'http://{self.target}:{port}' >eyefile.txt && ./EyeWitness.py --threads 5 --ocr --no-prompt --active-scan --all-protocols --web -f eyefile.txt -d {reportDir}/web/eyewitness-{self.target}-{port} && cd - &>/dev/null",
@@ -145,7 +164,9 @@ class EnumWeb:
                 reportDir = f"{cwd}/{self.target}-Report"
                 whatweb_files = []
                 dir_list = [
-                    d for d in glob.iglob(f"{reportPath}", recursive=True) if os.path.isdir(d)
+                    d
+                    for d in glob.iglob(f"{reportPath}", recursive=True)
+                    if os.path.isdir(d)
                 ]
                 for d in dir_list:
                     reportFile_list = [
@@ -170,7 +191,11 @@ class EnumWeb:
                         ]
                         with open(i, "r") as wwf:
                             for word in wwf:
-                                fword = word.replace("[", " ").replace("]", " ").replace(",", " ")
+                                fword = (
+                                    word.replace("[", " ")
+                                    .replace("]", " ")
+                                    .replace(",", " ")
+                                )
                                 for cms in cms_strings:
                                     if cms in fword:
                                         if "WordPress" in cms:
@@ -204,7 +229,8 @@ fi
                                             """.rstrip()
                                             try:
                                                 with open(
-                                                    f"{reportDir}/web/wordpressBrute.sh", "w"
+                                                    f"{reportDir}/web/wordpressBrute.sh",
+                                                    "w",
                                                 ) as wpb:
                                                     print(
                                                         "Creating wordpress Brute Force Script..."
@@ -268,7 +294,9 @@ fi
                 if not os.path.exists(
                     f"{self.target}-Report/proxy/web/eyewitness-{self.target}-{proxy}"
                 ):
-                    os.makedirs(f"{self.target}-Report/proxy/web/eyewitness-{self.target}-{proxy}")
+                    os.makedirs(
+                        f"{self.target}-Report/proxy/web/eyewitness-{self.target}-{proxy}"
+                    )
                 proxy_commands = proxy_commands + (
                     f"cd /opt/EyeWitness && echo 'http://{self.target}:{proxy}' > eyefile.txt && ./EyeWitness.py --threads 5 --ocr --no-prompt --active-scan --all-protocols --web -f eyefile.txt -d {reportDir}/proxy/web/eyewitness-{self.target}-{proxy} && cd - &>/dev/null",
                     f"whatweb -v -a 3 http://{self.target}:{proxy} | tee {reportDir}/proxy/web/whatweb-{self.target}-{proxy}.txt",
