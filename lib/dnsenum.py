@@ -76,7 +76,8 @@ class DnsEnum:
             ".txt",
             ".bak",
             ".note",
-            ".secret" ".backup",
+            ".secret",
+            ".backup",
             ".cgi",
             ".pl",
             ".git",
@@ -88,10 +89,49 @@ class DnsEnum:
             "localhost.localdomain",
             ".localhost",
             ".local",
+            ".acme",
+            ".css",
+            ".name",
+            ".tar",
+            ".gz",
+            ".bz2",
+            ".tar.gz",
+            ".zip",
+            ".web",
+            ".user",
+            ".pass",
+            ".bashrc",
+            ".bash",
+            ".script",
+            ".doc",
+            ".docx",
+            ".tex",
+            ".wks",
+            ".wpd",
+            ".pdf",
+            ".xml",
+            ".xls",
+            ".xlsx",
+            ".main",
+            ".go",
+            ".htm",
+            ".ppt",
+            ".pptx",
+            ".ods",
+            ".sql",
+            ".dba",
+            ".conf",
+            ".test",
+            ".file",
+            ".login",
+            ".hta",
+            ".robots",
         ]
         dns = []
         try:
-            with open(f"{self.target}-Report/nmap/top-ports-{self.target}.nmap", "r") as nm:
+            with open(
+                f"{self.target}-Report/nmap/top-ports-{self.target}.nmap", "r"
+            ) as nm:
                 for line in nm:
                     new = (
                         line.replace("=", " ")
@@ -102,7 +142,8 @@ class DnsEnum:
                         .replace("_", " ")
                     )
                     matches = re.findall(
-                        r"(?:[a-zA-Z0-9](?:[a-zA-Z0-9\-]{,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{3,6}", new
+                        r"(?:[a-zA-Z0-9](?:[a-zA-Z0-9\-]{,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{3,6}",
+                        new,
                     )
                     for x in matches:
                         if not any(s in x for s in ignore):
@@ -150,7 +191,9 @@ class DnsEnum:
                                 alnam = line.lstrip("Altnames:").rstrip("\n")
                                 alname = alnam.lstrip()
                                 alname1 = alname.lstrip("DNS:")
-                                alname2 = alname1.replace("DNS:", "").replace(",", "").split()
+                                alname2 = (
+                                    alname1.replace("DNS:", "").replace(",", "").split()
+                                )
                                 for x in alname2:
                                     if x not in ignore:
                                         altDomainNames.append(x)
