@@ -7,6 +7,7 @@ from sty import fg, bg, ef, rs
 from lib import nmapParser
 from lib import enumWeb
 from lib import enumWebSSL
+from utils import helper_lists
 
 
 class CheckProxy:
@@ -18,15 +19,18 @@ class CheckProxy:
         np = nmapParser.NmapParserFunk(self.target)
         np.openPorts()
         proxyPorts = np.proxy_ports
+        hpl = helper_lists.topPortsToScan()
+        topTCP = hpl.topTCP
+        stringerT = ",".join(map(str, topTCP))
         cmd_info = "[" + fg.li_green + "+" + fg.rs + "]"
         if len(proxyPorts) == 0:
             pass
         else:
             duplicate_cmds = []
-            add_line_cmd = (
-                f"""sed -e "\$ahttp {self.target} {proxyPorts[0]}" -i /etc/proxychains.conf"""
+            add_line_cmd = f"""sed -e "\$ahttp {self.target} {proxyPorts[0]}" -i /etc/proxychains.conf"""
+            comment_out_line_cmd = (
+                f"""sed -e '/socks5/ s/^#*/#/' -i  /etc/proxychains.conf"""
             )
-            comment_out_line_cmd = f"""sed -e '/socks5/ s/^#*/#/' -i  /etc/proxychains.conf"""
             proxy_config_file = "/etc/proxychains.conf"
             try:
                 pcCF = open(proxy_config_file, "r")
@@ -54,7 +58,7 @@ class CheckProxy:
             if not os.path.exists(f"{self.target}-Report/proxy"):
                 os.makedirs(f"{self.target}-Report/proxy")
 
-            proxychains_nmap_top_ports_cmd = f"proxychains nmap -vv -sT -Pn -sV -T3 --max-retries 1 --max-scan-delay 20 --top-ports 10000 -oA {self.target}-Report/nmap/proxychain-top-ports 127.0.0.1"
+            proxychains_nmap_top_ports_cmd = f"proxychains nmap -vv -sT -Pn -sV -p {stringerT} -oA {self.target}-Report/nmap/proxychain-top-ports 127.0.0.1"
             print(cmd_info, proxychains_nmap_top_ports_cmd)
             call(proxychains_nmap_top_ports_cmd, shell=True)
 
