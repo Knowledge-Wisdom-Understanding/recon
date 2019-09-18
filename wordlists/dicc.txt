@@ -188,6 +188,8 @@ abajo
 ab/docs/
 abierto
 about
+about.html
+about.php
 about.%EXT%
 about_us
 aboutus
@@ -5663,6 +5665,7 @@ server.xml
 service
 service.asmx
 services
+services.html
 services/config/databases.yml
 servicio
 servicios

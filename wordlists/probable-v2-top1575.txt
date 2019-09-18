@@ -2,6 +2,7 @@
 password
 spongebob
 snowflake
+f16tomcat!
 5AYRft73VtFpc84k
 123456789
 12345678
@@ -597,6 +598,7 @@ zachary
 westside
 tamara
 password123
+Password123!
 pass
 maryjane
 lincoln
