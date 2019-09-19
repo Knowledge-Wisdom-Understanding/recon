@@ -226,15 +226,15 @@ class NmapParserFunk:
                         self.http_script_title.append(result[1])
 
         ### Print Statements for Debugging Purposes..
-        print("HTTP PORTS:", self.http_ports)
+        # print("HTTP PORTS:", self.http_ports)
         # if len(self.http_script_results) != 0:
         #     print("HTTP-Script-Results:", self.http_script_results[0])
         # print("ORACLE PORTS:", self.oracle_tns_ports)
-        print("OPEN TCP PORTS:", self.tcp_ports)
-        print("SSL:", self.ssl_ports)
+        # print("OPEN TCP PORTS:", self.tcp_ports)
+        # print("SSL:", self.ssl_ports)
         # print("SMB:", self.smb_ports)
         # print("DNS:", self.dns_ports)
-        print("Services:", self.services)
+        # print("Services:", self.services)
         # print("SSH:", self.ssh_ports)
         # print("SSH VERSION:", self.ssh_version)
         # print("FTP VERSION:", self.ftp_version)
