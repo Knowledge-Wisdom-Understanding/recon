@@ -83,7 +83,9 @@ class NmapParserFunk:
         self.proxy_ssh_version = []
 
     def openPorts(self):
-        report = NmapParser.parse_fromfile(f"{self.target}-Report/nmap/top-ports-{self.target}.xml")
+        report = NmapParser.parse_fromfile(
+            f"{self.target}-Report/nmap/top-ports-{self.target}.xml"
+        )
         self.nmap_services += report.hosts[0].services
         self.nmap_services = sorted(self.nmap_services, key=lambda s: s.port)
         # print(self.nmap_services)
@@ -118,13 +120,15 @@ class NmapParserFunk:
                                 if service[8] not in self.ssl_script_results:
                                     self.ssl_script_results.append(service[8])
                 if "http" in service[1]:
-                    if "ssl" not in service[2]:
-                        if "http-proxy" not in service[1]:
-                            if service[0] not in ignored_windows_http_ports:
-                                if service[0] not in self.http_ports:
-                                    self.http_ports.append(service[0])
-                                if service[8] not in self.http_script_results:
-                                    self.http_script_results.append(service[8])
+                    if "ssl" in service[2]:
+                        continue
+                        if "ssl" not in service[1]:
+                            if "http-proxy" not in service[1]:
+                                if service[0] not in ignored_windows_http_ports:
+                                    if service[0] not in self.http_ports:
+                                        self.http_ports.append(service[0])
+                                    if service[8] not in self.http_script_results:
+                                        self.http_script_results.append(service[8])
                 if "netbios-ssn" in service[1]:
                     if service[0] not in self.smb_ports:
                         self.smb_ports.append(service[0])
@@ -222,15 +226,15 @@ class NmapParserFunk:
                         self.http_script_title.append(result[1])
 
         ### Print Statements for Debugging Purposes..
-        # print("HTTP PORTS:", self.http_ports)
+        print("HTTP PORTS:", self.http_ports)
         # if len(self.http_script_results) != 0:
         #     print("HTTP-Script-Results:", self.http_script_results[0])
         # print("ORACLE PORTS:", self.oracle_tns_ports)
-        # print("OPEN TCP PORTS:", self.tcp_ports)
-        # print("SSL:", self.ssl_ports)
+        print("OPEN TCP PORTS:", self.tcp_ports)
+        print("SSL:", self.ssl_ports)
         # print("SMB:", self.smb_ports)
         # print("DNS:", self.dns_ports)
-        # print("Services:", self.services)
+        print("Services:", self.services)
         # print("SSH:", self.ssh_ports)
         # print("SSH VERSION:", self.ssh_version)
         # print("FTP VERSION:", self.ftp_version)
@@ -384,20 +388,30 @@ class NmapParserFunk:
     def openProxyPorts(self):
         self.openPorts()
         cwd = os.getcwd()
-        if not os.path.exists(f"{cwd}/{self.target}-Report/nmap/proxychain-top-ports.xml"):
+        if not os.path.exists(
+            f"{cwd}/{self.target}-Report/nmap/proxychain-top-ports.xml"
+        ):
             pass
         else:
             proxy_report = NmapParser.parse_fromfile(
                 f"{self.target}-Report/nmap/proxychain-top-ports.xml"
             )
             self.proxy_nmap_services += proxy_report.hosts[0].services
-            self.proxy_nmap_services = sorted(self.proxy_nmap_services, key=lambda s: s.port)
+            self.proxy_nmap_services = sorted(
+                self.proxy_nmap_services, key=lambda s: s.port
+            )
             ignored_windows_http_ports = [5985, 47001]
             for service in self.proxy_nmap_services:
                 if "open" not in service.state:
                     continue
                 self.proxy_services.append(
-                    (service.port, service.service, service.tunnel, service.cpelist, service.banner)
+                    (
+                        service.port,
+                        service.service,
+                        service.tunnel,
+                        service.cpelist,
+                        service.banner,
+                    )
                 )
                 for service in self.proxy_services:
                     if service[0] not in self.proxy_tcp_ports:
@@ -463,7 +477,9 @@ class NmapParserFunk:
             # print("Proxy Ports2:", self.proxy_ports2)
 
     def openUdpPorts(self):
-        report = NmapParser.parse_fromfile(f"{self.target}-Report/nmap/top-udp-ports.xml")
+        report = NmapParser.parse_fromfile(
+            f"{self.target}-Report/nmap/top-udp-ports.xml"
+        )
         self.udp_nmap_services += report.hosts[0].services
         self.udp_nmap_services = sorted(self.udp_nmap_services, key=lambda s: s.port)
         # print(self.nmap_services)
@@ -473,7 +489,13 @@ class NmapParserFunk:
             if "open|filtered" in service.state:
                 continue
             self.udp_services.append(
-                (service.port, service.service, service.tunnel, service.cpelist, service.banner)
+                (
+                    service.port,
+                    service.service,
+                    service.tunnel,
+                    service.cpelist,
+                    service.banner,
+                )
             )
             for service in self.udp_services:
                 if service[0] not in self.udp_ports:
