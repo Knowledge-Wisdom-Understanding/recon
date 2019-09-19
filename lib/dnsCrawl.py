@@ -28,11 +28,13 @@ class checkSource:
         http_ports = np.http_ports
         cmd_info = "[" + fg.li_green + "+" + fg.rs + "]"
         cmd_info_orange = "[" + fg.li_yellow + "+" + fg.rs + "]"
+        cwd = os.getcwd()
+        reportDir = f"{cwd}/{self.target}-Report"
         if len(http_ports) != 0:
+            if not os.path.exists(f"{reportDir}/web"):
+                os.makedirs(f"{reportDir}/web")
             for hp in http_ports:
                 url = f"http://{self.target}:{hp}"
-                cwd = os.getcwd()
-                reportDir = f"{cwd}/{self.target}-Report"
                 wfuzzReport = f"{cwd}/{self.target}-Report/web/wfuzz-domain.txt"
                 page = requests.get(url)
                 data = page.text
