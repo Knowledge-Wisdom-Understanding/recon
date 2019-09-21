@@ -394,7 +394,9 @@ class NmapParserFunk:
         if not os.path.exists(f"{c.getPath('nmap_proxychain_top_ports')}"):
             pass
         else:
-            proxy_report = NmapParser.parse_fromfile(f"{c.getPath('nmap_proxychain_top_ports')}")
+            proxy_report = NmapParser.parse_fromfile(
+                f"{c.getPath('nmap_proxychain_top_ports')}"
+            )
             self.proxy_nmap_services += proxy_report.hosts[0].services
             self.proxy_nmap_services = sorted(
                 self.proxy_nmap_services, key=lambda s: s.port
@@ -478,7 +480,7 @@ class NmapParserFunk:
     def openUdpPorts(self):
         c = config_paths.Configurator(self.target)
         c.createConfig()
-        report = NmapParser.parse_fromfile(f"{c.getPath('nmap_top_udp_ports_xml')}")
+        report = NmapParser.parse_fromfile(f"""{c.getPath('nmap_top_udp_ports_xml')}""")
         self.udp_nmap_services += report.hosts[0].services
         self.udp_nmap_services = sorted(self.udp_nmap_services, key=lambda s: s.port)
         # print(self.nmap_services)
