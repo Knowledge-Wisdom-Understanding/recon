@@ -106,9 +106,9 @@ class Search:
                     pass
                 else:
                     first_word = lowercase_title.split(" ", 1)[0]
-                    http_cmd = f"""searchsploit {lowercase_title} >> {c.getPath("http_vulns")}"""
+                    http_cmd = f"""searchsploit "{lowercase_title}" >> {c.getPath("http_vulns")}"""
                     http_cmd2 = (
-                        f"""searchsploit {first_word} >> {c.getPath("http_vulns")}"""
+                        f"""searchsploit "{first_word}" >> {c.getPath("http_vulns")}"""
                     )
                     print(cmd_info, http_cmd)
                     print(cmd_info, http_cmd2)
@@ -128,13 +128,19 @@ class Search:
                     if fw in ignore:
                         pass
                     else:
-                        product_cmd = f"""echo {cmd_info} {lowercase_product} >> {c.getPath("all_vulns")}"""
-                        product_cmd2 = f"""searchsploit {lowercase_product} >> {c.getPath("all_vulns")}"""
-                        product_cmd3 = f"""echo {cmd_info} {fw} >> {c.getPath("all_vulns")} && searchsploit {fw} >> {c.getPath("all_vulns")}"""
+                        product_cmd = f"""echo "{cmd_info} {lowercase_product}" >> {c.getPath("all_vulns")}"""
+                        product_cmd2 = f"""searchsploit "{lowercase_product}" >> {c.getPath("all_vulns")}"""
+                        product_cmd3 = (
+                            f"""echo "{cmd_info} {fw}" >> {c.getPath("all_vulns")}"""
+                        )
+                        product_cmd4 = (
+                            f"""searchsploit "{fw}" >> {c.getPath("all_vulns")}"""
+                        )
                         print(cmd_info, product_cmd2)
                         call(product_cmd, shell=True)
                         call(product_cmd2, shell=True)
                         call(product_cmd3, shell=True)
+                        call(product_cmd4, shell=True)
 
     def vulnCheck(self):
         cmd_info = "[" + fg.green + "+" + fg.rs + "]"
