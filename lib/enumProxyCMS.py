@@ -104,7 +104,7 @@ class EnumProxyCMS:
                                             print(f"{teal}Found WordPress!{reset}")
                                             cms_counter += 1
                                             if len(sorted_wp_dirs) != 0:
-                                                wpscan_cmd = f"wpscan --no-update --url {sorted_wp_dirs[0]} --proxy http://{self.target}:{proxy_ports[0]} --wp-content-dir wp-content --enumerate vp,vt,cb,dbe,u,m --plugins-detection aggressive | tee {c.getPath("reportDir")}/proxy/web/wpscan-{proxy_http_port}.log"
+                                                wpscan_cmd = f"""wpscan --no-update --url {sorted_wp_dirs[0]} --proxy http://{self.target}:{proxy_ports[0]} --wp-content-dir wp-content --enumerate vp,vt,cb,dbe,u,m --plugins-detection aggressive | tee {c.getPath("reportDir")}/proxy/web/wpscan-{proxy_http_port}.log"""
                                                 cms_commands.append(wpscan_cmd)
                                                 if cms_counter >= 1:
                                                     hasPrinted = True

@@ -85,7 +85,7 @@ class CheckProxy:
             all_commands = []
             proxy_tcp_ports = npp.proxy_tcp_ports
             tcp_proxy_ports = ",".join(map(str, proxy_tcp_ports))
-            default_command = f"proxychains nmap -vv -sT -Pn -sC -sV -p {tcp_proxy_ports} --script-timeout 2m -oA {c.getPath("proxychain_serviceScan")} 127.0.0.1"
+            default_command = f"""proxychains nmap -vv -sT -Pn -sC -sV -p {tcp_proxy_ports} --script-timeout 2m -oA {c.getPath("proxychain_serviceScan")} 127.0.0.1"""
             all_commands.append(default_command)
             for cmd in http_proxy_commands:
                 all_commands.append(cmd)
