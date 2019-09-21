@@ -183,8 +183,6 @@ def main():
 
     def mpRun(commands):
         if len(commands) != 0:
-            # for command in commands:
-            #     print(cmd_info, command)
             with Pool(processes=2) as p:
                 max_ = len(commands)
                 with tqdm(total=max_) as pbar:
@@ -362,6 +360,7 @@ def main():
         and (args.PASSWORDS is None)
     ):
         validateIP()
+        reset_timer()
         scanTopTcpPorts()
         getOpenPorts()  # Must Always be ON
         enumDNS()
@@ -383,6 +382,7 @@ def main():
         searchSploits()
         removeColor()
         peace()
+        check_timer()
     # This is for the -f --file Option and will run all scans on all IP addresses
     # In the provided file. Should be 1 IPv4 address per line
     elif (
@@ -440,6 +440,7 @@ def main():
         validateIP()
         setupConfig()
         if os.path.exists(f"{args.target}-Report/nmap/top-ports-{args.target}.nmap"):
+            reset_timer()
             getOpenPorts()
             enumDNS()
             enumHTTP2()
@@ -449,7 +450,9 @@ def main():
             removeColor()
             aquatone()
             peace()
+            check_timer()
         else:
+            reset_timer()
             scanTopTcpPorts()
             getOpenPorts()
             enumDNS()
@@ -460,6 +463,7 @@ def main():
             removeColor()
             aquatone()
             peace()
+            check_timer()
 
     # This is the Brute forcing option and -t --target argument is required
     elif args.target and (args.file is None) and args.brute:
