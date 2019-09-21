@@ -195,6 +195,20 @@ def main():
                         if returncode != 0:
                             print(f"{i} command failed: {returncode}")
 
+    def infoMpRun(commands):
+        if len(commands) != 0:
+            for command in commands:
+                print(cmd_info, command)
+            with Pool(processes=2) as p:
+                max_ = len(commands)
+                with tqdm(total=max_) as pbar:
+                    for i, returncode in enumerate(
+                        p.imap_unordered(partial(call, shell=True), commands)
+                    ):
+                        pbar.update()
+                        if returncode != 0:
+                            print(f"{i} command failed: {returncode}")
+
     def removeColor():
         nocolor = remove_color.Clean(args.target)
         nocolor.listfiles()
@@ -241,7 +255,7 @@ def main():
         nmapRemaing = nmapOpenPorts.NmapOpenPorts(args.target)
         nmapRemaing.Scan()
         remaining_enum_cmds = nmapRemaing.processes
-        mpRun(remaining_enum_cmds)
+        infoMpRun(remaining_enum_cmds)
 
     def getOpenPorts():
         np = nmapParser.NmapParserFunk(args.target)
@@ -269,13 +283,13 @@ def main():
         cm = enumWeb.EnumWeb(args.target)
         cm.CMS()
         cms_commands = cm.cms_processes
-        mpRun(cms_commands)
+        infoMpRun(cms_commands)
 
     def cmsEnumSSL():
         cms = enumWebSSL.EnumWebSSL(args.target)
         cms.sslEnumCMS()
         cms_ssl_commands = cms.cms_processes
-        mpRun(cms_ssl_commands)
+        infoMpRun(cms_ssl_commands)
 
     def proxyEnum():
         pscan = enumProxy.CheckProxy(args.target)
@@ -284,13 +298,13 @@ def main():
         pr.openProxyPorts()
         pscan.Enum()
         proxy_commands = pscan.all_processes
-        mpRun(proxy_commands)
+        infoMpRun(proxy_commands)
 
     def proxyEnumCMS():
         pcms = enumProxyCMS.EnumProxyCMS(args.target)
         pcms.proxyCMS()
         proxy_cms_commands = pcms.cms_processes
-        mpRun(proxy_cms_commands)
+        infoMpRun(proxy_cms_commands)
 
     def enumLdap():
         ld = ldapEnum.LdapEnum(args.target)
@@ -348,18 +362,18 @@ def main():
         and (args.PASSWORDS is None)
     ):
         validateIP()
-        # scanTopTcpPorts()
+        scanTopTcpPorts()
         getOpenPorts()  # Must Always be ON
-        # enumDNS()
-        # enumHTTP()
-        # cmsEnum()
-        # enumHTTPS()
-        # cmsEnumSSL()
-        # sortFoundUrls()
-        # proxyEnum()
-        # sortFoundProxyUrls()
-        # proxyEnumCMS()
-        # aquatone()
+        enumDNS()
+        enumHTTP()
+        cmsEnum()
+        enumHTTPS()
+        cmsEnumSSL()
+        sortFoundUrls()
+        proxyEnum()
+        sortFoundProxyUrls()
+        proxyEnumCMS()
+        aquatone()
         enumSMB()
         enumLdap()
         enumOracle()
