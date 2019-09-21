@@ -6,6 +6,8 @@ from sty import fg, bg, ef, rs
 from lib import nmapParser
 from lib import domainFinder
 from utils import dig_parser
+from utils import config_paths
+from utils import helper_lists
 
 
 class DnsEnum:
@@ -15,8 +17,7 @@ class DnsEnum:
         self.hostnames = []
 
     def Scan(self):
-        info = fg.cyan + "Checking For Virtual Host Routing and DNS" + fg.rs
-        print(info)
+        print(fg.cyan + "Checking For Virtual Host Routing and DNS" + fg.rs)
         np = nmapParser.NmapParserFunk(self.target)
         np.openPorts()
         dnsPorts = np.dns_ports
@@ -24,12 +25,12 @@ class DnsEnum:
         dn.Scan()
         redirect_hostname = dn.redirect_hostname
         fqdn_hostname = dn.fqdn_hostname
-        cwd = os.getcwd()
-        reportDir = f"{cwd}/{self.target}-Report"
-        if not os.path.exists(f"{self.target}-Report/dns"):
-            os.makedirs(f"{self.target}-Report/dns")
-        if not os.path.exists(f"{self.target}-Report/aquatone"):
-            os.makedirs(f"{self.target}-Report/aquatone")
+        c = config_paths.Configurator(self.target)
+        c.createConfig()
+        if not os.path.exists(f"""{c.getPath("dnsDir")}"""):
+            os.makedirs(f"""{c.getPath("dnsDir")}""")
+        if not os.path.exists(f"""{c.getPath("aquatoneDir")}"""):
+            os.makedirs(f"""{c.getPath("aquatoneDir")}""")
 
         commands = ()
         if len(redirect_hostname) != 0 and (len(dnsPorts) != 0):
@@ -39,12 +40,12 @@ class DnsEnum:
                 for d in fqdn_hostname:
                     self.hostnames.append(d)
                 commands = commands + (
-                    f"cd {reportDir} && dnsenum --dnsserver {self.target} --enum -f /usr/share/seclists/Discovery/DNS/subdomains-top1million-5000.txt -r {d} | tee {self.target}-Report/dns/dnsenum-{self.target}.log && cd - &>/dev/null",
+                    f"""dnsenum --dnsserver {self.target} --enum -f {c.getPath("top5Ksubs")} -r {d} | tee {c.getPath("dnsEnum")}""",
                 )
             else:
                 string_hosts = " ".join(map(str, redirect_hostname))
                 commands = commands + (
-                    f"cd {reportDir} && dnsenum --dnsserver {self.target} --enum -f /usr/share/seclists/Discovery/DNS/subdomains-top1million-5000.txt -r {string_hosts} | tee {self.target}-Report/dns/dnsenum-{self.target}.log && cd - &>/dev/null",
+                    f"""dnsenum --dnsserver {self.target} --enum -f {c.getPath("top5Ksubs")} -r {string_hosts} | tee {c.getPath("dnsEnum")}""",
                 )
 
         self.processes = commands
@@ -55,83 +56,13 @@ class DnsEnum:
         np.openPorts()
         ssl_ports = np.ssl_ports
         dnsPort = np.dns_ports
-        ignore = [
-            ".nse",
-            ".php",
-            ".exe",
-            ".php5",
-            ".php7",
-            ".config",
-            ".html",
-            ".png",
-            ".js",
-            ".org",
-            ".versio",
-            ".com",
-            ".gif",
-            ".asp",
-            ".aspx",
-            ".jpg",
-            ".jpeg",
-            ".txt",
-            ".bak",
-            ".note",
-            ".secret",
-            ".backup",
-            ".cgi",
-            ".pl",
-            ".git",
-            ".co",
-            ".eu",
-            ".uk",
-            ".htm",
-            ".localdomain",
-            "localhost.localdomain",
-            ".localhost",
-            ".local",
-            ".acme",
-            ".css",
-            ".name",
-            ".tar",
-            ".gz",
-            ".bz2",
-            ".tar.gz",
-            ".zip",
-            ".web",
-            ".user",
-            ".pass",
-            ".bashrc",
-            ".bash",
-            ".script",
-            ".doc",
-            ".docx",
-            ".tex",
-            ".wks",
-            ".wpd",
-            ".pdf",
-            ".xml",
-            ".xls",
-            ".xlsx",
-            ".main",
-            ".go",
-            ".htm",
-            ".ppt",
-            ".pptx",
-            ".ods",
-            ".sql",
-            ".dba",
-            ".conf",
-            ".test",
-            ".file",
-            ".login",
-            ".hta",
-            ".robots",
-        ]
+        c = config_paths.Configurator(self.target)
+        c.createConfig()
+        ig = helper_lists.ignoreDomains()
+        ignore = ig.ignore
         dns = []
         try:
-            with open(
-                f"{self.target}-Report/nmap/top-ports-{self.target}.nmap", "r"
-            ) as nm:
+            with open(f"""{c.getPath("nmap_top_ports_nmap")}""", "r") as nm:
                 for line in nm:
                     new = (
                         line.replace("=", " ")
@@ -170,14 +101,10 @@ class DnsEnum:
                 allsortedhostnameslist.append(x)
         else:
             for sslport in ssl_ports:
-                if not os.path.exists(
-                    f"{self.target}-Report/webSSL/sslscan-color-{self.target}-{sslport}.log"
-                ):
+                if not os.path.exists(f"""{c.getPath("webSSLScanT")}-{sslport}.log"""):
                     pass
                 else:
-                    sslscanFile = "{}-Report/webSSL/sslscan-color-{}-{}.log".format(
-                        self.target, self.target, sslport
-                    )
+                    sslscanFile = f"""{c.getPath("webSSLScanT")}-{sslport}.log"""
                     domainName = []
                     altDomainNames = []
                     with open(sslscanFile, "rt") as f:
@@ -226,9 +153,9 @@ class DnsEnum:
 
         else:
             ######## Check For Zone Transfer ###############
-            if not os.path.exists(f"{self.target}-Report/dns"):
-                os.makedirs(f"{self.target}-Report/dns")
-            dig_cmd = f"dig -x {self.target} @{self.target}"
+            if not os.path.exists(f"""{c.getPath("dnsDir")}"""):
+                os.makedirs(f"""{c.getPath("dnsDir")}""")
+            dig_cmd = f"""dig -x {self.target} @{self.target}"""
             dp = dig_parser.digParse(self.target, dig_cmd)
             dp.parseDig()
             dig_hosts = dp.hosts
@@ -242,7 +169,7 @@ class DnsEnum:
             if len(self.hostnames) != 0:
                 alldns = " ".join(map(str, self.hostnames))
                 zonexferDns = []
-                dig_command = f"dig axfr @{self.target} {alldns}"
+                dig_command = f"""dig axfr @{self.target} {alldns}"""
                 dp2 = dig_parser.digParse(self.target, dig_command)
                 dp2.parseDigAxfr()
                 subdomains = dp2.subdomains

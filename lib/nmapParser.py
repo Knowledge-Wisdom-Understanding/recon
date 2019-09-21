@@ -2,6 +2,7 @@
 
 import os
 from libnmap.parser import NmapParser
+from utils import config_paths
 
 
 class NmapParserFunk:
@@ -83,9 +84,9 @@ class NmapParserFunk:
         self.proxy_ssh_version = []
 
     def openPorts(self):
-        report = NmapParser.parse_fromfile(
-            f"{self.target}-Report/nmap/top-ports-{self.target}.xml"
-        )
+        c = config_paths.Configurator(self.target)
+        c.createConfig()
+        report = NmapParser.parse_fromfile(f"""{c.getPath("nmap_top_ports_xml")}""")
         self.nmap_services += report.hosts[0].services
         self.nmap_services = sorted(self.nmap_services, key=lambda s: s.port)
         # print(self.nmap_services)
@@ -243,9 +244,9 @@ class NmapParserFunk:
         # print("SSH-Product", self.ssh_product)
 
     def allOpenPorts(self):
-        report = NmapParser.parse_fromfile(
-            f"{self.target}-Report/nmap/full-tcp-scan-{self.target}.xml"
-        )
+        c = config_paths.Configurator(self.target)
+        c.createConfig()
+        report = NmapParser.parse_fromfile(f"""{c.getPath("nmap_full_tcp_xml")}""")
         self.nmap_services += report.hosts[0].services
         self.nmap_services = sorted(self.nmap_services, key=lambda s: s.port)
         # print(self.nmap_services)
@@ -386,16 +387,14 @@ class NmapParserFunk:
         # print("Products", self.all_products)
 
     def openProxyPorts(self):
+        c = config_paths.Configurator(self.target)
+        c.createConfig()
         self.openPorts()
         cwd = os.getcwd()
-        if not os.path.exists(
-            f"{cwd}/{self.target}-Report/nmap/proxychain-top-ports.xml"
-        ):
+        if not os.path.exists(f"{c.getPath('nmap_proxychain_top_ports')}"):
             pass
         else:
-            proxy_report = NmapParser.parse_fromfile(
-                f"{self.target}-Report/nmap/proxychain-top-ports.xml"
-            )
+            proxy_report = NmapParser.parse_fromfile(f"{c.getPath('nmap_proxychain_top_ports')}")
             self.proxy_nmap_services += proxy_report.hosts[0].services
             self.proxy_nmap_services = sorted(
                 self.proxy_nmap_services, key=lambda s: s.port
@@ -477,9 +476,9 @@ class NmapParserFunk:
             # print("Proxy Ports2:", self.proxy_ports2)
 
     def openUdpPorts(self):
-        report = NmapParser.parse_fromfile(
-            f"{self.target}-Report/nmap/top-udp-ports.xml"
-        )
+        c = config_paths.Configurator(self.target)
+        c.createConfig()
+        report = NmapParser.parse_fromfile(f"{c.getPath('nmap_top_udp_ports_xml')}")
         self.udp_nmap_services += report.hosts[0].services
         self.udp_nmap_services = sorted(self.udp_nmap_services, key=lambda s: s.port)
         # print(self.nmap_services)

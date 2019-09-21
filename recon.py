@@ -30,12 +30,14 @@ from multiprocessing import Pool
 from functools import partial
 import socket
 from tqdm import tqdm
+from utils import config_paths
 
 cmd_info = "[" + fg.li_green + "+" + fg.rs + "]"
 bad_cmd = "[" + fg.li_red + "+" + fg.rs + "]"
 green = fg.li_green
 teal = fg.li_cyan
 purp = fg.li_magenta
+yellow = fg.li_yellow
 reset = fg.rs
 cwd = os.getcwd()
 
@@ -181,8 +183,8 @@ def main():
 
     def mpRun(commands):
         if len(commands) != 0:
-            for command in commands:
-                print(cmd_info, command)
+            # for command in commands:
+            #     print(cmd_info, command)
             with Pool(processes=2) as p:
                 max_ = len(commands)
                 with tqdm(total=max_) as pbar:
@@ -346,18 +348,18 @@ def main():
         and (args.PASSWORDS is None)
     ):
         validateIP()
-        scanTopTcpPorts()
+        # scanTopTcpPorts()
         getOpenPorts()  # Must Always be ON
-        enumDNS()
-        enumHTTP()
-        cmsEnum()
-        enumHTTPS()
-        cmsEnumSSL()
-        sortFoundUrls()
-        proxyEnum()
-        sortFoundProxyUrls()
-        proxyEnumCMS()
-        aquatone()
+        # enumDNS()
+        # enumHTTP()
+        # cmsEnum()
+        # enumHTTPS()
+        # cmsEnumSSL()
+        # sortFoundUrls()
+        # proxyEnum()
+        # sortFoundProxyUrls()
+        # proxyEnumCMS()
+        # aquatone()
         enumSMB()
         enumLdap()
         enumOracle()
@@ -422,6 +424,7 @@ def main():
     ):
         args.target = args.web
         validateIP()
+        setupConfig()
         if os.path.exists(f"{args.target}-Report/nmap/top-ports-{args.target}.nmap"):
             getOpenPorts()
             enumDNS()
@@ -446,6 +449,7 @@ def main():
 
     # This is the Brute forcing option and -t --target argument is required
     elif args.target and (args.file is None) and args.brute:
+        setupConfig()
         if "ssh" in args.brute:
             if args.port is None:
                 args.port = "22"

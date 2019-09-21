@@ -10,7 +10,7 @@ from bs4 import BeautifulSoup, Comment
 import requests
 import re
 from python_hosts.hosts import Hosts, HostsEntry
-from sty import fg, bg, ef, rs
+from utils import config_paths
 
 
 class checkSource:
@@ -28,14 +28,14 @@ class checkSource:
         http_ports = np.http_ports
         cmd_info = "[" + fg.li_green + "+" + fg.rs + "]"
         cmd_info_orange = "[" + fg.li_yellow + "+" + fg.rs + "]"
-        cwd = os.getcwd()
-        reportDir = f"{cwd}/{self.target}-Report"
+        c = config_paths.Configurator(self.target)
+        c.createConfig()
         if len(http_ports) != 0:
-            if not os.path.exists(f"{reportDir}/web"):
-                os.makedirs(f"{reportDir}/web")
+            if not os.path.exists(f"""{c.getPath("webDir")}"""):
+                os.makedirs(f"""{c.getPath("webDir")}""")
             for hp in http_ports:
-                url = f"http://{self.target}:{hp}"
-                wfuzzReport = f"{cwd}/{self.target}-Report/web/wfuzz-domain.txt"
+                url = f"""http://{self.target}:{hp}"""
+                wfuzzReport = f"""{c.getPath("wfuzzReport")}"""
                 page = requests.get(url)
                 data = page.text
                 soup = BeautifulSoup(data, "html.parser")
@@ -53,10 +53,10 @@ class checkSource:
                 # print(source_domain_name)
                 if len(source_domain_name) != 0:
                     print(
-                        f"{cmd_info_orange} {fg.li_magenta}Found{fg.rs} {fg.cyan}{source_domain_name}{fg.rs} in {fg.li_red}The Source!{fg.rs} http://{self.target}:{hp}"
+                        f"""{cmd_info_orange} {fg.li_magenta}Found{fg.rs} {fg.cyan}{source_domain_name}{fg.rs} in {fg.li_red}The Source!{fg.rs} http://{self.target}:{hp}"""
                     )
                     print(
-                        f"{cmd_info} {fg.li_magenta}Adding{fg.rs} {fg.li_cyan} {source_domain_name}{fg.rs} to /etc/hosts file"
+                        f"""{cmd_info} {fg.li_magenta}Adding{fg.rs} {fg.li_cyan} {source_domain_name}{fg.rs} to /etc/hosts file"""
                     )
                     hosts = Hosts(path="/etc/hosts")
                     new_entry = HostsEntry(
@@ -67,22 +67,16 @@ class checkSource:
                     for d in source_domain_name:
                         self.htb_source_domains.append(d)
                     try:
+                        tk5 = f"""{c.getPath("top5Ksubs")}"""
                         print(
-                            f"{cmd_info} wfuzz -z file,/usr/share/seclists/Discovery/DNS/subdomains-top1million-5000.txt -u {source_domain_name[0]} -H 'Host: FUZZ.{source_domain_name[0]}'"
+                            f"""{cmd_info} wfuzz -z file,{tk5} -u {source_domain_name[0]} -H 'Host: FUZZ.{source_domain_name[0]}'"""
                         )
                         str_domain = source_domain_name[0]
-                        fuzz_domain = f"FUZZ.{source_domain_name[0]}"
+                        fuzz_domain = f"""FUZZ.{source_domain_name[0]}"""
                         for r in wfuzz.fuzz(
                             url=str_domain,
                             hc=[404],
-                            payloads=[
-                                (
-                                    "file",
-                                    dict(
-                                        fn="/usr/share/seclists/Discovery/DNS/subdomains-top1million-5000.txt"
-                                    ),
-                                )
-                            ],
+                            payloads=[("file", dict(fn=tk5))],
                             headers=[("Host", fuzz_domain)],
                             printer=(wfuzzReport, "raw"),
                         ):
@@ -124,10 +118,10 @@ class checkSource:
                                 )
 
                                 print(
-                                    f"{cmd_info_orange} {fg.li_blue}Found Subdomain!{fg.rs} {fg.li_green}{sub_d}{fg.rs}"
+                                    f"""{cmd_info_orange} {fg.li_blue}Found Subdomain!{fg.rs} {fg.li_green}{sub_d}{fg.rs}"""
                                 )
                                 print(
-                                    f"{cmd_info}{fg.li_magenta} Adding{fg.rs} {fg.li_cyan}{sub_d}{fg.rs} to /etc/hosts file"
+                                    f"""{cmd_info}{fg.li_magenta} Adding{fg.rs} {fg.li_cyan}{sub_d}{fg.rs} to /etc/hosts file"""
                                 )
                                 hosts = Hosts(path="/etc/hosts")
                                 new_entry = HostsEntry(
@@ -145,9 +139,9 @@ class sourceCommentChecker:
         self.target = target
 
     def extract_source_comments(self):
-        url = f"http://{self.target}"
-        cwd = os.getcwd()
-        reportDir = f"{cwd}/{self.target}-Report"
+        url = f"""http://{self.target}"""
+        c = config_paths.Configurator(self.target)
+        c.createConfig()
         page = requests.get(url)
         data = page.text
         soup = BeautifulSoup(data, "html.parser")
@@ -155,7 +149,7 @@ class sourceCommentChecker:
         comments_arr = [c.extract() for c in comments]
         if len(comments_arr) != 0:
             try:
-                with open(f"{reportDir}/web/source_comments.txt", "w") as com:
+                with open(f"""{c.getPath("sourceComments")}""", "w") as com:
                     for c in comments_arr:
                         com_str = c.rstrip("\n")
                         com.write(com_str)

@@ -5,6 +5,7 @@ from sty import fg, bg, ef, rs
 from lib import nmapParser
 from subprocess import call, check_output, STDOUT
 from shutil import which
+from utils import config_paths
 
 
 class Aquatone:
@@ -16,7 +17,9 @@ class Aquatone:
         np.openPorts()
         npp = nmapParser.NmapParserFunk(self.target)
         npp.openProxyPorts()
-        cwd = os.getcwd()
+        c = config_paths.Configurator(self.target)
+        c.createConfig()
+        c.cmdConfig()
         cmd_info = "[" + fg.li_green + "+" + fg.rs + "]"
         ssl_ports = np.ssl_ports
         http_ports = np.http_ports
@@ -35,43 +38,36 @@ class Aquatone:
             all_web_proxy_ports.append(x)
         all_web_ports_comma_list = ",".join(map(str, all_web_ports))
         all_web_proxy_ports_comma_list = ",".join(map(str, all_web_proxy_ports))
-        cwd = os.getcwd()
-        if not os.path.exists(f"{self.target}-Report/aquatone"):
-            os.makedirs(f"{self.target}-Report/aquatone")
-        urls_path = f"{cwd}/{self.target}-Report/aquatone/urls.txt"
-        proxy_urls_path = f"{cwd}/{self.target}-Report/aquatone/proxy-urls.txt"
-        aqua_path = f"{cwd}/{self.target}-Report/aquatone/aquatone"
-        aqua_proxy_path = f"{cwd}/{self.target}-Report/aquatone/aquatone-proxy"
-        if os.path.exists(urls_path):
-            check_lines = f"""wc -l {urls_path} | cut -d ' ' -f 1"""
+        if not os.path.exists(f"""{c.getPath("aquatoneDir")}"""):
+            os.makedirs(f"""{c.getPath("aquatoneDir")}""")
+        if os.path.exists(c.getPath("aquatoneDirUrls")):
+            check_lines = f"""wc -l {c.getPath("aquatoneDirUrls")} | cut -d ' ' -f 1"""
             num_urls = check_output(check_lines, stderr=STDOUT, shell=True).rstrip()
             ### ToDo: open urls.txt and sort urls by occurance of response codes.
             if int(num_urls) < 100:
-                aquatone_cmd = f"""cat {urls_path} | aquatone -ports {all_web_ports_comma_list} -out {aqua_path} -screenshot-timeout 40000"""
+                aquatone_cmd = f"""cat {c.getPath("aquatoneDirUrls")} | aquatone -ports {all_web_ports_comma_list} -out {c.getPath("aquatoneDirAq")} -screenshot-timeout 40000"""
                 print(cmd_info, aquatone_cmd)
                 call(aquatone_cmd, shell=True)
                 if not which("firefox"):
                     pass
                 else:
-                    if os.path.exists(
-                        f"{cwd}/{self.target}-Report/aquatone/aquatone/aquatone_report.html"
-                    ):
-                        print(f"{fg.cyan}Opening Aquatone Report {fg.rs}")
-                        open_in_ff_cmd = f"firefox {cwd}/{self.target}-Report/aquatone/aquatone/aquatone_report.html &"
+                    if os.path.exists(f"""{c.getPath("aquatoneReport")}"""):
+                        print(f"""{fg.cyan}Opening Aquatone Report {fg.rs}""")
+                        open_in_ff_cmd = f"""firefox {c.getPath("aquatoneReport")} &"""
                         call(open_in_ff_cmd, shell=True)
-        if os.path.exists(proxy_urls_path):
-            check_lines = f"""wc -l {proxy_urls_path} | cut -d ' ' -f 1"""
+        if os.path.exists(c.getPath("aquatoneDirPUrls")):
+            check_lines = f"""wc -l {c.getPath("aquatoneDirPUrls")} | cut -d ' ' -f 1"""
             num_urls = check_output(check_lines, stderr=STDOUT, shell=True).rstrip()
             if int(num_urls) < 100:
-                aquatone_cmd = f"""cat {proxy_urls_path} | aquatone -ports {all_web_proxy_ports_comma_list} -proxy http://{self.target}:{proxy_ports[0]} -out {aqua_proxy_path} -screenshot-timeout 40000"""
+                aquatone_cmd = f"""cat {c.getPath("aquatoneDirPUrls")} | aquatone -ports {all_web_proxy_ports_comma_list} -proxy http://{self.target}:{proxy_ports[0]} -out {c.getPath("aquatoneDirAqP")} -screenshot-timeout 40000"""
                 print(cmd_info, aquatone_cmd)
                 call(aquatone_cmd, shell=True)
                 if not which("firefox"):
                     pass
                 else:
-                    if os.path.exists(
-                        f"{cwd}/{self.target}-Report/aquatone/aquatone-proxy/aquatone_report.html"
-                    ):
-                        open_in_ff_proxy_cmd = f"firefox {cwd}/{self.target}-Report/aquatone/aquatone-proxy/aquatone_report.html &"
+                    if os.path.exists(f"""{c.getPath("aquatoneProxyReport")}"""):
+                        open_in_ff_proxy_cmd = (
+                            f"""firefox {c.getPath("aquatoneProxyReport")} &"""
+                        )
                         call(open_in_ff_proxy_cmd, shell=True)
 

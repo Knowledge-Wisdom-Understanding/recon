@@ -1,0 +1,17 @@
+dirsearchSSL ! python3 /opt/dirsearch/dirsearch.py -u https://
+dirsearchSSLT ! python3 /opt/dirsearch/dirsearch.py -u https://{{ target }}
+dirsearch ! python3 /opt/dirsearch/dirsearch.py -u http://
+dirsearchT ! python3 /opt/dirsearch/dirsearch.py -u http://{{ target }}
+dirsearchProxyT ! python3 /opt/dirsearch/dirsearch.py -e php,asp,aspx,txt,html -x 400,403,405,500,502 -t 50 -w {{ pwd }}/wordlists/dicc.txt --proxy {{ target }}
+dirsearchProxy ! python3 /opt/dirsearch/dirsearch.py -e php,asp,aspx,txt,html -x
+dirsearchE ! python3 /opt/dirsearch/dirsearch.py -e
+hc ! 400,403,405,500,502
+ext ! php,asp,aspx,html,txt
+ext2 ! php,asp,aspx,html,txt,git,bak,tar,gz,7z,json,zip,rar,bz2,pdf,md,pl,cgi
+whatwebSSLt ! whatweb -v -a 3 https://{{ target }}
+whatwebSSL ! whatweb -v -a 3 https://
+whatweb ! whatweb -v -a 3 http://
+ftpScripts ! ftp-anon.nse,ftp-bounce.nse,ftp-libopie.nse,ftp-proftpd-backdoor.nse,ftp-vsftpd-backdoor.nse,ftp-vuln-cve2010-4221.nse,ftp-syst.nse
+patatorSSH ! patator ssh_login host={{ target }}
+eyeWitness ! ./EyeWitness.py --threads 5 --ocr --no-prompt --active-scan --all-protocols --web -f eyefile.txt -d
+nmapSMB ! nmap -vv -sV -Pn -p139,445 --script smb-enum-domains.nse,smb-enum-groups.nse,smb-enum-processes.nse,smb-enum-sessions.nse,smb-enum-shares.nse,smb-enum-users.nse,smb-ls.nse,smb-mbenum.nse,smb-os-discovery.nse,smb-print-text.nse,smb-psexec.nse,smb-security-mode.nse,smb-server-stats.nse,smb-system-info.nse,smb-vuln-conficker.nse,smb-vuln-cve2009-3103.nse,smb-vuln-ms06-025.nse,smb-vuln-ms07-029.nse,smb-vuln-ms08-067.nse,smb-vuln-ms10-054.nse,smb-vuln-ms10-061.nse,smb-vuln-ms17-010.nse --script-args=unsafe=1

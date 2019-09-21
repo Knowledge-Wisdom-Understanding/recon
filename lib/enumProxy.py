@@ -8,6 +8,7 @@ from lib import nmapParser
 from lib import enumWeb
 from lib import enumWebSSL
 from utils import helper_lists
+from utils import config_paths
 
 
 class CheckProxy:
@@ -26,6 +27,8 @@ class CheckProxy:
         if len(proxyPorts) == 0:
             pass
         else:
+            c = config_paths.Configurator(self.target)
+            c.createConfig()
             duplicate_cmds = []
             add_line_cmd = f"""sed -e "\$ahttp {self.target} {proxyPorts[0]}" -i /etc/proxychains.conf"""
             comment_out_line_cmd = (
@@ -55,10 +58,10 @@ class CheckProxy:
                 print(fnf_error)
                 exit()
 
-            if not os.path.exists(f"{self.target}-Report/proxy"):
-                os.makedirs(f"{self.target}-Report/proxy")
+            if not os.path.exists(f"""{c.getPath("proxyDir")}"""):
+                os.makedirs(f"""{c.getPath("proxyDir")}""")
 
-            proxychains_nmap_top_ports_cmd = f"proxychains nmap -vv -sT -Pn -sV -p {stringerT} -oA {self.target}-Report/nmap/proxychain-top-ports 127.0.0.1"
+            proxychains_nmap_top_ports_cmd = f"""proxychains nmap -vv -sT -Pn -sV -p {stringerT} -oA {c.getPath("proxychain_top_ports")} 127.0.0.1"""
             print(cmd_info, proxychains_nmap_top_ports_cmd)
             call(proxychains_nmap_top_ports_cmd, shell=True)
 
@@ -71,6 +74,8 @@ class CheckProxy:
         if len(open_proxy_ports) == 0:
             pass
         else:
+            c = config_paths.Configurator(self.target)
+            c.createConfig()
             pweb = enumWeb.EnumWeb(self.target)
             pweb.proxyScan()
             http_proxy_commands = pweb.proxy_processes
@@ -80,7 +85,7 @@ class CheckProxy:
             all_commands = []
             proxy_tcp_ports = npp.proxy_tcp_ports
             tcp_proxy_ports = ",".join(map(str, proxy_tcp_ports))
-            default_command = f"proxychains nmap -vv -sT -Pn -sC -sV -p {tcp_proxy_ports} --script-timeout 2m -oA {self.target}-Report/nmap/proxychain-ServiceScan 127.0.0.1"
+            default_command = f"proxychains nmap -vv -sT -Pn -sC -sV -p {tcp_proxy_ports} --script-timeout 2m -oA {c.getPath("proxychain_serviceScan")} 127.0.0.1"
             all_commands.append(default_command)
             for cmd in http_proxy_commands:
                 all_commands.append(cmd)

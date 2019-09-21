@@ -5,6 +5,7 @@ from subprocess import call, check_output, STDOUT
 from sty import fg, bg, ef, rs
 from lib import nmapParser
 import glob
+from utils import config_paths
 
 
 class DefaultLinuxUsers:
@@ -130,13 +131,13 @@ class Cewl:
         slports = []
         if len(ssl_ports) == 1:
             slports.append(ssl_ports[0])
-        cwd = os.getcwd()
-        reportDir = f"{cwd}/{self.target}-Report"
-        if os.path.exists(f"{reportDir}/aquatone/urls.txt"):
-            if not os.path.exists(f"{reportDir}/wordlists"):
-                os.makedirs(f"{reportDir}/wordlists")
+        c = config_paths.Configurator(self.target)
+        c.createConfig()
+        if os.path.exists(f"""{c.getPath("aquatoneDirUrls")}"""):
+            if not os.path.exists(f"""{c.getPath("wordlistsDir")}"""):
+                os.makedirs(f"""{c.getPath("wordlistsDir")}""")
             url_list = []
-            urls_file = f"{reportDir}/aquatone/urls.txt"
+            urls_file = f"""{c.getPath("aquatoneDirUrls")}"""
             if os.path.exists(urls_file):
                 try:
                     with open(urls_file, "r") as uf:
@@ -159,7 +160,7 @@ class Cewl:
                     for url in wordlist:
                         counter += 1
                         cewl_cmds.append(
-                            f"cewl {url} -m 3 -w {reportDir}/wordlists/cewl-{counter}-list.txt"
+                            f"""cewl {url} -m 3 -w {c.getPath("reportDir")}/wordlists/cewl-{counter}-list.txt"""
                         )
                 if len(cewl_cmds) != 0:
                     try:
@@ -169,17 +170,17 @@ class Cewl:
                         print(cre_error)
                 words = []
                 try:
-                    with open(f"{cwd}/wordlists/probable-v2-top1575.txt", "r") as prob:
+                    with open(f"""{c.getPath("CustomPass1575")}""", "r") as prob:
                         for line in prob:
                             words.append(line.rstrip())
-                    for wl in os.listdir(f"{reportDir}/wordlists"):
-                        wlfile = f"{reportDir}/wordlists/{wl}"
+                    for wl in os.listdir(f"""{c.getPath("wordlistsDir")}"""):
+                        wlfile = f"""{c.getPath("wordlistsDir")}/{wl}"""
                         with open(wlfile, "r") as wlf:
                             for line in wlf:
                                 words.append(line.rstrip())
                     set_unique_words = sorted(set(words))
                     unique_words = list(set_unique_words)
-                    with open(f"{reportDir}/wordlists/all.txt", "a") as allwls:
+                    with open(f"""{c.getPath("CewlPlus")}""", "a") as allwls:
                         string_words = "\n".join(map(str, unique_words))
                         allwls.write(str(string_words))
                 except FileNotFoundError as fnf_error:
@@ -197,12 +198,14 @@ class DirsearchURLS:
         self.target = target
 
     def genDirsearchUrlList(self):
-        cwd = os.getcwd()
-        reportPath = f"{cwd}/{self.target}-Report/*"
+        c = config_paths.Configurator(self.target)
+        c.createConfig()
         awkprint = "{print $3}"
         dirsearch_files = []
         dir_list = [
-            d for d in glob.iglob(f"{reportPath}", recursive=True) if os.path.isdir(d)
+            d
+            for d in glob.iglob(f"""{c.getPath("reportGlob")}""", recursive=True)
+            if os.path.isdir(d)
         ]
         for d in dir_list:
             reportFile_list = [
@@ -213,8 +216,8 @@ class DirsearchURLS:
             for rf in reportFile_list:
                 if "nmap" not in rf:
                     if "dirsearch" in rf:
-                        if not os.path.exists(f"{self.target}-Report/aquatone"):
-                            os.makedirs(f"{self.target}-Report/aquatone")
+                        if not os.path.exists(f"""{c.getPath("aquatoneDir")}"""):
+                            os.makedirs(f"""{c.getPath("aquatoneDir")}""")
                         dirsearch_files.append(rf)
                     if "nikto" in rf:
                         check_nikto_lines = f"""wc -l {rf} | cut -d ' ' -f 1"""
@@ -226,18 +229,18 @@ class DirsearchURLS:
 
         if len(dirsearch_files) != 0:
             all_dirsearch_files_on_one_line = " ".join(map(str, dirsearch_files))
-            url_list_cmd = f"""cat {all_dirsearch_files_on_one_line} | grep -v '400' | awk '{awkprint}' | sort -u > {cwd}/{self.target}-Report/aquatone/urls.txt"""
+            url_list_cmd = f"""cat {all_dirsearch_files_on_one_line} | grep -v '400' | awk '{awkprint}' | sort -u > {c.getPath("aquatoneDirUrls")}"""
             call(url_list_cmd, shell=True)
 
     def genProxyDirsearchUrlList(self):
-        cwd = os.getcwd()
-        if os.path.exists(f"{cwd}/{self.target}-Report/proxy"):
-            reportPath = f"{cwd}/{self.target}-Report/proxy/*"
+        c = config_paths.Configurator(self.target)
+        c.createConfig()
+        if os.path.exists(f"""{c.getPath("proxyDir")}"""):
             awkprint = "{print $3}"
             dirsearch_files = []
             dir_list = [
                 d
-                for d in glob.iglob(f"{reportPath}", recursive=True)
+                for d in glob.iglob(f"""{c.getPath("proxyGlob")}""", recursive=True)
                 if os.path.isdir(d)
             ]
             for d in dir_list:
@@ -249,19 +252,91 @@ class DirsearchURLS:
                 for rf in reportFile_list:
                     if "nmap" not in rf:
                         if "dirsearch" in rf:
-                            if not os.path.exists(f"{self.target}-Report/aquatone"):
-                                os.makedirs(f"{self.target}-Report/aquatone")
+                            if not os.path.exists(f"""{c.getPath("aquatoneDir")}"""):
+                                os.makedirs(f"""{c.getPath("aquatoneDir")}""")
                             dirsearch_files.append(rf)
 
             if len(dirsearch_files) != 0:
                 all_dirsearch_files_on_one_line = " ".join(map(str, dirsearch_files))
-                url_list_cmd = f"""cat {all_dirsearch_files_on_one_line} | grep -v '400' | awk '{awkprint}' | sort -u > {cwd}/{self.target}-Report/aquatone/proxy-urls.txt"""
+                url_list_cmd = f"""cat {all_dirsearch_files_on_one_line} | grep -v '400' | awk '{awkprint}' | sort -u > {c.getPath("aquatoneDirPUrls")}"""
                 call(url_list_cmd, shell=True)
 
 
 class ignoreDomains:
     def __init__(self):
         self.ignored = ["localhost", "localdomain"]
+        self.ignore = [
+            ".nse",
+            ".php",
+            ".exe",
+            ".php5",
+            ".php7",
+            ".config",
+            ".html",
+            ".png",
+            ".js",
+            ".org",
+            ".versio",
+            ".com",
+            ".gif" "",
+            ".asp",
+            ".aspx",
+            ".jpg",
+            ".jpeg",
+            ".txt",
+            ".bak",
+            ".note",
+            ".secret",
+            ".backup",
+            ".cgi",
+            ".pl",
+            ".git",
+            ".co",
+            ".eu",
+            ".uk",
+            ".htm",
+            ".localdomain",
+            "localhost.localdomain",
+            ".localhost",
+            ".local",
+            ".acme",
+            ".css",
+            ".name",
+            ".tar",
+            ".gz",
+            ".bz2",
+            ".tar.gz",
+            ".zip",
+            ".web",
+            ".user",
+            ".pass",
+            ".bashrc",
+            ".bash",
+            ".script",
+            ".doc",
+            ".docx",
+            ".tex",
+            ".wks",
+            ".wpd",
+            ".pdf" "",
+            ".xml",
+            ".xls",
+            ".xlsx",
+            ".main",
+            ".go",
+            ".htm",
+            ".ppt",
+            ".pptx",
+            ".ods",
+            ".sql",
+            ".dba",
+            ".conf" "",
+            ".test",
+            ".file",
+            ".login",
+            ".hta",
+            ".robots",
+        ]
 
 
 class topPortsToScan:

@@ -1,0 +1,139 @@
+reportDir : {{ reportDir }}
+pwd : {{ pwd }}
+reportGlob : {{ reportDir }}/*
+proxyGlob : {{ reportDir }}/proxy/*
+reportGlobWebSSL : {{ reportDir }}/webSSL/*
+webDir : {{ reportDir }}/web
+dnsDir : {{ reportDir }}/dns
+dnsZoneXfer : {{ reportDir }}/dns/dig-axfr-{{ target }}.log
+dnsDig : {{ reportDir }}/dns/dig-{{ target }}.log
+dnsEnum : {{ reportDir }}/dns/dnsenum-{{ target }}.log
+nmapDir : {{ nmapReportDir }}
+nmap_top_ports_xml : {{ nmapReportDir }}/top-ports-{{ target }}.xml
+nmap_top_ports_nmap : {{ nmapReportDir }}/top-ports-{{ target }}.nmap
+nmap_full_tcp_xml : {{ nmapReportDir }}/full-tcp-scan-{{ target }}.xml
+nmap_proxychain_top_ports : {{ nmapReportDir }}/proxychain-top-ports.xml
+proxychain_top_ports : {{ nmapReportDir }}/proxychain-top-ports
+proxychain_serviceScan : {{ nmapReportDir }}/proxychain-ServiceScan
+nmap_top_udp_ports_xml : {{ nmapReportDir }}/top-udp-ports.xml
+nmapCups : {{ nmapReportDir }}/cups-enum
+nmapJavaRmi : {{ nmapReportDir }}/java-rmi
+nmapJavaRmiDump : {{ nmapReportDir }}/java-rmi-dump
+nmapVNC : {{ nmapReportDir }}/vnc
+nmapTelnet : {{ nmapReportDir }}/telnet
+nmapCassandra : {{ nmapReportDir }}/cassandra
+nmapMySQL : {{ nmapReportDir }}/mySql
+nmapMsSQL : {{ nmapReportDir }}/msSql
+nmapMongo : {{ nmapReportDir }}/mongo
+nmapPop3 : {{ nmapReportDir }}/pop3
+nmapKerberos : {{ nmapReportDir }}/kerberos
+rpcDir : {{ reportDir }}/rpc
+impRpc : {{ reportDir }}/rpc/rpcdump.log
+rpcEnum4linux : {{ reportDir }}/rpc/rpcEnum4linux.log
+vulnDir : {{ reportDir }}/vulns
+webSSLDir : {{ reportDir }}/webSSL
+webSSLScanT : {{ reportDir }}/webSSL/sslscan-color-{{ target }}
+webSSLWhatWebT : {{ reportDir }}/webSSL/whatweb-{{ target }}
+webSSLWhatWeb : {{ reportDir }}/webSSL/whatweb
+webSSLNiktoT : {{ reportDir }}/webSSL/whatweb-{{ target }}
+webSSLNikto : {{ reportDir }}/webSSL/whatweb
+webSSLwafw00fT : {{ reportDir }}/webSSL/wafw00f-{{ target }}
+webSSLwafw00f : {{ reportDir }}/webSSL/wafw00f
+webSSLRobotsT : {{ reportDir }}/webSSL/robots-{{ target }}
+webSSLRobots : {{ reportDir }}/webSSL/robots
+webSSLDirsearchT : {{ reportDir }}/webSSL/dirsearch-{{ target }}
+webSSLDirsearchFT : {{ reportDir }}/webSSL/dirsearch-foreign-{{ target }}
+webSSLDirsearchF : {{ reportDir }}/webSSL/dirsearch-foreign
+webSSLDirsearchRFT : {{ reportDir }}/webSSL/dirsearch-raftfiles-{{ target }}
+webSSLDirsearchRF : {{ reportDir }}/webSSL/dirsearch-raftfiles
+webSSLDirsearchRLDT : {{ reportDir }}/webSSL/dirsearch-raftlargedirs-{{ target }}
+webSSLDirsearchRLD : {{ reportDir }}/webSSL/dirsearch-raftlargedirs
+webSSLDirsearchDLMT : {{ reportDir }}/webSSL/dirsearch-dlistmedium-{{ target }}
+webSSLDirsearchDLM : {{ reportDir }}/webSSL/dirsearch-dlistmedium
+webSSLDirsearchBigT : {{ reportDir }}/webSSL/dirsearch-big-{{ target }}
+webSSLDirsearch : {{ reportDir }}/webSSL/dirsearch
+webSSLDirsearchBig : {{ reportDir }}/webSSL/dirsearch-big
+webSSLDirsearchPT : {{ reportDir }}/proxy/webSSL/dirsearch-127.0.0.1
+webSSLDirsearchPTB : {{ reportDir }}/proxy/webSSL/dirsearch-127.0.0.1-big
+wordlistsDir : {{ reportDir }}/wordlists
+proxyDir : {{ reportDir }}/proxy
+proxyWebSSL : {{ reportDir }}/proxy/webSSL
+proxyWeb : {{ reportDir }}/proxy/web
+aquatoneDir : {{ reportDir }}/aquatone
+aquatoneReport : {{ reportDir }}/aquatone/aquatone/aquatone_report.html
+aquatoneProxyReport : {{ reportDir }}/aquatone/aquatone-proxy/aquatone_report.html
+aquatoneDirUrls : {{ reportDir }}/aquatone/urls.txt
+aquatoneDirPUrls : {{ reportDir }}/aquatone/proxy-urls.txt
+aquatoneDirAq : {{ reportDir }}/aquatone/aquatone
+aquatoneDirAqP : {{ reportDir }}/aquatone/aquatone-proxy
+nfsDir : {{ reportDir }}/nfs
+nmapNfs : {{ nmapReportDir }}/nfs
+nfs_showmount : {{ reportDir }}/nfs/nfs-show-mount.txt
+sipDir : {{ reportDir }}/sip
+nmapSip : {{ nmapReportDir }}/sip
+svWar : {{ reportDir }}/sip/svwar.txt
+smtpDir : {{ reportDir }}/smtp
+smtp_user_enum : {{ reportDir }}/smtp/smtp-user-enum-port
+nmapSmb : {{ nmapReportDir }}/smbvulns-{{ target }}
+smbDir : {{ reportDir }}/smb
+smbScan : {{ reportDir }}/smb/smb-scan-{{ target }}.log
+sshDir : {{ reportDir }}/ssh
+snmpDir : {{ reportDir }}/snmp
+snmpwalk_log : {{ reportDir }}/snmp/snmpwalk.log
+snmpcheck_log : {{ reportDir }}/snmp/snmp-check.log
+snmp_onesixtyone_log : {{ reportDir }}/snmp/onesixtyone.log
+rpcDir : {{ reportDir }}/rpc
+ldapDir : {{ reportDir }}/ldap
+ldapEnum4linux : {{ reportDir }}/ldap/ldapenum4linux.txt
+nmapLdap : {{ nmapReportDir }}/ldap
+oracleDir : {{ reportDir }}/oracle
+oraclelog : {{ reportDir }}/oracle/oracle.log
+oracletxt : {{ reportDir }}/oracle/oracle.txt
+oraclesid : {{ reportDir }}/oracle/oracle-sid.txt
+nmaporacle : {{ nmapReportDir }}/oracle
+top_ports : {{ nmapReportDir }}/top-ports-{{ target }}
+full_tcp : {{ nmapReportDir }}/full-tcp-scan-{{ target }}
+vulners : {{ nmapReportDir }}/vulnscan-{{ target }}
+top_udp_ports : {{ nmapReportDir }}/top-udp-ports-{{ target }}
+ftp_vulns : {{ reportDir }}/vulns/ftp.log
+nmap_ftp : {{ nmapReportDir }}/ftp-enum
+ssh_vulns : {{ reportDir }}/vulns/ssh.log
+smtp_vulns : {{ reportDir }}/vulns/smtp.log
+http_vulns : {{ reportDir }}/vulns/http-title.log
+all_vulns : {{ reportDir }}/vulns/all-services.log
+ssh_user_enum : {{ pwd }}/scripts/ssh_user_enum.py
+usernames_wordlist : {{ pwd }}/wordlists/usernames.txt
+Big : /usr/share/wordlists/dirb/big.txt
+ssh_usernames : {{ reportDir }}/ssh/ssh-usernames.json
+eyewitnessDir : {{ reportDir }}/web/eyewitness
+eyewitnessDirT : {{ reportDir }}/web/eyewitness-{{ target }}
+eyewitnessDirPT : {{ reportDir }}/proxy/web/eyewitness-{{ target }}
+eyewitnessSSLDir : {{ reportDir }}/webSSL/eyewitness
+dlistMed : /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt
+raftLarge : /usr/share/seclists/Discovery/Web-Content/raft-large-files-lowercase.txt
+raftLd : /usr/share/seclists/Discovery/Web-Content/raft-large-directories.txt
+CewlPlus : {{ reportDir }}/wordlists/all.txt
+CustomPass1575 : {{ pwd }}/wordlists/probable-v2-top1575.txt
+probPass1575 : /usr/share/seclists/Passwords/probable-v2-top1575.txt
+wlDict : {{ pwd }}/wordlists/dicc.txt
+webWhatwebProxy : {{ reportDir }}/proxy/web/whatweb-proxy
+webWhatwebPT : {{ reportDir }}/proxy/web/whatweb-proxy-{{ target }}
+webWhatweb : {{ reportDir }}/web/whatweb
+webDsP : {{ reportDir }}/proxy/web/dirsearch-127.0.0.1-proxy
+webDsPB : {{ reportDir }}/proxy/web/dirsearch-127.0.0.1-proxy-big
+webNiktoP : {{ reportDir }}/proxy/web/nikto-port
+webNikto : {{ reportDir }}/web/niktoscan
+webDs : {{ reportDir }}/web/dirsearch
+webDsB : {{ reportDir }}/web/dirsearch-big
+webRobots : {{ reportDir }}/web/robots
+webWafw00f : {{ reportDir }}/web/wafw00f
+webDirsearchF : {{ reportDir }}/web/dirsearch-foreign
+webDirsearchRF : {{ reportDir }}/web/dirsearch-raftfiles
+webDirsearchRLD : {{ reportDir }}/web/dirsearch-raftlargedirs
+webDirsearchDLM : {{ reportDir }}/web/dirsearch-dlistmedium
+webWPScan : {{ reportDir }}/web/wpscan
+webWPBrute : {{ reportDir }}/web/wordpressBrute.sh
+weblinks : {{ reportDir }}/web/links.txt
+top5Ksubs : /usr/share/seclists/Discovery/DNS/subdomains-top1million-5000.txt
+wfuzzReport : {{ reportDir }}/web/wfuzz-domain.txt
+sourceComments : {{ reportDir }}/web/source_comments.txt

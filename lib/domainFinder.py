@@ -7,6 +7,8 @@ import re
 from lib import nmapParser
 from utils import dig_parser
 from subprocess import call
+from utils import config_paths
+from utils import helper_lists
 
 
 class DomainFinder:
@@ -21,85 +23,13 @@ class DomainFinder:
         ssl_ports = np.ssl_ports
         dnsPort = np.dns_ports
         cmd_info = "[" + fg.li_green + "+" + fg.rs + "]"
-        cwd = os.getcwd()
-        reportDir = f"{cwd}/{self.target}-Report"
-        ignore = [
-            ".nse",
-            ".php",
-            ".exe",
-            ".php5",
-            ".php7",
-            ".config",
-            ".html",
-            ".png",
-            ".js",
-            ".org",
-            ".versio",
-            ".com",
-            ".gif",
-            ".asp",
-            ".aspx",
-            ".jpg",
-            ".jpeg",
-            ".txt",
-            ".bak",
-            ".note",
-            ".secret",
-            ".backup",
-            ".cgi",
-            ".pl",
-            ".git",
-            ".co",
-            ".eu",
-            ".uk",
-            ".htm",
-            ".localdomain",
-            "localhost.localdomain",
-            ".localhost",
-            ".local",
-            ".acme",
-            ".css",
-            ".name",
-            ".tar",
-            ".gz",
-            ".bz2",
-            ".tar.gz",
-            ".zip",
-            ".web",
-            ".user",
-            ".pass",
-            ".bashrc",
-            ".bash",
-            ".script",
-            ".doc",
-            ".docx",
-            ".tex",
-            ".wks",
-            ".wpd",
-            ".pdf",
-            ".xml",
-            ".xls",
-            ".xlsx",
-            ".main",
-            ".go",
-            ".htm",
-            ".ppt",
-            ".pptx",
-            ".ods",
-            ".sql",
-            ".dba",
-            ".conf",
-            ".test",
-            ".file",
-            ".login",
-            ".hta",
-            ".robots",
-        ]
+        c = config_paths.Configurator(self.target)
+        c.createConfig()
+        ig = helper_lists.ignoreDomains()
+        ignore = ig.ignore
         dns = []
         try:
-            with open(
-                f"{self.target}-Report/nmap/top-ports-{self.target}.nmap", "r"
-            ) as nm:
+            with open(f"""{c.getPath("nmap_top_ports_nmap")}""", "r") as nm:
                 for line in nm:
                     new = (
                         line.replace("=", " ")
@@ -128,7 +58,7 @@ class DomainFinder:
                             .replace("'", "")
                         )
                         print(
-                            f"{self.target} is redirecting to: {redirectDomain}, adding {redirectDomain} to /etc/hosts file"
+                            f"""{self.target} is redirecting to: {redirect_domain}, adding {redirect_domain} to /etc/hosts file"""
                         )
                         dns.append(redirect_domain)
                         self.redirect_hostname.append(redirect_domain)
@@ -155,20 +85,18 @@ class DomainFinder:
             for x in allsortedhostnames:
                 allsortedhostnameslist.append(x)
         else:
-            if not os.path.exists(f"{self.target}-Report/webSSL"):
-                os.makedirs(f"{self.target}-Report/webSSL")
-            if not os.path.exists(f"{self.target}-Report/aquatone"):
-                os.makedirs(f"{self.target}-Report/aquatone")
+            if not os.path.exists(f"""{c.getPath("webSSLDir")}"""):
+                os.makedirs(f"""{c.getPath("webSSLDir")}""")
+            if not os.path.exists(f"""{c.getPath("aquatoneDir")}"""):
+                os.makedirs(f"""{c.getPath("aquatoneDir")}""")
             for sslport in ssl_ports:
-                sslscanCMD = f"sslscan https://{self.target}:{sslport} | tee {self.target}-Report/webSSL/sslscan-color-{self.target}-{sslport}.log"
+                sslscanCMD = f"""sslscan https://{self.target}:{sslport} | tee {c.getPath("webSSLScanT")}-{sslport}.log"""
                 print(cmd_info, sslscanCMD)
                 call(sslscanCMD, shell=True)
-                if not os.path.exists(
-                    f"{self.target}-Report/webSSL/sslscan-color-{self.target}-{sslport}.log"
-                ):
+                if not os.path.exists(f"""{c.getPath("webSSLScanT")}-{sslport}.log"""):
                     pass
                 else:
-                    sslscanFile = f"{self.target}-Report/webSSL/sslscan-color-{self.target}-{sslport}.log"
+                    sslscanFile = f"""{c.getPath("webSSLScanT")}-{sslport}.log"""
                     # print(sslscanFile)
                     domainName = []
                     altDomainNames = []
@@ -224,7 +152,7 @@ class DomainFinder:
                     if x not in ignore:
                         self.redirect_hostname.append(x)
                 print(
-                    f"{cmd_info} Adding {fg.li_cyan}{allsortedhostnameslist} {fg.rs}to /etc/hosts"
+                    f"""{cmd_info} Adding {fg.li_cyan}{allsortedhostnameslist} {fg.rs}to /etc/hosts"""
                 )
                 hosts = Hosts(path="/etc/hosts")
                 new_entry = HostsEntry(
@@ -234,9 +162,11 @@ class DomainFinder:
                 hosts.write()
 
         else:
-            if not os.path.exists(f"{self.target}-Report/dns"):
-                os.makedirs(f"{self.target}-Report/dns")
-            dig_cmd = f"dig -x {self.target} @{self.target} | tee {reportDir}/dns/dig-{self.target}.log"
+            if not os.path.exists(f"""{c.getPath("dnsDir")}"""):
+                os.makedirs(f"""{c.getPath("dnsDir")}""")
+            dig_cmd = (
+                f"""dig -x {self.target} @{self.target} | tee {c.getPath("dnsDig")}"""
+            )
             print(cmd_info, dig_cmd)
             dp = dig_parser.digParse(self.target, dig_cmd)
             dp.parseDig()
@@ -256,7 +186,7 @@ class DomainFinder:
             if len(allsortedhostnameslist) != 0:
                 alldns = " ".join(map(str, allsortedhostnameslist))
                 zonexferDns = []
-                dig_command = f"dig axfr @{self.target} {alldns} | tee {reportDir}/dns/dig-axfr-{self.target}.log"
+                dig_command = f"""dig axfr @{self.target} {alldns} | tee {c.getPath("dnsZoneXfer")}"""
                 print(cmd_info, dig_command)
                 dp2 = dig_parser.digParse(self.target, dig_command)
                 dp2.parseDigAxfr()
@@ -271,7 +201,7 @@ class DomainFinder:
                     self.redirect_hostname.append(x)
                 if len(zonexferDns) != 0:
                     print(
-                        f"{cmd_info} Adding {fg.li_cyan}{sortedAllDomainsList} {fg.rs}to /etc/hosts"
+                        f"""{cmd_info} Adding {fg.li_cyan}{sortedAllDomainsList} {fg.rs}to /etc/hosts"""
                     )
                     hosts = Hosts(path="/etc/hosts")
                     new_entry = HostsEntry(
@@ -287,82 +217,12 @@ class DomainFinder:
         np = nmapParser.NmapParserFunk(self.target)
         np.openPorts()
         dnsPort = np.dns_ports
-        ignore = [
-            ".nse",
-            ".php",
-            ".exe",
-            ".php5",
-            ".php7",
-            ".config",
-            ".html",
-            ".png",
-            ".js",
-            ".org",
-            ".versio",
-            ".com",
-            ".gif",
-            ".asp",
-            ".aspx",
-            ".jpg",
-            ".jpeg",
-            ".txt",
-            ".bak",
-            ".note",
-            ".secret",
-            ".backup",
-            ".cgi",
-            ".pl",
-            ".git",
-            ".co",
-            ".eu",
-            ".uk",
-            ".htm",
-            ".localdomain",
-            "localhost.localdomain",
-            ".localhost",
-            ".local",
-            ".acme",
-            ".css",
-            ".name",
-            ".tar",
-            ".gz",
-            ".bz2",
-            ".tar.gz",
-            ".zip",
-            ".web",
-            ".user",
-            ".pass",
-            ".bashrc",
-            ".bash",
-            ".script",
-            ".doc",
-            ".docx",
-            ".tex",
-            ".wks",
-            ".wpd",
-            ".pdf",
-            ".xml",
-            ".xls",
-            ".xlsx",
-            ".main",
-            ".go",
-            ".htm",
-            ".ppt",
-            ".pptx",
-            ".ods",
-            ".sql",
-            ".dba",
-            ".conf",
-            ".test",
-            ".file",
-            ".login",
-            ".hta",
-            ".robots",
-        ]
+        c = config_paths.Configurator(self.target)
+        c.createConfig()
+        ig = helper_lists.ignoreDomains()
+        ignore = ig.ignore
         try:
-            with open(
-                f"{self.target}-Report/nmap/top-ports-{self.target}.nmap", "r"
-            ) as nm:
+            with open(f"""{c.getPath("nmap_top_ports_nmap")}""", "r") as nm:
                 for line in nm:
                     new = (
                         line.replace("=", " ")
@@ -392,9 +252,9 @@ class DomainFinder:
         except FileNotFoundError as fnf_error:
             print(fnf_error)
         if len(dnsPort) != 0:
-            if not os.path.exists(f"{self.target}-Report/dns"):
-                os.makedirs(f"{self.target}-Report/dns")
-            dig_cmd = f"dig -x {self.target} @{self.target}"
+            if not os.path.exists(f"""{c.getPath("dnsDir")}"""):
+                os.makedirs(f"""{c.getPath("dnsDir")}""")
+            dig_cmd = f"""dig -x {self.target} @{self.target}"""
             dp = dig_parser.digParse(self.target, dig_cmd)
             dp.parseDig()
             dig_hosts = dp.hosts
@@ -408,7 +268,7 @@ class DomainFinder:
             if len(self.redirect_hostname) != 0:
                 alldns = " ".join(map(str, self.redirect_hostname))
                 zonexferDns = []
-                dig_command = f"dig axfr @{self.target} {alldns}"
+                dig_command = f"""dig axfr @{self.target} {alldns}"""
                 dp2 = dig_parser.digParse(self.target, dig_command)
                 dp2.parseDigAxfr()
                 subdomains = dp2.subdomains
