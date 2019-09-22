@@ -45,6 +45,7 @@ class RunCommands:
 
     def infoMpRun(self, commands):
         """Pool all commmands to run from certain services and print the commands before running the Pool commands."""
+        cmd_info = "[" + fg.green + "+" + fg.rs + "]"
         if len(commands) != 0:
             for command in commands:
                 print(cmd_info, command)

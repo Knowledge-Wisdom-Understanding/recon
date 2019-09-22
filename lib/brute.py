@@ -82,7 +82,7 @@ class Brute:
 
                 if len(self.unique_users) > 0 and (len(self.unique_users) < 4):
                     if os.path.exists(f"""{c.getPath("CewlPlus")}"""):
-                        if os.path.getsize(cewl_wordlist) > 0:
+                        if os.path.getsize(f"""{c.getPath("CewlPlus")}""") > 0:
                             for u in self.unique_users:
                                 print(
                                     f"""{teal}Beginning Password Brute Force for User:{reset} {green}{u}{reset}"""
@@ -160,10 +160,12 @@ class BruteSingleUserCustom:
     def SshSingleUserBruteCustom(self):
         """Run patator with custome wordlist against a single user specified as a command line argument."""
         cmd_info = "[" + fg.green + "+" + fg.rs + "]"
-        cwd = os.getcwd()
         green = fg.li_green
         teal = fg.li_cyan
         reset = fg.rs
+        c = config_paths.Configurator(self.target)
+        c.createConfig()
+        c.cmdConfig()
         np = nmapParser.NmapParserFunk(self.target)
         np.openPorts()
         print(

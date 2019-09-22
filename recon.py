@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 from termcolor import colored
+from lib import brute
 from sty import fg, bg, ef, rs
 import argparse
 import signal

@@ -19,7 +19,6 @@ class NmapOpenPorts:
         found by nmaps fullTcpScan results. The following services will be enumerated
         if their respective ports are open. FTP, SMTP, NFS, RPC, TELNET, SIP, VNC, CUPS, MSSQL,
         MYSQL, CASSANDRA, MONGODB, POP3 SNMP, AND KERBEROS."""
-        cwd = os.getcwd()
         np = nmapParser.NmapParserFunk(self.target)
         np.allOpenPorts()
         ftpPorts = np.ftp_ports
@@ -40,7 +39,6 @@ class NmapOpenPorts:
         unp = nmapParser.NmapParserFunk(self.target)
         unp.openUdpPorts()
         snmpPorts = unp.snmp_ports
-        sipUdpPorts = unp.sip_udp_ports
         c = config_paths.Configurator(self.target)
         c.createConfig()
         c.cmdConfig()

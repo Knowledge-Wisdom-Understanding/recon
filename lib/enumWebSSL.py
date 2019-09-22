@@ -6,6 +6,7 @@ from lib import nmapParser
 from lib import dnsenum
 import glob
 from utils import config_paths
+from subprocess import call
 
 
 class EnumWebSSL:
@@ -188,10 +189,10 @@ class EnumWebSSL:
                     proxy_commands = proxy_commands + (
                         f"""echo {cmd_info} {green} 'whatweb -v -a 3 --proxy {self.target}:{proxy} https://127.0.0.1:{proxy_ssl_port} | tee {self.target}-Report/proxy/webSSL/whatweb-proxy-{self.target}-{proxy_ssl_port}.txt' {reset}""",
                         f"""whatweb -v -a 3 --proxy {self.target}:{proxy} https://127.0.0.1:{proxy_ssl_port} | tee {self.target}-Report/proxy/webSSL/whatweb-proxy-{self.target}-{proxy_ssl_port}.txt""",
-                        f"""echo {cmd_info} {green} '{c.getCmd("dirsearchProxyT")}:{proxy} -u https://127.0.0.1:{proxy_http_port} --plain-text-report {c.getPath("webSSLDirsearchPT")}-{proxy}-{proxy_http_port}.log' {reset}""",
-                        f"""{c.getCmd("dirsearchProxyT")}:{proxy} -u https://127.0.0.1:{proxy_http_port} --plain-text-report {c.getPath("webSSLDirsearchPT")}-{proxy}-{proxy_http_port}.log""",
-                        f"""echo {cmd_info} {green} '{c.getCmd("dirsearchE")} {c.getCmd("ext")} -x {c.getCmd("hc")} -t 50 -w {c.getCmd("Big")} --proxy {self.target}:{proxy} -u https://127.0.0.1:{proxy_http_port} --plain-text-report {c.getPath("webSSLDirsearchPTB")}-{proxy}-{proxy_http_port}.log' {reset}""",
-                        f"""{c.getCmd("dirsearchE")} {c.getCmd("ext")} -x {c.getCmd("hc")} -t 50 -w {c.getCmd("Big")} --proxy {self.target}:{proxy} -u https://127.0.0.1:{proxy_http_port} --plain-text-report {c.getPath("webSSLDirsearchPTB")}-{proxy}-{proxy_http_port}.log""",
+                        f"""echo {cmd_info} {green} '{c.getCmd("dirsearchProxyT")}:{proxy} -u https://127.0.0.1:{proxy_ssl_port} --plain-text-report {c.getPath("webSSLDirsearchPT")}-{proxy}-{proxy_ssl_port}.log' {reset}""",
+                        f"""{c.getCmd("dirsearchProxyT")}:{proxy} -u https://127.0.0.1:{proxy_ssl_port} --plain-text-report {c.getPath("webSSLDirsearchPT")}-{proxy}-{proxy_ssl_port}.log""",
+                        f"""echo {cmd_info} {green} '{c.getCmd("dirsearchE")} {c.getCmd("ext")} -x {c.getCmd("hc")} -t 50 -w {c.getCmd("Big")} --proxy {self.target}:{proxy} -u https://127.0.0.1:{proxy_ssl_port} --plain-text-report {c.getPath("webSSLDirsearchPTB")}-{proxy}-{proxy_ssl_port}.log' {reset}""",
+                        f"""{c.getCmd("dirsearchE")} {c.getCmd("ext")} -x {c.getCmd("hc")} -t 50 -w {c.getCmd("Big")} --proxy {self.target}:{proxy} -u https://127.0.0.1:{proxy_ssl_port} --plain-text-report {c.getPath("webSSLDirsearchPTB")}-{proxy}-{proxy_ssl_port}.log""",
                         f"""echo {cmd_info} {green} 'nikto -ask=no -host https://127.0.0.1:{proxy_ssl_port}/ -ssl -useproxy https://{self.target}:{proxy}/ > {self.target}-Report/proxy/webSSL/nikto-{self.target}-{proxy_ssl_port}-proxy-scan.txt 2>&1 &' {reset}""",
                         f"""nikto -ask=no -host https://127.0.0.1:{proxy_ssl_port}/ -ssl -useproxy https://{self.target}:{proxy}/ > {self.target}-Report/proxy/webSSL/nikto-{self.target}-{proxy_ssl_port}-proxy-scan.txt 2>&1 &""",
                     )
@@ -263,7 +264,7 @@ class EnumWebSSL:
                                     if cms in fword:
                                         if len(whatweb_hostnames) == 0:
                                             if "WordPress" in cms:
-                                                wpscan_cmd = f"""wpscan --no-update --disable-tls-checks --url https://{self.target}:{ssl_port}/ --wp-content-dir wp-content --enumerate vp,vt,cb,dbe,u,m --plugins-detection aggressive | tee {reportDir}/webSSL/wpscan-{ssl_port}.log"""
+                                                wpscan_cmd = f"""wpscan --no-update --disable-tls-checks --url https://{self.target}:{ssl_port}/ --wp-content-dir wp-content --enumerate vp,vt,cb,dbe,u,m --plugins-detection aggressive | tee {c.getPath("reportDir")}/webSSL/wpscan-{ssl_port}.log"""
                                                 cms_commands.append(wpscan_cmd)
                                                 manual_brute_force_script = f"""
 #!/bin/bash
@@ -293,7 +294,7 @@ fi
                                             """.rstrip()
                                             try:
                                                 with open(
-                                                    f"""{reportDir}/webSSL/wordpressBrute.sh""",
+                                                    f"""{c.getPath("reportDir")}/webSSL/wordpressBrute.sh""",
                                                     "w",
                                                 ) as wpb:
                                                     print(
@@ -301,23 +302,23 @@ fi
                                                     )
                                                     wpb.write(manual_brute_force_script)
                                                 call(
-                                                    f"""chmod +x {reportDir}/webSSL/wordpressBrute.sh""",
+                                                    f"""chmod +x {c.getPath("reportDir")}/webSSL/wordpressBrute.sh""",
                                                     shell=True,
                                                 )
                                             except FileNotFoundError as fnf_error:
                                                 print(fnf_error)
                                                 continue
                                             if "Drupal" in cms:
-                                                drupal_cmd = f"""droopescan scan drupal -u https://{self.target}:{ssl_port}/ -t 32 | tee {reportDir}/webSSL/drupalscan-{self.target}-{ssl_port}.log"""
+                                                drupal_cmd = f"""droopescan scan drupal -u https://{self.target}:{ssl_port}/ -t 32 | tee {c.getPath("reportDir")}/webSSL/drupalscan-{self.target}-{ssl_port}.log"""
                                                 cms_commands.append(drupal_cmd)
                                             if "Joomla" in cms:
-                                                joomla_cmd = f"""joomscan --url https://{self.target}:{ssl_port}/ -ec | tee {reportDir}/webSSL/joomlascan-{self.target}-{ssl_port}.log"""
+                                                joomla_cmd = f"""joomscan --url https://{self.target}:{ssl_port}/ -ec | tee {c.getPath("reportDir")}/webSSL/joomlascan-{self.target}-{ssl_port}.log"""
                                                 cms_commands.append(joomla_cmd)
                                             if "Magento" in cms:
-                                                magento_cmd = f"""cd /opt/magescan && bin/magescan scan:all -n --insecure https://{self.target}:{ssl_port}/ | tee {reportDir}/webSSL/magentoscan-{self.target}-{ssl_port}.log && cd - &>/dev/null"""
+                                                magento_cmd = f"""cd /opt/magescan && bin/magescan scan:all -n --insecure https://{self.target}:{ssl_port}/ | tee {c.getPath("reportDir")}/webSSL/magentoscan-{self.target}-{ssl_port}.log && cd - &>/dev/null"""
                                                 cms_commands.append(magento_cmd)
                                             if "WebDAV" in cms:
-                                                webdav_cmd = f"""davtest -move -sendbd auto -url https://{self.target}:{ssl_port}/ | tee {reportDir}/webSSL/davtestscan-{self.target}-{ssl_port}.log"""
+                                                webdav_cmd = f"""davtest -move -sendbd auto -url https://{self.target}:{ssl_port}/ | tee {c.getPath("reportDir")}/webSSL/davtestscan-{self.target}-{ssl_port}.log"""
                                                 webdav_cmd2 = f"""nmap -Pn -v -sV -p {ssl_port} --script=http-iis-webdav-vuln.nse -oA {self.target}-Report/nmap/webdav {self.target}"""
                                                 cms_commands.append(webdav_cmd)
                                                 cms_commands.append(webdav_cmd2)
@@ -326,28 +327,28 @@ fi
                                                 for whatweb_hn in whatweb_hostnames:
                                                     if hn in whatweb_hn:
                                                         if "WordPress" in cms:
-                                                            wpscan_cmd = f"""wpscan --no-update --disable-tls-checks --url https://{hn}:{ssl_port}/ --wp-content-dir wp-content --enumerate vp,vt,cb,dbe,u,m --plugins-detection aggressive | tee {reportDir}/webSSL/wpscan-{hn}-{ssl_port}.log"""
+                                                            wpscan_cmd = f"""wpscan --no-update --disable-tls-checks --url https://{hn}:{ssl_port}/ --wp-content-dir wp-content --enumerate vp,vt,cb,dbe,u,m --plugins-detection aggressive | tee {c.getPath("reportDir")}/webSSL/wpscan-{hn}-{ssl_port}.log"""
                                                             cms_commands.append(
                                                                 wpscan_cmd
                                                             )
                                                         if "Drupal" in cms:
-                                                            drupal_cmd = f"""droopescan scan drupal -u https://{hn}:{ssl_port}/ -t 32 | tee {reportDir}/webSSL/drupalscan-{hn}-{ssl_port}.log"""
+                                                            drupal_cmd = f"""droopescan scan drupal -u https://{hn}:{ssl_port}/ -t 32 | tee {c.getPath("reportDir")}/webSSL/drupalscan-{hn}-{ssl_port}.log"""
                                                             cms_commands.append(
                                                                 drupal_cmd
                                                             )
                                                         if "Joomla" in cms:
-                                                            joomla_cmd = f"""joomscan --url https://{hn}:{ssl_port}/ -ec | tee {reportDir}/webSSL/joomlascan-{hn}-{ssl_port}.log"""
+                                                            joomla_cmd = f"""joomscan --url https://{hn}:{ssl_port}/ -ec | tee {c.getPath("reportDir")}/webSSL/joomlascan-{hn}-{ssl_port}.log"""
                                                             cms_commands.append(
                                                                 joomla_cmd
                                                             )
                                                         if "Magento" in cms:
-                                                            magento_cmd = f"""cd /opt/magescan && bin/magescan scan:all https://{hn}:{ssl_port}/ | tee {reportDir}/webSSL/magentoscan-{hn}-{ssl_port}.log && cd - &>/dev/null"""
+                                                            magento_cmd = f"""cd /opt/magescan && bin/magescan scan:all https://{hn}:{ssl_port}/ | tee {c.getPath("reportDir")}/webSSL/magentoscan-{hn}-{ssl_port}.log && cd - &>/dev/null"""
                                                             cms_commands.append(
                                                                 magento_cmd
                                                             )
                                                         if "WebDAV" in cms:
-                                                            webdav_cmd = f"""davtest -move -sendbd auto -url https://{hn}:{ssl_port}/ | tee {reportDir}/webSSL/davtestscan-{hn}-{ssl_port}.log"""
-                                                            webdav_cmd2 = f"""nmap -Pn -v -sV -p {ssl_port} --script=http-iis-webdav-vuln.nse -oA {reportDir}/nmap/webdav {self.target}"""
+                                                            webdav_cmd = f"""davtest -move -sendbd auto -url https://{hn}:{ssl_port}/ | tee {c.getPath("reportDir")}/webSSL/davtestscan-{hn}-{ssl_port}.log"""
+                                                            webdav_cmd2 = f"""nmap -Pn -v -sV -p {ssl_port} --script=http-iis-webdav-vuln.nse -oA {c.getPath("reportDir")}/nmap/webdav {self.target}"""
                                                             cms_commands.append(
                                                                 webdav_cmd
                                                             )

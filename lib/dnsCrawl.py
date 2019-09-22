@@ -41,7 +41,7 @@ class checkSource:
                 page = requests.get(url)
                 data = page.text
                 soup = BeautifulSoup(data, "html.parser")
-                links = []
+                # links = []
                 htb = [".htb"]
                 source_domain_name = []
                 for link in soup.find_all(text=lambda x: ".htb" in x):
@@ -104,7 +104,7 @@ class checkSource:
                         for htprc in filt2arr:
                             status_code.append(htprc[1])
                     if len(status_code) != 0:
-                        for status in status_code:
+                        for _ in status_code:
                             # print(status_code)
                             awk_print = "awk '{print $8}'"
                             get_domain_cmd = f"""sed -n -e 's/^.*C={status_code}//p' {wfuzzReport} | {awk_print}"""
@@ -166,4 +166,3 @@ class sourceCommentChecker:
                         com.write(com_str)
             except FileNotFoundError as fnf:
                 print(fnf)
-

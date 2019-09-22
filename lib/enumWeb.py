@@ -190,8 +190,8 @@ class EnumWeb:
                         f"""{c.getCmd("dirsearchT")}:{port}/ -t 50 -e {c.getCmd("ext2")} -x {c.getCmd("hc")} -w {c.getPath("raftLarge")} --plain-text-report {c.getPath("webDirsearchRF")}-{port}.log""",
                         f"""echo {cmd_info} {green} '{c.getCmd("dirsearchT")}:{port}/ -t 50 -e php,asp,aspx,html,txt -x {c.getCmd("hc")} -w {c.getPath("raftLd")} --plain-text-report {c.getPath("webDirsearchRLD")}-{port}.log' {reset}""",
                         f"""{c.getCmd("dirsearchT")}:{port}/ -t 50 -e php,asp,aspx,html,txt -x {c.getCmd("hc")} -w {c.getPath("raftLd")} --plain-text-report {c.getPath("webDirsearchRLD")}-{port}.log""",
-                        f"""echo {cmd_info} {green} '{c.getCmd("dirsearchT")}:{port}/ -t 50 -e php,asp,aspx,html,txt -x {c.getCmd("hc")} -w {cwd}/wordlists/foreign.txt --plain-text-report {c.getPath("webDirsearchF")}-{port}.log' {reset}""",
-                        f"""{c.getCmd("dirsearchT")}:{port}/ -t 50 -e php,asp,aspx,html,txt -x {c.getCmd("hc")} -w {cwd}/wordlists/foreign.txt --plain-text-report {c.getPath("webDirsearchF")}-{port}.log""",
+                        f"""echo {cmd_info} {green} '{c.getCmd("dirsearchT")}:{port}/ -t 50 -e php,asp,aspx,html,txt -x {c.getCmd("hc")} -w {c.getPath("pwd")}/wordlists/foreign.txt --plain-text-report {c.getPath("webDirsearchF")}-{port}.log' {reset}""",
+                        f"""{c.getCmd("dirsearchT")}:{port}/ -t 50 -e php,asp,aspx,html,txt -x {c.getCmd("hc")} -w {c.getPath("pwd")}/wordlists/foreign.txt --plain-text-report {c.getPath("webDirsearchF")}-{port}.log""",
                         f"""echo {cmd_info} {green} 'nikto -ask=no -host http://{self.target}:{port} >{c.getPath("webNikto")}-{port}.txt 2>&1 &' {reset}""",
                         f"""nikto -ask=no -host http://{self.target}:{port} >{c.getPath("webNikto")}-{port}.txt 2>&1 &""",
                     )

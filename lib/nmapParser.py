@@ -401,8 +401,7 @@ class NmapParserFunk:
         c = config_paths.Configurator(self.target)
         c.createConfig()
         self.openPorts()
-        cwd = os.getcwd()
-        if not os.path.exists(f"{c.getPath('nmap_proxychain_top_ports')}"):
+        if not os.path.exists(f"""{c.getPath('nmap_proxychain_top_ports')}"""):
             pass
         else:
             proxy_report = NmapParser.parse_fromfile(
