@@ -10,12 +10,14 @@ Enum_Oracle() {
     cwd=$(pwd)
     getcwd=$(echo $cwd)
     reconDir2="$getcwd/$rhost-Report/oracle"
+    cd /opt/odat
+    echo -e "${NICE} ./odat.py sidguesser -s $rhost -p 1521 | tee $reconDir2/oracle-sid.txt"
+    ./odat.py sidguesser -s $rhost -p 1521 | tee $reconDir2/oracle-sid.txt
     SIDS=$(sed -n -e 's/^.*server: //p' $reconDir2/oracle-sid.txt)
     sid_list=$(echo $SIDS | tr "," "\n")
     if [[ -n $SIDS ]]; then
         for sid in $sid_list; do
-            cd /opt/odat
-            echo -e "${NICE} Running ODAT passwordguesser ${NICE} ./odat.py passwordguesser -s $rhost -p 1521 -d $sid --accounts-file $reconDir2/oracle_default_userpass.txt --force-retry | tee $reconDir2/oracle-$sid-password-guesser.txt"
+            echo -e "${NICE} Running ODAT passwordguesser ${NICE} ./odat.py passwordguesser -s $rhost -p 1521 -d $sid --accounts-file $getcwd/wordlists/oracle_default_userpass.txt --force-retry | tee $reconDir2/oracle-$sid-password-guesser.txt"
             ./odat.py passwordguesser -s $rhost -p 1521 -d $sid --accounts-file $getcwd/wordlists/oracle_default_userpass.txt --force-retry | tee $reconDir2/oracle-$sid-password-guesser.txt
             if grep -i "Valid credentials found" $reconDir2/oracle-$sid-password-guesser.txt 2>/dev/null; then
                 echo -e "${NICE} ${NICE} ${NICE} ${NICE} ${NICE} ${NICE} ${TEAL}Found Valid Credentials!${END} ${NICE} ${NICE} ${NICE} ${NICE} ${NICE} ${NICE}"

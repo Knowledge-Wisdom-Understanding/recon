@@ -25,8 +25,10 @@ class OracleEnum:
         if len(oracle_tns_ports) == 0:
             pass
         else:
-            ldap_enum = f"""lib/oracle.sh {self.target}"""
-            call(ldap_enum, shell=True)
+            c = config_paths.Configurator(self.target)
+            c.createConfig()
+            oracle_pwn = f"""bash {c.getPath("oracleBrute")} {self.target}"""
+            call(oracle_pwn, shell=True)
 
     def Scan(self):
         """This Scan() Function will run various oracle scanning tools and attempt to find
@@ -64,7 +66,5 @@ class OracleEnum:
                 f"""cd /opt/odat && ./odat.py tnscmd -s {self.target} -p 1521 --version | tee {c.getPath("oracletxt")} && cd - &>/dev/null""",
                 f"""echo {cmd_info} {green} './odat.py tnscmd -s {self.target} -p 1521 --status | tee {c.getPath("oracletxt")}' {reset}""",
                 f"""cd /opt/odat && ./odat.py tnscmd -s {self.target} -p 1521 --status | tee {c.getPath("oracletxt")} && cd - &>/dev/null""",
-                f"""echo {cmd_info} {green} './odat.py sidguesser -s {self.target} -p 1521 | tee {c.getPath("oraclesid")}' {reset}""",
-                f"""cd /opt/odat && ./odat.py sidguesser -s {self.target} -p 1521 | tee {c.getPath("oraclesid")} && cd - &>/dev/null""",
             )
             self.processes = commands

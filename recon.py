@@ -1,22 +1,5 @@
 #!/usr/bin/env python3
 
-from lib import topOpenPorts
-from lib import nmapOpenPorts
-from lib import nmapParser
-from lib import enumWeb
-from lib import enumWebSSL
-from lib import smbEnum
-from lib import dnsenum
-from lib import aqua
-from lib import enumProxy
-from lib import ldapEnum
-from lib import oracleEnum
-from lib import brute
-from lib import searchsploits
-from lib import enumProxyCMS
-from utils import remove_color
-from utils import peaceout_banner
-from utils import helper_lists
 from termcolor import colored
 from sty import fg, bg, ef, rs
 import argparse
@@ -30,9 +13,8 @@ from multiprocessing import Pool
 from functools import partial
 import socket
 from tqdm import tqdm
-from utils import config_paths
+from utils import run_commands
 
-cmd_info = "[" + fg.li_green + "+" + fg.rs + "]"
 bad_cmd = "[" + fg.li_red + "+" + fg.rs + "]"
 green = fg.li_green
 teal = fg.li_cyan
@@ -188,170 +170,6 @@ def main():
             print("")
             sys.exit()
 
-    def mpRun(commands):
-        """Pool all commands to run from each service class and run them 2 at a time.,"""
-        if len(commands) != 0:
-            with Pool(processes=2) as p:
-                max_ = len(commands)
-                with tqdm(total=max_) as pbar:
-                    for i, returncode in enumerate(
-                        p.imap_unordered(partial(call, shell=True), commands)
-                    ):
-                        pbar.update()
-                        if returncode != 0:
-                            print(f"{i} command failed: {returncode}")
-
-    def infoMpRun(commands):
-        """Pool all commmands to run from certain services and print the commands before running the Pool commands."""
-        if len(commands) != 0:
-            for command in commands:
-                print(cmd_info, command)
-            with Pool(processes=2) as p:
-                max_ = len(commands)
-                with tqdm(total=max_) as pbar:
-                    for i, returncode in enumerate(
-                        p.imap_unordered(partial(call, shell=True), commands)
-                    ):
-                        pbar.update()
-                        if returncode != 0:
-                            print(f"{i} command failed: {returncode}")
-
-    def removeColor():
-        """Helper function to call the utils/remove_color Class."""
-        nocolor = remove_color.Clean(args.target)
-        nocolor.listfiles()
-        nocolor.listFilesProxy()
-
-    def enumHTTP():
-        """Helper function to call the lib/enumWeb Class."""
-        eweb = enumWeb.EnumWeb(args.target)
-        eweb.Scan()
-        web_enum_commands = eweb.processes
-        mpRun(web_enum_commands)
-
-    def enumHTTPS():
-        """Helper function to call the lib/enumWebSSL Class."""
-        webssl = enumWebSSL.EnumWebSSL(args.target)
-        webssl.Scan()
-        web_ssl_enum_commands = webssl.processes
-        mpRun(web_ssl_enum_commands)
-
-    def enumHTTP2():
-        """Helper function to call the lib/enumWeb Large Wordlists Class."""
-        eweb = enumWeb.EnumWeb(args.target)
-        eweb.ScanWebOption()
-        web_enum_commands = eweb.processes
-        mpRun(web_enum_commands)
-
-    def enumHTTPS2():
-        """Helper function to call the lib/enumWebSSL Large Wordlists Class."""
-        webssl = enumWebSSL.EnumWebSSL(args.target)
-        webssl.ScanWebOption()
-        web_ssl_enum_commands = webssl.processes
-        mpRun(web_ssl_enum_commands)
-
-    def enumDNS():
-        """Helper function to call the lib/DnsEnum Class."""
-        dn = dnsenum.DnsEnum(args.target)
-        dn.Scan()
-        dns_enum_commands = dn.processes
-        mpRun(dns_enum_commands)
-
-    def enumSMB():
-        """Helper function to call the lib/SmbEnum Class."""
-        smb = smbEnum.SmbEnum(args.target)
-        smb.Scan()
-        smb_enum_commands = smb.processes
-        mpRun(smb_enum_commands)
-
-    def enumRemainingServices():
-        """Helper function to call the lib/NmapOpenPorts Class."""
-        print(f"{teal}Enumerating Remaining Services {reset}")
-        nmapRemaing = nmapOpenPorts.NmapOpenPorts(args.target)
-        nmapRemaing.Scan()
-        remaining_enum_cmds = nmapRemaing.processes
-        infoMpRun(remaining_enum_cmds)
-
-    def getOpenPorts():
-        """Helper function to call the lib/NmapParserFunk Class."""
-        np = nmapParser.NmapParserFunk(args.target)
-        np.openPorts()
-
-    def scanTopTcpPorts():
-        """Helper function to call the lib/TopOpenPorts Class."""
-        ntp = topOpenPorts.TopOpenPorts(args.target)
-        ntp.Scan()
-
-    def fullTcpAndTopUdpScan():
-        """Helper function to Run FULLTCP and UDP and VULNERS nmap Scans."""
-        ntp = topOpenPorts.TopOpenPorts(args.target)
-        ntp.topUdpAllTcp()
-        nmap_commands = ntp.processes
-        mpRun(nmap_commands)
-
-    def aquatone():
-        """Helper Funtion to run Aquatone provided there are open web servers and found urls which is 
-        handled in the lib/aqua.py logic."""
-        aq = aqua.Aquatone(args.target)
-        aq.Scan()
-
-    def peace():
-        """Helper function to print the peaceout banner."""
-        pe = peaceout_banner.PeaceOut()
-        pe.bannerOut()
-
-    def cmsEnum():
-        """Helper funciton to call the CMS enumeration HTTP logic."""
-        cm = enumWeb.EnumWeb(args.target)
-        cm.CMS()
-        cms_commands = cm.cms_processes
-        infoMpRun(cms_commands)
-
-    def cmsEnumSSL():
-        """Helper funciton to call the CMS enumeration HTTPS logic."""
-        cms = enumWebSSL.EnumWebSSL(args.target)
-        cms.sslEnumCMS()
-        cms_ssl_commands = cms.cms_processes
-        infoMpRun(cms_ssl_commands)
-
-    def proxyEnum():
-        """Helper funciton to call The Check Proxy and Enumerate Proxy Class's / Functions."""
-        pscan = enumProxy.CheckProxy(args.target)
-        pscan.Scan()
-        pr = nmapParser.NmapParserFunk(args.target)
-        pr.openProxyPorts()
-        pscan.Enum()
-        proxy_commands = pscan.all_processes
-        infoMpRun(proxy_commands)
-
-    def proxyEnumCMS():
-        """Helper funciton to call The Check Proxy and Enumerate Proxy CMS Class"""
-        pcms = enumProxyCMS.EnumProxyCMS(args.target)
-        pcms.proxyCMS()
-        proxy_cms_commands = pcms.cms_processes
-        infoMpRun(proxy_cms_commands)
-
-    def enumLdap():
-        """Helper Function to Call Ldap Enumeration."""
-        ld = ldapEnum.LdapEnum(args.target)
-        ld.Scan()
-        ldap_cmds = ld.processes
-        mpRun(ldap_cmds)
-        ld.ldapSearch()
-
-    def enumOracle():
-        """Helper Function to Call Oracle Enumeration."""
-        oc = oracleEnum.OracleEnum(args.target)
-        oc.Scan()
-        oracle_cmds = oc.processes
-        mpRun(oracle_cmds)
-        oc.OraclePwn()
-
-    def getUdpPorts():
-        """Helper Function to parse UDP ports."""
-        udp = nmapParser.NmapParserFunk(args.target)
-        udp.openUdpPorts()
-
     def sshUserBrute():
         """Helper Function to Call the SSHBRUTE option / Class"""
         sb = brute.Brute(args.target, args.brute, args.port)
@@ -369,21 +187,7 @@ def main():
         )
         sb.SshSingleUserBruteCustom()
 
-    def searchSploits():
-        """Helper Function to Call the Search Class which will attempt to run SearchSploit."""
-        ss = searchsploits.Search(args.target)
-        ss.Scan()
-        ss.vulnCheck()
-
-    def sortFoundUrls():
-        """Helper Function to call the Helper Class DirsearchURLS. See DirsearchURL's comment for more information."""
-        ds = helper_lists.DirsearchURLS(args.target)
-        ds.genDirsearchUrlList()
-
-    def sortFoundProxyUrls():
-        """Helper Function to sort found Proxy URLS found by dirsearch."""
-        ds = helper_lists.DirsearchURLS(args.target)
-        ds.genProxyDirsearchUrlList()
+    rc = run_commands.RunCommands(args.target)
 
     # This is the Full Scan option for a Single Target
     if (
@@ -397,27 +201,28 @@ def main():
     ):
         validateIP()
         reset_timer()
-        scanTopTcpPorts()
-        getOpenPorts()  # Must Always be ON
-        enumDNS()
-        enumHTTP()
-        cmsEnum()
-        enumHTTPS()
-        cmsEnumSSL()
-        sortFoundUrls()
-        proxyEnum()
-        sortFoundProxyUrls()
-        proxyEnumCMS()
-        aquatone()
-        enumSMB()
-        enumLdap()
-        enumOracle()
-        fullTcpAndTopUdpScan()
-        getUdpPorts()
-        enumRemainingServices()
-        searchSploits()
-        removeColor()
-        peace()
+        rc.scanTopTcpPorts()
+        rc.getOpenPorts()  # Must Always be ON
+        rc.enumDNS()
+        rc.enumHTTP()
+        rc.cmsEnum()
+        rc.enumHTTPS()
+        rc.cmsEnumSSL()
+        rc.sortFoundUrls()
+        rc.proxyEnum()
+        rc.sortFoundProxyUrls()
+        rc.proxyEnumCMS()
+        rc.aquatone()
+        rc.enumSMB()
+        rc.enumLdap()
+        rc.removeColor()
+        rc.enumOracle()
+        rc.fullTcpAndTopUdpScan()
+        rc.getUdpPorts()
+        rc.enumRemainingServices()
+        rc.searchSploits()
+        rc.removeColor()
+        rc.peace()
         check_timer()
     # This is for the -f --file Option and will run all scans on all IP addresses
     # In the provided file. Should be 1 IPv4 address per line
@@ -436,27 +241,28 @@ def main():
                     args.target = ip.rstrip()
                     validateIP()
                     reset_timer()
-                    scanTopTcpPorts()
-                    getOpenPorts()  # Must Always be ON
-                    enumDNS()
-                    enumHTTP()
-                    cmsEnum()
-                    enumHTTPS()
-                    cmsEnumSSL()
-                    sortFoundUrls()
-                    proxyEnum()
-                    sortFoundProxyUrls()
-                    proxyEnumCMS()
-                    aquatone()
-                    enumSMB()
-                    enumLdap()
-                    enumOracle()
-                    fullTcpAndTopUdpScan()
-                    getUdpPorts()
-                    enumRemainingServices()
-                    searchSploits()
-                    removeColor()
-                    peace()
+                    rc.scanTopTcpPorts()
+                    rc.getOpenPorts()  # Must Always be ON
+                    rc.enumDNS()
+                    rc.enumHTTP()
+                    rc.cmsEnum()
+                    rc.enumHTTPS()
+                    rc.cmsEnumSSL()
+                    rc.sortFoundUrls()
+                    rc.proxyEnum()
+                    rc.sortFoundProxyUrls()
+                    rc.proxyEnumCMS()
+                    rc.aquatone()
+                    rc.enumSMB()
+                    rc.enumLdap()
+                    rc.removeColor()
+                    rc.enumOracle()
+                    rc.fullTcpAndTopUdpScan()
+                    rc.getUdpPorts()
+                    rc.enumRemainingServices()
+                    rc.searchSploits()
+                    rc.removeColor()
+                    rc.peace()
                     check_timer()
         except FileNotFoundError as fnf_error:
             print(fnf_error)
@@ -474,31 +280,30 @@ def main():
     ):
         args.target = args.web
         validateIP()
-        setupConfig()
         if os.path.exists(f"{args.target}-Report/nmap/top-ports-{args.target}.nmap"):
             reset_timer()
-            getOpenPorts()
-            enumDNS()
-            enumHTTP2()
-            cmsEnum()
-            enumHTTPS2()
-            cmsEnumSSL()
-            removeColor()
-            aquatone()
-            peace()
+            rc.getOpenPorts()
+            rc.enumDNS()
+            rc.enumHTTP2()
+            rc.cmsEnum()
+            rc.enumHTTPS2()
+            rc.cmsEnumSSL()
+            rc.removeColor()
+            rc.aquatone()
+            rc.peace()
             check_timer()
         else:
             reset_timer()
-            scanTopTcpPorts()
-            getOpenPorts()
-            enumDNS()
-            enumHTTP2()
-            cmsEnum()
-            enumHTTPS2()
-            cmsEnumSSL()
-            removeColor()
-            aquatone()
-            peace()
+            rc.scanTopTcpPorts()
+            rc.getOpenPorts()
+            rc.enumDNS()
+            rc.enumHTTP2()
+            rc.cmsEnum()
+            rc.enumHTTPS2()
+            rc.cmsEnumSSL()
+            rc.removeColor()
+            rc.aquatone()
+            rc.peace()
             check_timer()
 
     # This is the Brute forcing option and -t --target argument is required
@@ -555,7 +360,7 @@ def main():
                     ):
                         sshUserBrute()
                     else:
-                        scanTopTcpPorts()
+                        rc.scanTopTcpPorts()
                         sshUserBrute()
                 elif args.user and (args.PASSWORDS is None):
                     print(

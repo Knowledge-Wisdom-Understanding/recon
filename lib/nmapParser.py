@@ -127,8 +127,7 @@ class NmapParserFunk:
                                 if service[8] not in self.ssl_script_results:
                                     self.ssl_script_results.append(service[8])
                 if "http" in service[1]:
-                    if "ssl" in service[2]:
-                        continue
+                    if "ssl" not in service[2]:
                         if "ssl" not in service[1]:
                             if "http-proxy" not in service[1]:
                                 if service[0] not in ignored_windows_http_ports:

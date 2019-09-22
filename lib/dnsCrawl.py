@@ -2,10 +2,9 @@
 
 import os
 from sty import fg, bg, ef, rs
-from subprocess import PIPE, Popen, check_output, STDOUT
+from subprocess import PIPE, Popen, check_output, STDOUT, call
 import wfuzz
 from lib import nmapParser
-from subprocess import call
 from bs4 import BeautifulSoup, Comment
 import requests
 import re
