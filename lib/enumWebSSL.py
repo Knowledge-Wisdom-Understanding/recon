@@ -9,6 +9,9 @@ from utils import config_paths
 
 
 class EnumWebSSL:
+    """EnumWebSSL will Enumerate all Found SSL/HTTPS webservers with open ports from the nmapParser. The following tools
+    are described in this Classes Scan() function."""
+
     def __init__(self, target):
         self.target = target
         self.processes = ""
@@ -16,6 +19,8 @@ class EnumWebSSL:
         self.cms_processes = ""
 
     def Scan(self):
+        """Enumerate HTTPS/SSL Web Server ports based on nmaps output. This function will run the following tools;
+        WhatWeb, WafW00f, Dirsearch, EyeWitness, Nikto, and curl robots.txt"""
         np = nmapParser.NmapParserFunk(self.target)
         np.openPorts()
         df = dnsenum.DnsEnum(self.target)
@@ -78,6 +83,11 @@ class EnumWebSSL:
             self.processes = commands
 
     def ScanWebOption(self):
+        """Enumerate Web Server ports based on nmaps output. This function will run the following tools;
+        WhatWeb, WafW00f, Dirsearch, EyeWitness, Nikto, and curl robots.txt
+        This is almost identical to the normal web scan except, it uses much larger wordlists
+         and doesn't run EyeWitnesss Since that tool is run on the intended default
+        Original Scan option."""
         np = nmapParser.NmapParserFunk(self.target)
         np.openPorts()
         df = dnsenum.DnsEnum(self.target)
@@ -148,6 +158,8 @@ class EnumWebSSL:
             self.processes = commands
 
     def sslProxyScan(self):
+        """This function is called by lib/enumProxy.py and will enumerate HTTPS/SSL Web Servers.
+        It will run, whatweb, dirsearch, and nikto."""
         npp = nmapParser.NmapParserFunk(self.target)
         npp.openProxyPorts()
         np = nmapParser.NmapParserFunk(self.target)
@@ -188,6 +200,10 @@ class EnumWebSSL:
             # print(self.processes)
 
     def sslEnumCMS(self):
+        """If a valid CMS is found from initial Web Enumeration, more specifically, WhatWebs results, Then proceed to 
+        Enumerate the CMS further using Wpscan, Magescan, Nmap, Droopescan, Joomscan, and davtest, hydra, and will
+        create a brute force bash script using Cewl, which will then be used by WpScan to try and brute force
+        Users and passwords."""
         np = nmapParser.NmapParserFunk(self.target)
         np.openPorts()
         df = dnsenum.DnsEnum(self.target)

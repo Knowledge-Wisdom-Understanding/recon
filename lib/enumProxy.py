@@ -12,11 +12,18 @@ from utils import config_paths
 
 
 class CheckProxy:
+    """The CheckProxy Class will Attempt to run a nmap scan using proxychains if any valid 
+    http-proxy ports are found to be open from nmap's initial scanning results from the NmapParserFunk class
+    located in lib/nmapParser.py"""
+
     def __init__(self, target):
         self.target = target
         self.all_processes = ""
 
     def Scan(self):
+        """If there is an open http-proxy port from nmaps results. Try to add the server IP to your proxychains
+        config file and then proceed to scan the target again through the proxy port using proxychains and nmap.
+        If more ports are discovered open, proceed to enumerate all found open ports through the http-proxy port."""
         np = nmapParser.NmapParserFunk(self.target)
         np.openPorts()
         proxyPorts = np.proxy_ports
@@ -66,6 +73,7 @@ class CheckProxy:
             call(proxychains_nmap_top_ports_cmd, shell=True)
 
     def Enum(self):
+        """This is a helper function that will run all the Enumeration Commands Based off of nmaps proxychain original output scan if new ports are discovered."""
         npp = nmapParser.NmapParserFunk(self.target)
         npp.openProxyPorts()
         np = nmapParser.NmapParserFunk(self.target)

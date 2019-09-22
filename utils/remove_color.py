@@ -7,6 +7,11 @@ from utils import config_paths
 
 
 class Clean:
+    """The Clean Class is responsible for cleaning up output files that contain ANSI
+    color codes. It's nice to have the color output in the terminal window, however, to
+    avoid removing all color from the program, instead, I've created this helper class
+    to remove all ANSI color codes from all color output found in the Report Results."""
+
     def __init__(self, target):
         self.target = target
 

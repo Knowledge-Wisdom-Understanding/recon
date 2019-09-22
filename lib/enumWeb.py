@@ -13,6 +13,9 @@ from utils import config_paths
 
 
 class EnumWeb:
+    """The EnumWeb Class will enumeate all found open HTTP ports based off of nmap's initial
+    scan results."""
+
     def __init__(self, target):
         self.target = target
         self.processes = ""
@@ -20,6 +23,8 @@ class EnumWeb:
         self.proxy_processes = ""
 
     def Scan(self):
+        """Enumerate Web Server ports based on nmaps output. This function will run the following tools;
+        WhatWeb, WafW00f, Dirsearch, EyeWitness, Nikto, and curl robots.txt"""
         green = fg.li_green
         reset = fg.rs
         cmd_info = "[" + green + "+" + reset + "]"
@@ -107,6 +112,11 @@ class EnumWeb:
             self.processes = commands
 
     def ScanWebOption(self):
+        """Enumerate Web Server ports based on nmaps output. This function will run the following tools;
+        WhatWeb, WafW00f, Dirsearch, EyeWitness, Nikto, and curl robots.txt
+        This is almost identical to the normal web scan except, it uses much larger wordlists
+         and doesn't run EyeWitnesss Since that tool is run on the intended default
+        Original Scan option."""
         np = nmapParser.NmapParserFunk(self.target)
         np.openPorts()
         http_ports = np.http_ports
@@ -189,6 +199,10 @@ class EnumWeb:
             self.processes = commands
 
     def CMS(self):
+        """If a valid CMS is found from initial Web Enumeration, more specifically, WhatWebs results, Then proceed to 
+        Enumerate the CMS further using Wpscan, Magescan, Nmap, Droopescan, Joomscan, and davtest, hydra, and will
+        create a brute force bash script using Cewl, which will then be used by WpScan to try and brute force
+        Users and passwords."""
         np = nmapParser.NmapParserFunk(self.target)
         np.openPorts()
         http_ports = np.http_ports
@@ -310,6 +324,8 @@ fi
             self.cms_processes = mpCmds
 
     def proxyScan(self):
+        """This is the Web Proxy scan function that is called by lib/enumProxy.py.
+        This function will attempt to run, dirsearch, whatweb, and nikto"""
         np = nmapParser.NmapParserFunk(self.target)
         np.openPorts()
         npp = nmapParser.NmapParserFunk(self.target)
@@ -355,6 +371,7 @@ fi
             self.proxy_processes = proxy_commands
 
     def getLinks(self):
+        """This feature isn't full implemented yet and is just here to keep the other functions company ;)"""
         url = f"""http://{self.target}"""
         c = config_paths.Configurator(self.target)
         c.createConfig()

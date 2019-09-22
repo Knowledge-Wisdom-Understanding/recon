@@ -6,6 +6,9 @@ from utils import config_paths
 
 
 class NmapParserFunk:
+    """NmapParserFunk will parse all nmap XML reports and return all found TCP and UDP ports as well
+    as their service versions, script results, and various other information."""
+
     def __init__(self, target):
         self.target = target
         ##### SERVICES ###############
@@ -84,6 +87,9 @@ class NmapParserFunk:
         self.proxy_ssh_version = []
 
     def openPorts(self):
+        """The openPorts function will parse all found ports from the nmap.xml file fed to
+        the report variable. All ports will be appended to the lists in __init__ and will
+        then be accessible from the NmapParserFunk Class."""
         c = config_paths.Configurator(self.target)
         c.createConfig()
         report = NmapParser.parse_fromfile(f"""{c.getPath("nmap_top_ports_xml")}""")
@@ -244,6 +250,9 @@ class NmapParserFunk:
         # print("SSH-Product", self.ssh_product)
 
     def allOpenPorts(self):
+        """The openPorts function will parse all found ports from the FullTcpNmap.xml file fed to
+        the report variable. All ports will be appended to the lists in __init__ and will
+        then be accessible from the NmapParserFunk Class."""
         c = config_paths.Configurator(self.target)
         c.createConfig()
         report = NmapParser.parse_fromfile(f"""{c.getPath("nmap_full_tcp_xml")}""")
@@ -387,6 +396,9 @@ class NmapParserFunk:
         # print("Products", self.all_products)
 
     def openProxyPorts(self):
+        """The openProxyPorts function will parse all found ports from the proxychains nmap xml file fed to
+        the report variable. All ports will be appended to the lists in __init__ and will
+        then be accessible from the NmapParserFunk Class."""
         c = config_paths.Configurator(self.target)
         c.createConfig()
         self.openPorts()
@@ -478,6 +490,9 @@ class NmapParserFunk:
             # print("Proxy Ports2:", self.proxy_ports2)
 
     def openUdpPorts(self):
+        """The openUdpPorts function will parse all found ports from the UDP nmap xml file fed to
+        the report variable. All ports will be appended to the lists in __init__ and will
+        then be accessible from the NmapParserFunk Class."""
         c = config_paths.Configurator(self.target)
         c.createConfig()
         report = NmapParser.parse_fromfile(f"""{c.getPath('nmap_top_udp_ports_xml')}""")

@@ -9,6 +9,9 @@ from utils import config_paths
 
 
 class Search:
+    """The Search Class is responsible for running SearchSploit and checking for
+    OpenSSH vulnerabilities, Specifically, Username Enumeration."""
+
     def __init__(self, target):
         self.target = target
         self.processes = ""
@@ -18,6 +21,10 @@ class Search:
         self.smtp_info = []
 
     def Scan(self):
+        """This Scan Funtion will take the parsed output from NmapParserFunk Class's output
+        and attempt to run searchsploit against each service. Also, the HTTP-TITLE from nmap's
+        script scans will be ran against searchsploit as oftentimes, a CMS's title may give away
+        a vulnerable service or the CMS version itself."""
         cmd_info = "[" + fg.green + "+" + fg.rs + "]"
         np = nmapParser.NmapParserFunk(self.target)
         np.allOpenPorts()
@@ -143,6 +150,11 @@ class Search:
                         call(product_cmd4, shell=True)
 
     def vulnCheck(self):
+        """Vuln Check will check if OpenSSH is vulnerable to Username Enumeration.
+        If it is, A message will be printed to the User. This feature can be enabled to automatically 
+        always brute force SSH if the instance is a vulnerable version, however, I've changed this
+        feature to not run automatically as that option should be left up to the user, among various other 
+        reasons."""
         cmd_info = "[" + fg.green + "+" + fg.rs + "]"
         manual_cmd_info = "[" + fg.li_yellow + "+" + fg.rs + "]"
         blue = fg.li_blue

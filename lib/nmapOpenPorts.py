@@ -7,11 +7,18 @@ from utils import config_paths
 
 
 class NmapOpenPorts:
+    """NmapOpenPorts will enumerate all remaining found open ports services that were discovered from the 
+    fullTcp and Top UDP nmap scan results."""
+
     def __init__(self, target):
         self.target = target
         self.processes = ""
 
     def Scan(self):
+        """This Scan Function will proceed to enumerate all the remaining services
+        found by nmaps fullTcpScan results. The following services will be enumerated
+        if their respective ports are open. FTP, SMTP, NFS, RPC, TELNET, SIP, VNC, CUPS, MSSQL,
+        MYSQL, CASSANDRA, MONGODB, POP3 SNMP, AND KERBEROS."""
         cwd = os.getcwd()
         np = nmapParser.NmapParserFunk(self.target)
         np.allOpenPorts()

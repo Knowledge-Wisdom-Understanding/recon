@@ -5,15 +5,23 @@ from jinja2 import Environment, FileSystemLoader
 
 
 class Configurator:
+    """The Configurator Class is used to parse the hard coded paths file. It is implemented
+    Very poorly and not the proper jinja2 way at all. In fact, this implemetation breaks
+    the core functionality of jinja2 and will be replaced by a better config file parser soon.
+    As the time comes available to me or anyone that would like to contribute to the project.
+    That being said, This Configurator does do the job, just not very well. """
+
     def __init__(self, target):
         self.target = target
         self.config = dict()
         self.cmd = dict()
 
     def getPath(self, path):
+        """Return the path from the configurator_paths.j2 Dictionary."""
         return self.config["paths"][path]
 
     def createConfig(self):
+        """Render the configurator_paths.j2 file."""
         pwd = os.getcwd()
         reportDir = f"{pwd}/{self.target}-Report"
         nmapReportDir = f"{pwd}/{self.target}-Report/nmap"
@@ -34,9 +42,11 @@ class Configurator:
             self.config["paths"][key] = value
 
     def getCmd(self, cmd):
+        """Return a cmd from the commands.j2 dictionary."""
         return self.cmd["commands"][cmd]
 
     def cmdConfig(self):
+        """Render the commands.j2 template."""
         pwd = os.getcwd()
         self.cmd["target"] = {"target": self.target}
 

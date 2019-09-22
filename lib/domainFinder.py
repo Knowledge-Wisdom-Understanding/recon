@@ -12,12 +12,20 @@ from utils import helper_lists
 
 
 class DomainFinder:
+    """DomainFinder Class will parse nmaps scripts output looking for hostnames, will also export and find
+    the subject hostname returned by SSLSCAN if HTTPS/SSL web servers are found. All found hostnames will then be saved
+    for later use in memory inside of this class by the Web and dnsenum classes / functions and features."""
+
     def __init__(self, target):
         self.target = target
         self.redirect_hostname = []
         self.fqdn_hostname = []
 
     def Scan(self):
+        """Parse nmap's output from the top open ports scan and use regex to find valid hostnames that are
+        3-6 chars in length. These domains will be filtered to ignore most .com and file extensions since this tool
+        is currently designed for CTF machines like Hack the Box which usually have .htb extensions. The list of ignored domains
+        is in utils/helper_lists.py"""
         np = nmapParser.NmapParserFunk(self.target)
         np.openPorts()
         ssl_ports = np.ssl_ports

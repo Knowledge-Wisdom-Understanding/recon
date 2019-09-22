@@ -9,10 +9,19 @@ from utils import config_paths
 
 
 class Aquatone:
+    """The Aquatone Class will attempt to generate a nice aquatone report provided there are found URLS
+    returned from the Web Server using Dirsearch. If so, This class will then proceed to open up the 
+    freshly generated report in firefox provided that firefox is installed on your machine which it is
+    by default in kali linux. :)"""
+
     def __init__(self, target):
         self.target = target
 
     def Scan(self):
+        """Create Aquatone Report based off of the dirsearch results.
+        if the length of urls.txt is greater than 150, aquatone won't
+        be run as this might be an indication of too many false positives.
+        """
         np = nmapParser.NmapParserFunk(self.target)
         np.openPorts()
         npp = nmapParser.NmapParserFunk(self.target)
