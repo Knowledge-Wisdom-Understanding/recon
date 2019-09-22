@@ -3,7 +3,6 @@
 import os
 from sty import fg, bg, ef, rs
 from subprocess import PIPE, Popen, check_output, STDOUT, call
-import wfuzz
 from lib import nmapParser
 from bs4 import BeautifulSoup, Comment
 import requests
@@ -70,6 +69,8 @@ class checkSource:
                     for d in source_domain_name:
                         self.htb_source_domains.append(d)
                     try:
+                        import wfuzz
+
                         tk5 = f"""{c.getPath("top5Ksubs")}"""
                         print(
                             f"""{cmd_info} wfuzz -z file,{tk5} -u {source_domain_name[0]} -H 'Host: FUZZ.{source_domain_name[0]}'"""
