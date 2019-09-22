@@ -114,7 +114,6 @@ obama
 trump
 jon
 mac
-littlemac
 tyson
 wpuser
 cyrus
