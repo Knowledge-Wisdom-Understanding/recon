@@ -88,7 +88,7 @@ def signal_handler(sig, frame):
     sys.exit(0)
 
 
-VERSION = 2.1
+VERSION = 2.4
 
 
 def main():

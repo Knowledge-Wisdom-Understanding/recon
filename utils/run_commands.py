@@ -17,16 +17,16 @@ from lib import aqua
 from lib import enumProxy
 from lib import ldapEnum
 from lib import oracleEnum
-from lib import brute
 from lib import searchsploits
 from lib import enumProxyCMS
 from utils import remove_color
 from utils import peaceout_banner
 from utils import helper_lists
-from utils import config_paths
 
 
 class RunCommands:
+    """Helper Class to Wrap all commands in easy to access functions that can be called easily."""
+
     def __init__(self, target):
         self.target = target
 
