@@ -26,18 +26,13 @@ class EnumWeb:
         np = nmapParser.NmapParserFunk(self.target)
         np.openPorts()
         http_ports = np.http_ports
-        dn = domainFinder.DomainFinder(self.target)
-        dn.getRedirect()
-        hostnames = dn.redirect_hostname
-        dc = dnsCrawl.checkSource(self.target)
-        dc.getLinks()
-        htb_source_domains = dc.htb_source_domains
         if len(http_ports) == 0:
             pass
         else:
-            print(
-                f"""{fg.li_cyan} Enumerating HTTP Ports, Running the following commands: {fg.rs}"""
-            )
+            print(f"""{fg.li_cyan} Enumerating HTTP Ports! {fg.rs}""")
+            dn = domainFinder.DomainFinder(self.target)
+            dn.getRedirect()
+            hostnames = dn.redirect_hostname
             c = config_paths.Configurator(self.target)
             c.createConfig()
             c.cmdConfig()
@@ -45,6 +40,11 @@ class EnumWeb:
                 os.makedirs(f"""{c.getPath("webDir")}""")
             if not os.path.exists(f"""{c.getPath("aquatoneDir")}"""):
                 os.makedirs(f"""{c.getPath("aquatoneDir")}""")
+            dc = dnsCrawl.checkSource(self.target)
+            dc.getLinks()
+            htb_source_domains = dc.htb_source_domains
+            sc = dnsCrawl.sourceCommentChecker(self.target)
+            sc.extract_source_comments()
             commands = ()
             another_array_of_hostnames = []
             if len(htb_source_domains) != 0:

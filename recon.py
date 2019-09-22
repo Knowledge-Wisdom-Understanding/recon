@@ -467,7 +467,6 @@ def main():
 
     # This is the Brute forcing option and -t --target argument is required
     elif args.target and (args.file is None) and args.brute:
-        setupConfig()
         if "ssh" in args.brute:
             if args.port is None:
                 args.port = "22"

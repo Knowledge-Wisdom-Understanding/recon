@@ -18,6 +18,9 @@ fanis
 tryharder
 daemon
 bin
+shelly
+shock
+shocker
 noulis
 games
 sys
