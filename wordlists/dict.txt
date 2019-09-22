@@ -1913,6 +1913,12 @@ cgi/account/
 cgi-admin
 cgi-bin
 cgi-bin/
+cgi-bin/secret.txt
+cgi-bin/config.cgi
+cgi-bin/config.pl
+cgi-bin/config.php
+cgi-bin/config
+cgi-bin/user.sh
 cgibin/
 CGI-BIN/
 cgi-bin2/

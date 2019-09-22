@@ -44,7 +44,7 @@ class Aquatone:
             check_lines = f"""wc -l {c.getPath("aquatoneDirUrls")} | cut -d ' ' -f 1"""
             num_urls = check_output(check_lines, stderr=STDOUT, shell=True).rstrip()
             ### ToDo: open urls.txt and sort urls by occurance of response codes.
-            if int(num_urls) < 100:
+            if int(num_urls) < 150:
                 aquatone_cmd = f"""cat {c.getPath("aquatoneDirUrls")} | aquatone -ports {all_web_ports_comma_list} -out {c.getPath("aquatoneDirAq")} -screenshot-timeout 40000"""
                 print(cmd_info, aquatone_cmd)
                 call(aquatone_cmd, shell=True)
@@ -58,7 +58,7 @@ class Aquatone:
         if os.path.exists(c.getPath("aquatoneDirPUrls")):
             check_lines = f"""wc -l {c.getPath("aquatoneDirPUrls")} | cut -d ' ' -f 1"""
             num_urls = check_output(check_lines, stderr=STDOUT, shell=True).rstrip()
-            if int(num_urls) < 100:
+            if int(num_urls) < 150:
                 aquatone_cmd = f"""cat {c.getPath("aquatoneDirPUrls")} | aquatone -ports {all_web_proxy_ports_comma_list} -proxy http://{self.target}:{proxy_ports[0]} -out {c.getPath("aquatoneDirAqP")} -screenshot-timeout 40000"""
                 print(cmd_info, aquatone_cmd)
                 call(aquatone_cmd, shell=True)
