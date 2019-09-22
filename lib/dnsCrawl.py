@@ -148,6 +148,8 @@ class sourceCommentChecker:
         comments = soup.find_all(string=lambda text: isinstance(text, Comment))
         comments_arr = [c.extract() for c in comments]
         if len(comments_arr) != 0:
+            print(f"Found Comments in the Source! on page {url}")
+            print(f"""Writing Comments to {c.getPath("sourceComments")}""")
             try:
                 with open(f"""{c.getPath("sourceComments")}""", "w") as com:
                     for c in comments_arr:
