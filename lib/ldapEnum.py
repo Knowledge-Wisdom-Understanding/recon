@@ -8,11 +8,16 @@ from utils import config_paths
 
 
 class LdapEnum:
+    """LdapEnum Will Enumerate all found Ldap open ports using nmap and enum4linux and ldapsearch."""
+
     def __init__(self, target):
         self.target = target
         self.processes = ""
 
     def ldapSearch(self):
+        """This will run a helper bash script that will attempt to login to smb
+        using smbmap if any valid SambaNTHashes are found using a 
+        passthe hash technique."""
         np = nmapParser.NmapParserFunk(self.target)
         np.openPorts()
         ldap_ports = np.ldap_ports
@@ -23,6 +28,8 @@ class LdapEnum:
             call(ldap_enum, shell=True)
 
     def Scan(self):
+        """If Ldap ports are open, run nmap ldap scripts, enum4linux and the results 
+        will be fed to the ldap.sh bash script."""
         np = nmapParser.NmapParserFunk(self.target)
         np.openPorts()
         ldap_ports = np.ldap_ports

@@ -65,6 +65,8 @@ EXAMPLES = """
 
 
 def banner():
+    """Print the AutoRecon Banner."""
+
     def random_color():
         valid_colors = ("red", "green", "yellow", "blue", "magenta", "cyan")
         return random.choice(valid_colors)
@@ -89,6 +91,7 @@ def banner():
 
 
 def display_time(seconds, granularity=2):
+    """Helper function for the timer that is displayed at the Scans Completion."""
     result = []
 
     for name, count in intervals:
@@ -111,6 +114,7 @@ VERSION = 2.1
 
 
 def main():
+    """Call All the Functionlity from all lib files to automate the enumeration process."""
     banner()
     startTimer = time.time()
     parser = argparse.ArgumentParser(
@@ -162,17 +166,20 @@ def main():
     target_time = []
 
     def reset_timer():
+        """Reset the timer which is most useful when scanning a list of hosts from a file."""
         resetTimer = time.time()
         target_time.clear()
         target_time.append(resetTimer)
 
     def check_timer():
+        """Check the current timer output. Most useful when the -f argument is supplied from the CLI."""
         end = time.time()
         time_elapsed = end - target_time[0]
         durationMSG = fg.cyan + f"Scans Completed for {args.target} in: " + fg.rs
         print(durationMSG, display_time(time_elapsed))
 
     def validateIP():
+        """Validate the target IP Before running the tools."""
         try:
             s = socket.inet_aton(args.target)
         except socket.error:
@@ -182,6 +189,7 @@ def main():
             sys.exit()
 
     def mpRun(commands):
+        """Pool all commands to run from each service class and run them 2 at a time.,"""
         if len(commands) != 0:
             with Pool(processes=2) as p:
                 max_ = len(commands)
@@ -194,6 +202,7 @@ def main():
                             print(f"{i} command failed: {returncode}")
 
     def infoMpRun(commands):
+        """Pool all commmands to run from certain services and print the commands before running the Pool commands."""
         if len(commands) != 0:
             for command in commands:
                 print(cmd_info, command)
@@ -208,47 +217,55 @@ def main():
                             print(f"{i} command failed: {returncode}")
 
     def removeColor():
+        """Helper function to call the utils/remove_color Class."""
         nocolor = remove_color.Clean(args.target)
         nocolor.listfiles()
         nocolor.listFilesProxy()
 
     def enumHTTP():
+        """Helper function to call the lib/enumWeb Class."""
         eweb = enumWeb.EnumWeb(args.target)
         eweb.Scan()
         web_enum_commands = eweb.processes
         mpRun(web_enum_commands)
 
     def enumHTTPS():
+        """Helper function to call the lib/enumWebSSL Class."""
         webssl = enumWebSSL.EnumWebSSL(args.target)
         webssl.Scan()
         web_ssl_enum_commands = webssl.processes
         mpRun(web_ssl_enum_commands)
 
     def enumHTTP2():
+        """Helper function to call the lib/enumWeb Large Wordlists Class."""
         eweb = enumWeb.EnumWeb(args.target)
         eweb.ScanWebOption()
         web_enum_commands = eweb.processes
         mpRun(web_enum_commands)
 
     def enumHTTPS2():
+        """Helper function to call the lib/enumWebSSL Large Wordlists Class."""
         webssl = enumWebSSL.EnumWebSSL(args.target)
         webssl.ScanWebOption()
         web_ssl_enum_commands = webssl.processes
         mpRun(web_ssl_enum_commands)
 
     def enumDNS():
+        """Helper function to call the lib/DnsEnum Class."""
         dn = dnsenum.DnsEnum(args.target)
         dn.Scan()
         dns_enum_commands = dn.processes
         mpRun(dns_enum_commands)
 
     def enumSMB():
+        """Helper function to call the lib/SmbEnum Class."""
         smb = smbEnum.SmbEnum(args.target)
         smb.Scan()
         smb_enum_commands = smb.processes
         mpRun(smb_enum_commands)
 
     def enumRemainingServices():
+        """Helper function to call the lib/NmapOpenPorts Class."""
         print(f"{teal}Enumerating Remaining Services {reset}")
         nmapRemaing = nmapOpenPorts.NmapOpenPorts(args.target)
         nmapRemaing.Scan()
@@ -256,40 +273,49 @@ def main():
         infoMpRun(remaining_enum_cmds)
 
     def getOpenPorts():
+        """Helper function to call the lib/NmapParserFunk Class."""
         np = nmapParser.NmapParserFunk(args.target)
         np.openPorts()
 
     def scanTopTcpPorts():
+        """Helper function to call the lib/TopOpenPorts Class."""
         ntp = topOpenPorts.TopOpenPorts(args.target)
         ntp.Scan()
 
     def fullTcpAndTopUdpScan():
+        """Helper function to Run FULLTCP and UDP and VULNERS nmap Scans."""
         ntp = topOpenPorts.TopOpenPorts(args.target)
         ntp.topUdpAllTcp()
         nmap_commands = ntp.processes
         mpRun(nmap_commands)
 
     def aquatone():
+        """Helper Funtion to run Aquatone provided there are open web servers and found urls which is 
+        handled in the lib/aqua.py logic."""
         aq = aqua.Aquatone(args.target)
         aq.Scan()
 
     def peace():
+        """Helper function to print the peaceout banner."""
         pe = peaceout_banner.PeaceOut()
         pe.bannerOut()
 
     def cmsEnum():
+        """Helper funciton to call the CMS enumeration HTTP logic."""
         cm = enumWeb.EnumWeb(args.target)
         cm.CMS()
         cms_commands = cm.cms_processes
         infoMpRun(cms_commands)
 
     def cmsEnumSSL():
+        """Helper funciton to call the CMS enumeration HTTPS logic."""
         cms = enumWebSSL.EnumWebSSL(args.target)
         cms.sslEnumCMS()
         cms_ssl_commands = cms.cms_processes
         infoMpRun(cms_ssl_commands)
 
     def proxyEnum():
+        """Helper funciton to call The Check Proxy and Enumerate Proxy Class's / Functions."""
         pscan = enumProxy.CheckProxy(args.target)
         pscan.Scan()
         pr = nmapParser.NmapParserFunk(args.target)
@@ -299,12 +325,14 @@ def main():
         infoMpRun(proxy_commands)
 
     def proxyEnumCMS():
+        """Helper funciton to call The Check Proxy and Enumerate Proxy CMS Class"""
         pcms = enumProxyCMS.EnumProxyCMS(args.target)
         pcms.proxyCMS()
         proxy_cms_commands = pcms.cms_processes
         infoMpRun(proxy_cms_commands)
 
     def enumLdap():
+        """Helper Function to Call Ldap Enumeration."""
         ld = ldapEnum.LdapEnum(args.target)
         ld.Scan()
         ldap_cmds = ld.processes
@@ -312,6 +340,7 @@ def main():
         ld.ldapSearch()
 
     def enumOracle():
+        """Helper Function to Call Oracle Enumeration."""
         oc = oracleEnum.OracleEnum(args.target)
         oc.Scan()
         oracle_cmds = oc.processes
@@ -319,33 +348,40 @@ def main():
         oc.OraclePwn()
 
     def getUdpPorts():
+        """Helper Function to parse UDP ports."""
         udp = nmapParser.NmapParserFunk(args.target)
         udp.openUdpPorts()
 
     def sshUserBrute():
+        """Helper Function to Call the SSHBRUTE option / Class"""
         sb = brute.Brute(args.target, args.brute, args.port)
         sb.SshUsersBrute()
 
     def sshSingleUserBrute():
+        """Helper Function to Call the SSHBRUTE option / Class for a single specified username."""
         sb = brute.BruteSingleUser(args.target, args.brute, args.port, args.user)
         sb.SshSingleUserBrute()
 
     def sshSingleUserBruteCustom():
+        """Helper Function to Call the SSHBRUTE option / Class for a single specified username With a custom PasswordList."""
         sb = brute.BruteSingleUserCustom(
             args.target, args.brute, args.port, args.user, args.PASSWORDS
         )
         sb.SshSingleUserBruteCustom()
 
     def searchSploits():
+        """Helper Function to Call the Search Class which will attempt to run SearchSploit."""
         ss = searchsploits.Search(args.target)
         ss.Scan()
         ss.vulnCheck()
 
     def sortFoundUrls():
+        """Helper Function to call the Helper Class DirsearchURLS. See DirsearchURL's comment for more information."""
         ds = helper_lists.DirsearchURLS(args.target)
         ds.genDirsearchUrlList()
 
     def sortFoundProxyUrls():
+        """Helper Function to sort found Proxy URLS found by dirsearch."""
         ds = helper_lists.DirsearchURLS(args.target)
         ds.genProxyDirsearchUrlList()
 

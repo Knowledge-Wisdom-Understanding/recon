@@ -8,11 +8,17 @@ from utils import config_paths
 
 
 class OracleEnum:
+    """OracleEnum Will Enumerate Oracle on it's default port of 1521. I've never seen oracle's vulnerable service running
+    on different ports besides 1521 so the port is hard coded to avoid other oracle ports. Perhaps it would be best to eventually
+    change this to have some logic in the nmapParser to also include other oracle ports. Time will tell."""
+
     def __init__(self, target):
         self.target = target
         self.processes = ""
 
     def OraclePwn(self):
+        """OraclePwn will run a helper lib/oracle.sh bash script which will attempt to bruteforce
+        Oracle if any valid SID's are found from the Scan() Functions results."""
         np = nmapParser.NmapParserFunk(self.target)
         np.openPorts()
         oracle_tns_ports = np.oracle_tns_ports
@@ -23,6 +29,9 @@ class OracleEnum:
             call(ldap_enum, shell=True)
 
     def Scan(self):
+        """This Scan() Function will run various oracle scanning tools and attempt to find
+        valid SID's along with other useful information. The following tools will be used,
+        Nmap, tnscmd10g, osscanner, and ODAT."""
         np = nmapParser.NmapParserFunk(self.target)
         np.openPorts()
         oracle_tns_ports = np.oracle_tns_ports

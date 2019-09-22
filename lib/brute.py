@@ -10,6 +10,9 @@ from utils import config_paths
 
 
 class Brute:
+    """The Brute Class Contains the default SSH brute Force Option functions and is pretty cool how i chained it all
+    together. Check it out friend."""
+
     def __init__(self, target, serviceName, port):
         self.target = target
         self.serviceName = serviceName
@@ -17,6 +20,9 @@ class Brute:
         self.unique_users = []
 
     def SshUsersBrute(self):
+        """If OpenSSH is in the service banner and < 7.7 from nmapParser's results. Then enumerate valid usernames from SSH using a small wordlist of around 600 common names.
+        If a valid Username is found that isn't in the list of default linux / windows usernames, from utils/helper_lists.py. Proceed to brute force that usernames password with
+        patator using Seclists probable top 1575.txt wordlist with a few custom added passwords."""
         cmd_info = "[" + fg.green + "+" + fg.rs + "]"
         c = config_paths.Configurator(self.target)
         c.createConfig()
@@ -113,6 +119,7 @@ class BruteSingleUser:
         self.user = user
 
     def SshSingleUserBrute(self):
+        """Run patator with seclists probable top 1575 wordlist against a single user specified as a command line argument."""
         cmd_info = "[" + fg.green + "+" + fg.rs + "]"
         c = config_paths.Configurator(self.target)
         c.createConfig()
@@ -151,6 +158,7 @@ class BruteSingleUserCustom:
         self.passList = passList
 
     def SshSingleUserBruteCustom(self):
+        """Run patator with custome wordlist against a single user specified as a command line argument."""
         cmd_info = "[" + fg.green + "+" + fg.rs + "]"
         cwd = os.getcwd()
         green = fg.li_green

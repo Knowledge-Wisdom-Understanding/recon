@@ -11,12 +11,18 @@ from utils import helper_lists
 
 
 class DnsEnum:
+    """DnsEnum Class will Enumerate Dns Servers and Host names found thoughout the scanning process, most notably, hostnames that
+    are discovered from the lib/domainFinder.py and the lib/dnsCrawl.py files. Also, There are some helper functions to
+    export if you will, found hostnames that will be later used by the Web Enumeration Classes and functions."""
+
     def __init__(self, target):
         self.target = target
         self.processes = ""
         self.hostnames = []
 
     def Scan(self):
+        """Enumerate DNS server if any hostnames are found from lib/domainFinder.py and if
+        port 53 is open."""
         print(fg.cyan + "Checking For Virtual Host Routing and DNS" + fg.rs)
         np = nmapParser.NmapParserFunk(self.target)
         np.openPorts()

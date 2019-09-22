@@ -9,11 +9,19 @@ from utils import config_paths
 
 
 class TopOpenPorts:
+    """The TopOpenPorts Class holds functions that will run nmap scan top 363 custom common ports
+    scan, top UDP ports, Nmap vulners scripts, along with a Full TCP Scan to be thorough."""
+
     def __init__(self, target):
         self.target = target
         self.processes = ""
 
     def Scan(self):
+        """The Scan() function will run the initial nmap Top Tcp ports scan with enumerate
+        versions and nmap's default safe scripts via the -sC and -sV flags. -Pn will ignore ping scan
+        and the script-timeout is set to 2 minutes as sometimes https scripts can get stuck and
+        output 100's of lines of unnecessary output which will slow the scan time down. 2 minutes is a good timeout
+        setting."""
         c = config_paths.Configurator(self.target)
         c.createConfig()
         if not os.path.exists(f"""{c.getPath("reportDir")}"""):
@@ -30,6 +38,8 @@ class TopOpenPorts:
         call(nmap_command, shell=True)
 
     def topUdpAllTcp(self):
+        """topUdpAllTcp will run a full nmap tcp port scan, a top udp ports scan, and a nmap vulners script scan on found open
+        ports from the initial nmap scan."""
         green = fg.li_green
         reset = fg.rs
         cmd_info = "[" + green + "+" + reset + "]"

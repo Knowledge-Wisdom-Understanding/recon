@@ -10,6 +10,10 @@ from utils import config_paths
 
 
 class EnumProxyCMS:
+    """EnumProxyCMS will enumerate any found Content Management Systems found running on webservers that were
+    discovered through a http-proxy port using proxychains and other cool tools that you will see being used in the code
+    if you take the time to read through it."""
+
     def __init__(self, target):
         self.target = target
         self.processes = ""
@@ -18,6 +22,8 @@ class EnumProxyCMS:
         self.redirect_hostname = []
 
     def proxyCMS(self):
+        """If a Content Management System is discovered on the web from enumProxy's output, Then proceed to try and enumerate the CMS further.
+        CMS Scanners to be scanned are limited to: Drupal, Wordpress, Joomla, Magento, Tomcat, and Apache WebDav"""
         np = nmapParser.NmapParserFunk(self.target)
         np.openPorts()
         npp = nmapParser.NmapParserFunk(self.target)

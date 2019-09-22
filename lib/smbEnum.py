@@ -7,11 +7,17 @@ from utils import config_paths
 
 
 class SmbEnum:
+    """SmbEnum Will Run the Following tools if port 139, or 445 are found
+    open from nmap's initial scan results.
+    SMBCLIENT, NMBLOOKUP, NBTSCAN, SMBSCAN, AND ENUM4LINUX"""
+
     def __init__(self, target):
         self.target = target
         self.processes = ""
 
     def Scan(self):
+        """This Scan() Funciton will run the following tools,
+        SMBCLIENT, NMBLOOKUP, NBTSCAN, SMBSCAN, AND ENUM4LINUX"""
         np = nmapParser.NmapParserFunk(self.target)
         np.openPorts()
         smb_ports = np.smb_ports

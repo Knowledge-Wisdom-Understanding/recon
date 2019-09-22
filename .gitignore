@@ -37,3 +37,5 @@ Reports/*
 Reports*
 report*
 Report*
+utils/command_parser.py
+config/web_cmds.j2

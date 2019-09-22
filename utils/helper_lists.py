@@ -9,6 +9,13 @@ from utils import config_paths
 
 
 class DefaultLinuxUsers:
+    """List of default Linux users that is utilized by the SSH Brute Force
+    Classes. Specifically, This list helps ignore default linux users, since
+    most of the time, these aren't users that you want to brute force as they
+    usually don't have a login shell etc.. Besides root of course however,
+    Many times, the root user won't be permitted to SSH into a box unless
+    specifically set by the Server Admin."""
+
     def __init__(self, target):
         self.target = target
         self.default_linux_users = [
@@ -117,6 +124,10 @@ class DefaultLinuxUsers:
 
 
 class Cewl:
+    """Generate a custom Cewl Wordlist if there is a valid WebServer port that is open.
+    This wordlist will be appended to the seclists probable top 1575.txt password list and
+    then fed to the SSH brute forcing Classes in lib/brute.py"""
+
     def __init__(self, target):
         self.target = target
 
@@ -194,6 +205,11 @@ class Wordpress:
 
 
 class DirsearchURLS:
+    """This Class, DirsearchURLS is reponsible for sorting all the found URL's
+    from Dirsearches report output and then it will combined them in to one unique
+    list that will be fed to Aquatone to generate a nice HTML report that will
+    Be opened up in the firefox web browser."""
+
     def __init__(self, target):
         self.target = target
 
@@ -233,6 +249,11 @@ class DirsearchURLS:
             call(url_list_cmd, shell=True)
 
     def genProxyDirsearchUrlList(self):
+        """This Class, genProxyDirsearchUrlList is reponsible for sorting all the found URL's
+        from Dirsearches report output and then it will combined them in to one unique
+        list that will be fed to Aquatone to generate a nice HTML report that will
+        Be opened up in the firefox web browser."""
+
         c = config_paths.Configurator(self.target)
         c.createConfig()
         if os.path.exists(f"""{c.getPath("proxyDir")}"""):
@@ -263,6 +284,9 @@ class DirsearchURLS:
 
 
 class ignoreDomains:
+    """ignoreDomains Class is used by lib/domainFinder.py to help ignore invalid domain names
+    from nmap's top open ports initial script scan."""
+
     def __init__(self):
         self.ignored = ["localhost", "localdomain"]
         self.ignore = [
@@ -340,6 +364,11 @@ class ignoreDomains:
 
 
 class topPortsToScan:
+    """As the Class name Suggests, This Class contains a list of the Top 200 nmap common ports,
+    Plus 136 custom CTFish ports that I've come accross so far whille scanning CTF machines.
+    Also, The top Common UDP ports I hand picked out that I see open most often so as not to make
+    this auto recon tool take forever as UDP port scans can be very slow."""
+
     def __init__(self):
         self.topTCP = [
             1,

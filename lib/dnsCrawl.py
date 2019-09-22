@@ -23,6 +23,10 @@ class checkSource:
         return process.communicate()[0]
 
     def getLinks(self):
+        """Grab all links from web server homepage i.e. http://IP:PORT/ and look for .htb domain names.
+        If a .htb domain is found, add the hostname to the /etc/hosts file and then proceed to fuzz the domain
+        for subdomains using wfuzz. If a valid subdomain is found, add the subdomain to the /etc/hosts file as 
+        well using python_hosts library merge_names parameter."""
         np = nmapParser.NmapParserFunk(self.target)
         np.openPorts()
         http_ports = np.http_ports
@@ -135,10 +139,15 @@ class checkSource:
 
 
 class sourceCommentChecker:
+    """sourceCommentChecker does what you think it does. If you don't think you know what it does, Read the code.
+    Line by flippin line."""
+
     def __init__(self, target):
         self.target = target
 
     def extract_source_comments(self):
+        """Search home page for comments in the HTML source code. If any comments are found, 
+        Write them to a file in the report/web directory."""
         url = f"""http://{self.target}"""
         c = config_paths.Configurator(self.target)
         c.createConfig()
