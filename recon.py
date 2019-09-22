@@ -8,11 +8,7 @@ import time
 import sys
 import random
 import os
-from subprocess import call
-from multiprocessing import Pool
-from functools import partial
 import socket
-from tqdm import tqdm
 from utils import run_commands
 
 bad_cmd = "[" + fg.li_red + "+" + fg.rs + "]"
@@ -324,7 +320,7 @@ def main():
                     ):
                         sshUserBrute()
                     else:
-                        scanTopTcpPorts()
+                        rc.scanTopTcpPorts()
                         sshUserBrute()
                 elif args.user is None and args.USERS:
                     print(f"Brute Forcing Usernames with userlist {args.USERS}")
