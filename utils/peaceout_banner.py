@@ -5,13 +5,15 @@ from random import choice
 
 
 class PeaceOut:
-  """This script didn't have enough naked chicks so I added one."""
+    """This script didn't have enough naked chicks so I added one."""
+
     def __init__(self):
         self.banner = """"""
 
     def bannerOut(self):
-      """Select a random color from valid colors and return a random color
-      to colorize the PeaceOut Banner Class."""
+        """Select a random color from valid colors and return a random color
+        to colorize the PeaceOut Banner Class."""
+
         def random_color(self):
             valid_colors = ("red", "green", "yellow", "blue", "magenta", "cyan")
             return choice(valid_colors)
