@@ -33,6 +33,7 @@ uucp
 list
 irc
 gnats
+sunny
 ntp
 sshd
 avahi
@@ -600,11 +601,6 @@ mnbvcxz
 lkjhgfdsa
 poiuytrewq
 qwertyuiop
-54321
-789
-yis6afraidof7
-because
-bcuz789
 okeydokey
 bashful
 squid
@@ -615,6 +611,5 @@ ldapuser
 ldapuser1
 alien
 entity
-et
 extra
 extraterrestrial
