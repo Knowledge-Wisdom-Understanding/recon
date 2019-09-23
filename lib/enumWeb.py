@@ -308,7 +308,7 @@ fi
                                             magento_cmd = f"""cd /opt/magescan && bin/magescan scan:all http://{self.target}:{http_port}/ | tee {c.getPath("reportDir")}/web/magentoscan-{self.target}-{http_port}.log && cd - &>/dev/null"""
                                             cms_commands.append(magento_cmd)
                                         if "WebDAV" in cms or ("Microsoft-IIS 6.0" in cms):
-                                            webdav_cmd = f"""davtest -move -sendbd auto -url http://{self.target}:{http_port}/ | tee {c.getPath("reportDir")}/web/davtestscan-{self.target}-{http_port}.log"""
+                                            webdav_cmd = f"""davtest -move -sendbd auto -url http://{self.target}/ | tee {c.getPath("reportDir")}/web/davtestscan-{self.target}.log"""
                                             webdav_cmd2 = f"""nmap -Pn -v -sV -p {http_port} --script=http-iis-webdav-vuln.nse -oA {self.target}-Report/nmap/webdav {self.target}"""
                                             cms_commands.append(webdav_cmd)
                                             cms_commands.append(webdav_cmd2)
