@@ -137,7 +137,7 @@ class DnsEnum:
                         both.append(x)
 
                     tmpdns2 = []
-                    ignore_chars_regex = re.compile("[@_!#$%^&*()<>?/\|}{~:]")
+                    ignore_chars_regex = re.compile(r"[@_!#$%^&*()<>?/\|}{~:]")
                     for x in both:
                         if ignore_chars_regex.search(x) == None:
                             tmpdns2.append(x)

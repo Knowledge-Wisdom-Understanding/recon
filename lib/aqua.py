@@ -9,10 +9,7 @@ from utils import config_paths
 
 
 class Aquatone:
-    """The Aquatone Class will attempt to generate a nice aquatone report provided there are found URLS
-    returned from the Web Server using Dirsearch. If so, This class will then proceed to open up the 
-    freshly generated report in firefox provided that firefox is installed on your machine which it is
-    by default in kali linux. :)"""
+    """The Aquatone Class will attempt to generate a nice aquatone report provided there are found URLSreturned from the Web Server using Dirsearch. If so, This class will then proceed to open up the freshly generated report in firefox provided that firefox is installed on your machine which it is by default in kali linux. :)"""
 
     def __init__(self, target):
         self.target = target

@@ -26,7 +26,7 @@ class SmbEnum:
         else:
             c = config_paths.Configurator(self.target)
             c.createConfig()
-            c.getCmd()
+            c.cmdConfig()
             green = fg.li_green
             reset = fg.rs
             cmd_info = "[" + green + "+" + reset + "]"

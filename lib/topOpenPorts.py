@@ -19,8 +19,8 @@ class TopOpenPorts:
     def Scan(self):
         """The Scan() function will run the initial nmap Top Tcp ports scan with enumerate
         versions and nmap's default safe scripts via the -sC and -sV flags. -Pn will ignore ping scan
-        and the script-timeout is set to 2 minutes as sometimes https scripts can get stuck and
-        output 100's of lines of unnecessary output which will slow the scan time down. 2 minutes is a good timeout
+        and the script-timeout is set to 5 minutes as sometimes https scripts can get stuck and
+        output 100's of lines of unnecessary output which will slow the scan time down. 5 minutes is a good timeout
         setting."""
         c = config_paths.Configurator(self.target)
         c.createConfig()
@@ -32,7 +32,7 @@ class TopOpenPorts:
         hpl = helper_lists.topPortsToScan()
         topTCP = hpl.topTCP
         stringerT = ",".join(map(str, topTCP))
-        nmap_command = f"""nmap -vv -Pn -sV -sC -p {stringerT} --script-timeout 2m -oA {c.getPath("top_ports")} {self.target}"""
+        nmap_command = f"""nmap -vv -Pn -sV -sC -p {stringerT} --script-timeout 5m -oA {c.getPath("top_ports")} {self.target}"""
         cmd_info = "[" + fg.li_green + "+" + fg.rs + "]"
         print(f"""{cmd_info} {fg.li_green}{nmap_command}{fg.rs}""")
         call(nmap_command, shell=True)

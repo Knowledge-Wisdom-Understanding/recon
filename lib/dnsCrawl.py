@@ -2,10 +2,8 @@
 
 import os
 from sty import fg, bg, ef, rs
-from subprocess import PIPE, Popen, check_output, STDOUT
-import wfuzz
+from subprocess import PIPE, Popen, check_output, STDOUT, call
 from lib import nmapParser
-from subprocess import call
 from bs4 import BeautifulSoup, Comment
 import requests
 import re
@@ -43,38 +41,29 @@ class checkSource:
                 page = requests.get(url)
                 data = page.text
                 soup = BeautifulSoup(data, "html.parser")
-                links = []
+                # links = []
                 htb = [".htb"]
                 source_domain_name = []
                 for link in soup.find_all(text=lambda x: ".htb" in x):
-                    matches = re.findall(
-                        r"(?:[a-zA-Z0-9](?:[a-zA-Z0-9\-]{,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{3}",
-                        link,
-                    )
+                    matches = re.findall(r"(?:[a-zA-Z0-9](?:[a-zA-Z0-9\-]{,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{3}", link,)
                     for x in matches:
                         if any(s in x for s in htb):
                             source_domain_name.append(x)
                 # print(source_domain_name)
                 if len(source_domain_name) != 0:
-                    print(
-                        f"""{cmd_info_orange} {fg.li_magenta}Found{fg.rs} {fg.cyan}{source_domain_name}{fg.rs} in {fg.li_red}The Source!{fg.rs} http://{self.target}:{hp}"""
-                    )
-                    print(
-                        f"""{cmd_info} {fg.li_magenta}Adding{fg.rs} {fg.li_cyan} {source_domain_name}{fg.rs} to /etc/hosts file"""
-                    )
+                    print(f"""{cmd_info_orange} {fg.li_magenta}Found{fg.rs} {fg.cyan}{source_domain_name}{fg.rs} in {fg.li_red}The Source!{fg.rs} http://{self.target}:{hp}""")
+                    print(f"""{cmd_info} {fg.li_magenta}Adding{fg.rs} {fg.li_cyan} {source_domain_name}{fg.rs} to /etc/hosts file""")
                     hosts = Hosts(path="/etc/hosts")
-                    new_entry = HostsEntry(
-                        entry_type="ipv4", address=self.target, names=source_domain_name
-                    )
+                    new_entry = HostsEntry(entry_type="ipv4", address=self.target, names=source_domain_name)
                     hosts.add([new_entry], merge_names=True)
                     hosts.write()
                     for d in source_domain_name:
                         self.htb_source_domains.append(d)
                     try:
+                        import wfuzz
+
                         tk5 = f"""{c.getPath("top5Ksubs")}"""
-                        print(
-                            f"""{cmd_info} wfuzz -z file,{tk5} -u {source_domain_name[0]} -H 'Host: FUZZ.{source_domain_name[0]}'"""
-                        )
+                        print(f"""{cmd_info} wfuzz -z file,{tk5} -u {source_domain_name[0]} -H 'Host: FUZZ.{source_domain_name[0]}'""")
                         str_domain = source_domain_name[0]
                         fuzz_domain = f"""FUZZ.{source_domain_name[0]}"""
                         for r in wfuzz.fuzz(
@@ -104,7 +93,7 @@ class checkSource:
                         for htprc in filt2arr:
                             status_code.append(htprc[1])
                     if len(status_code) != 0:
-                        for status in status_code:
+                        for _ in status_code:
                             # print(status_code)
                             awk_print = "awk '{print $8}'"
                             get_domain_cmd = f"""sed -n -e 's/^.*C={status_code}//p' {wfuzzReport} | {awk_print}"""
@@ -121,12 +110,8 @@ class checkSource:
                                     subdomains[0], source_domain_name[0]
                                 )
 
-                                print(
-                                    f"""{cmd_info_orange} {fg.li_blue}Found Subdomain!{fg.rs} {fg.li_green}{sub_d}{fg.rs}"""
-                                )
-                                print(
-                                    f"""{cmd_info}{fg.li_magenta} Adding{fg.rs} {fg.li_cyan}{sub_d}{fg.rs} to /etc/hosts file"""
-                                )
+                                print(f"""{cmd_info_orange} {fg.li_blue}Found Subdomain!{fg.rs} {fg.li_green}{sub_d}{fg.rs}""")
+                                print(f"""{cmd_info}{fg.li_magenta} Adding{fg.rs} {fg.li_cyan}{sub_d}{fg.rs} to /etc/hosts file""")
                                 hosts = Hosts(path="/etc/hosts")
                                 new_entry = HostsEntry(
                                     entry_type="ipv4",
@@ -157,6 +142,8 @@ class sourceCommentChecker:
         comments = soup.find_all(string=lambda text: isinstance(text, Comment))
         comments_arr = [c.extract() for c in comments]
         if len(comments_arr) != 0:
+            print(f"Found Comments in the Source! on page {url}")
+            print(f"""Writing Comments to {c.getPath("sourceComments")}""")
             try:
                 with open(f"""{c.getPath("sourceComments")}""", "w") as com:
                     for c in comments_arr:
@@ -164,4 +151,3 @@ class sourceCommentChecker:
                         com.write(com_str)
             except FileNotFoundError as fnf:
                 print(fnf)
-

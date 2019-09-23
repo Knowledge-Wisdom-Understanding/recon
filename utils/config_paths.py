@@ -5,11 +5,10 @@ from jinja2 import Environment, FileSystemLoader
 
 
 class Configurator:
-    """The Configurator Class is used to parse the hard coded paths file. It is implemented
-    Very poorly and not the proper jinja2 way at all. In fact, this implemetation breaks
+    """The Configurator Class is used to parse the hard coded paths file. This implementation
+    is a temporary work around while I look for a better alternative. In fact, this implemetation breaks
     the core functionality of jinja2 and will be replaced by a better config file parser soon.
-    As the time comes available to me or anyone that would like to contribute to the project.
-    That being said, This Configurator does do the job, just not very well. """
+    That being said, This Configurator Class does get the job done, just not in an optimal way."""
 
     def __init__(self, target):
         self.target = target

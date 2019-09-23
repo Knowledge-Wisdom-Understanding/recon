@@ -69,7 +69,12 @@ class Clean:
                                 removeColor(
                                     self,
                                     rf,
-                                    f"""{c.getPath("oracleDir")}/oracleblah.log""",
+                                    f"""{c.getPath("oracleDir")}/oracle-blah.log""",
+                                )
+                                removeColor(
+                                    self,
+                                    rf,
+                                    f"""{c.getPath("oracleDir")}/oracle-blah.txt""",
                                 )
                             if "wpscan" in rf:
                                 removeColor(
@@ -182,7 +187,13 @@ class Clean:
                                     removeColor(
                                         self,
                                         rf,
-                                        f"""{c.getPath("proxyOracle")}/oracleblah.log""",
+                                        f"""{c.getPath("proxyOracle")}/oracle-blah.log""",
+                                    )
+                                if "oracle" in rf:
+                                    removeColor(
+                                        self,
+                                        rf,
+                                        f"""{c.getPath("proxyOracle")}/oracl-eblah.txt""",
                                     )
                                 if "nikto" in rf:
                                     check_nikto_lines = (

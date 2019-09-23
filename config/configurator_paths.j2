@@ -94,6 +94,7 @@ oraclelog : {{ reportDir }}/oracle/oracle.log
 oracletxt : {{ reportDir }}/oracle/oracle.txt
 oraclesid : {{ reportDir }}/oracle/oracle-sid.txt
 nmaporacle : {{ nmapReportDir }}/oracle
+oracleBrute : {{ pwd }}/lib/oracle.sh
 top_ports : {{ nmapReportDir }}/top-ports-{{ target }}
 full_tcp : {{ nmapReportDir }}/full-tcp-scan-{{ target }}
 vulners : {{ nmapReportDir }}/vulnscan-{{ target }}
@@ -140,3 +141,4 @@ weblinks : {{ reportDir }}/web/links.txt
 top5Ksubs : /usr/share/seclists/Discovery/DNS/subdomains-top1million-5000.txt
 wfuzzReport : {{ reportDir }}/web/wfuzz-domain.txt
 sourceComments : {{ reportDir }}/web/source_comments.txt
+falsePosWordlist :[[ pwd ]]/wordlists/testFalsePositives.txt

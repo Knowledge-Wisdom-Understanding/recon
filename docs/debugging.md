@@ -2,7 +2,7 @@
 
 ## Enabling & Disabling Feature(s)
 
-- Starting on line 321, The Various Service Scan/Enum Functions can be commented out to turn them off which will gracefully disable that feature.
+- Starting on line 198, The Various Service Scan/Enum Functions can be commented out to turn them off which will gracefully disable that feature.
 - getOpenPorts() must always be left on for proper functionality.
 - scanTop10000Ports() only needs to be on for the first scan of a new target.
 - cmsEnum() is dependent on enumHTTP() and cmsEnumSSL() is dependent on enumHTTPS() and so on...

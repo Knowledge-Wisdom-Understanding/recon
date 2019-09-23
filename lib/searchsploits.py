@@ -28,12 +28,9 @@ class Search:
         cmd_info = "[" + fg.green + "+" + fg.rs + "]"
         np = nmapParser.NmapParserFunk(self.target)
         np.allOpenPorts()
-        ftp_version = np.ftp_version
         ftp_product = np.ftp_product
         ssh_product = np.ssh_product
-        ssh_version = np.ssh_version
         smtp_product = np.smtp_product
-        smtp_version = np.smtp_version
         products = np.all_products
         http_title = np.http_script_title
         ignore = ["apache", "mysql"]
@@ -163,12 +160,8 @@ class Search:
         reset = fg.rs
         np = nmapParser.NmapParserFunk(self.target)
         np.openPorts()
-        ftp_version = np.ftp_version
-        ftp_product = np.ftp_product
         ssh_product = np.ssh_product
         ssh_version = np.ssh_version
-        smtp_product = np.smtp_product
-        smtp_version = np.smtp_version
         c = config_paths.Configurator(self.target)
         c.createConfig()
         ## Check what version OPENSSH is
@@ -181,7 +174,7 @@ class Search:
             int_first_two_nums = float(first_two_nums)
             if ssh_product[0] == "OpenSSH":
                 if int_first_two_nums < float(7.7):
-                    ssh_port = np.ssh_ports[0]
+                    # ssh_port = np.ssh_ports[0]
                     print(
                         f"""{cmd_info} {blue}{ssh_product[0]} {ssh_version[0]}{reset} is {red}vulnerable to username Enumeration{reset}"""
                     )
