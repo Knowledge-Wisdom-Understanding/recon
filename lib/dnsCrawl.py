@@ -45,25 +45,16 @@ class checkSource:
                 htb = [".htb"]
                 source_domain_name = []
                 for link in soup.find_all(text=lambda x: ".htb" in x):
-                    matches = re.findall(
-                        r"(?:[a-zA-Z0-9](?:[a-zA-Z0-9\-]{,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{3}",
-                        link,
-                    )
+                    matches = re.findall(r"(?:[a-zA-Z0-9](?:[a-zA-Z0-9\-]{,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{3}", link,)
                     for x in matches:
                         if any(s in x for s in htb):
                             source_domain_name.append(x)
                 # print(source_domain_name)
                 if len(source_domain_name) != 0:
-                    print(
-                        f"""{cmd_info_orange} {fg.li_magenta}Found{fg.rs} {fg.cyan}{source_domain_name}{fg.rs} in {fg.li_red}The Source!{fg.rs} http://{self.target}:{hp}"""
-                    )
-                    print(
-                        f"""{cmd_info} {fg.li_magenta}Adding{fg.rs} {fg.li_cyan} {source_domain_name}{fg.rs} to /etc/hosts file"""
-                    )
+                    print(f"""{cmd_info_orange} {fg.li_magenta}Found{fg.rs} {fg.cyan}{source_domain_name}{fg.rs} in {fg.li_red}The Source!{fg.rs} http://{self.target}:{hp}""")
+                    print(f"""{cmd_info} {fg.li_magenta}Adding{fg.rs} {fg.li_cyan} {source_domain_name}{fg.rs} to /etc/hosts file""")
                     hosts = Hosts(path="/etc/hosts")
-                    new_entry = HostsEntry(
-                        entry_type="ipv4", address=self.target, names=source_domain_name
-                    )
+                    new_entry = HostsEntry(entry_type="ipv4", address=self.target, names=source_domain_name)
                     hosts.add([new_entry], merge_names=True)
                     hosts.write()
                     for d in source_domain_name:
@@ -72,9 +63,7 @@ class checkSource:
                         import wfuzz
 
                         tk5 = f"""{c.getPath("top5Ksubs")}"""
-                        print(
-                            f"""{cmd_info} wfuzz -z file,{tk5} -u {source_domain_name[0]} -H 'Host: FUZZ.{source_domain_name[0]}'"""
-                        )
+                        print(f"""{cmd_info} wfuzz -z file,{tk5} -u {source_domain_name[0]} -H 'Host: FUZZ.{source_domain_name[0]}'""")
                         str_domain = source_domain_name[0]
                         fuzz_domain = f"""FUZZ.{source_domain_name[0]}"""
                         for r in wfuzz.fuzz(
@@ -121,12 +110,8 @@ class checkSource:
                                     subdomains[0], source_domain_name[0]
                                 )
 
-                                print(
-                                    f"""{cmd_info_orange} {fg.li_blue}Found Subdomain!{fg.rs} {fg.li_green}{sub_d}{fg.rs}"""
-                                )
-                                print(
-                                    f"""{cmd_info}{fg.li_magenta} Adding{fg.rs} {fg.li_cyan}{sub_d}{fg.rs} to /etc/hosts file"""
-                                )
+                                print(f"""{cmd_info_orange} {fg.li_blue}Found Subdomain!{fg.rs} {fg.li_green}{sub_d}{fg.rs}""")
+                                print(f"""{cmd_info}{fg.li_magenta} Adding{fg.rs} {fg.li_cyan}{sub_d}{fg.rs} to /etc/hosts file""")
                                 hosts = Hosts(path="/etc/hosts")
                                 new_entry = HostsEntry(
                                     entry_type="ipv4",
