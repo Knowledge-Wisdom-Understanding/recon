@@ -129,12 +129,13 @@ class NmapParserFunk:
                 if "http" in service[1]:
                     if "ssl" not in service[2]:
                         if "ssl" not in service[1]:
-                            if "http-proxy" not in service[1]:
-                                if service[0] not in ignored_windows_http_ports:
-                                    if service[0] not in self.http_ports:
-                                        self.http_ports.append(service[0])
-                                    if service[8] not in self.http_script_results:
-                                        self.http_script_results.append(service[8])
+                            if "MiniServ" not in service[5]:
+                                if "http-proxy" not in service[1]:
+                                    if service[0] not in ignored_windows_http_ports:
+                                        if service[0] not in self.http_ports:
+                                            self.http_ports.append(service[0])
+                                        if service[8] not in self.http_script_results:
+                                            self.http_script_results.append(service[8])
                 if "netbios-ssn" in service[1]:
                     if service[0] not in self.smb_ports:
                         self.smb_ports.append(service[0])
@@ -231,7 +232,7 @@ class NmapParserFunk:
                     if result[1] not in self.http_script_title:
                         self.http_script_title.append(result[1])
 
-        ### Print Statements for Debugging Purposes..
+        # Print Statements for Debugging Purposes..
         # print("HTTP PORTS:", self.http_ports)
         # if len(self.http_script_results) != 0:
         #     print("HTTP-Script-Results:", self.http_script_results[0])
