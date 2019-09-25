@@ -3,7 +3,7 @@
 import os
 from lib import nmapParser
 from shutil import which
-from utils import config_paths
+from utils import config_parser
 
 
 class NmapOpenPorts:
@@ -39,101 +39,71 @@ class NmapOpenPorts:
         unp = nmapParser.NmapParserFunk(self.target)
         unp.openUdpPorts()
         snmpPorts = unp.snmp_ports
-        c = config_paths.Configurator(self.target)
-        c.createConfig()
-        c.cmdConfig()
+        c = config_parser.CommandParser(f"{os.getcwd()}/config/config.yaml", self.target)
         unsorted_commands = []
         if len(snmpPorts) != 0:
-            if not os.path.exists(f"""{c.getPath("snmpDir")}"""):
-                os.makedirs(f"""{c.getPath("snmpDir")}""")
-            snmp_walk_cmd = f"""snmpwalk -c public -v2c {self.target} | tee {c.getPath("snmpwalk_log")}"""
-            snmp_check_cmd = f"""snmp-check -c public -v 1 -d {self.target} | tee {c.getPath("snmpcheck_log")}"""
-            onesixty_one_cmd = f"""onesixtyone -c /usr/share/doc/onesixtyone/dict.txt {self.target} | tee {c.getPath("snmp_onesixtyone_log")}"""
-            unsorted_commands.append(snmp_check_cmd)
-            unsorted_commands.append(snmp_walk_cmd)
-            unsorted_commands.append(onesixty_one_cmd)
+            if not os.path.exists(c.getPath("snmp", "snmpDir")):
+                os.makedirs(c.getPath("snmp", "snmpDir"))
+            unsorted_commands.append(c.getCmd("snmp", "snmpwalk"))
+            unsorted_commands.append(c.getCmd("snmp", "snmpCheck"))
+            unsorted_commands.append(c.getCmd("snmp", "onesixtyone"))
         if len(ftpPorts) != 0:
             string_ftp_ports = ",".join(map(str, ftpPorts))
-            ftp_enum_cmd = f"""nmap -vv -sV -Pn -p {string_ftp_ports} --script={c.getCmd("ftpScripts")} -oA {c.getPath("nmap_ftp")} {self.target}"""
-            unsorted_commands.append(ftp_enum_cmd)
+            unsorted_commands.append(c.getCmd("ftp", "nmapFtp", ftpPorts=string_ftp_ports))
         if len(smtpPorts) != 0:
-            if not os.path.exists(f"""{c.getPath("smtpDir")}"""):
-                os.makedirs(f"""{c.getPath("smtpDir")}""")
+            if not os.path.exists(c.getPath("smtp", "smtpDir")):
+                os.makedirs(c.getPath("smtp", "smtpDir"))
             for p in smtpPorts:
-                smtp_cmd = f"""smtp-user-enum -M VRFY -U /usr/share/metasploit-framework/data/wordlists/unix_users.txt -t {self.target} -p {p} 2>&1 | tee {c.getPath("smtp_user_enum")}-{p}.log"""
-                unsorted_commands.append(smtp_cmd)
+                unsorted_commands.append(c.getCmd("smtp", "smtpUserEnum", p=p))
         if len(nfsPorts) != 0:
-            if not os.path.exists(f"""{c.getPath("nfsDir")}"""):
-                os.makedirs(f"""{c.getPath("nfsDir")}""")
+            if not os.path.exists(c.getPath("nfs", "nfsDir")):
+                os.makedirs(c.getPath("nfs", "nfsDir"))
             string_nfs_ports = ",".join(map(str, nfsPorts))
-            nfs_cmd = f"""nmap -vv -sV -p {string_nfs_ports} --script=nfs-ls.nse,nfs-statfs.nse,nfs-showmount.nse -oA {c.getPath("nmapNfs")} {self.target}"""
-            nfs_cmd_2 = f"""showmount -e {self.target} 2>&1 | tee {c.getPath("nfs_showmount")}"""
-            unsorted_commands.append(nfs_cmd)
-            unsorted_commands.append(nfs_cmd_2)
+            unsorted_commands.append(c.getCmd("nfs", "nmapNfs", nfsPorts=string_nfs_ports))
+            unsorted_commands.append(c.getCmd("nfs", "showmount"))
         if len(rpcPorts) != 0:
-            if not os.path.exists(f"""{c.getPath("rpcDir")}"""):
-                os.makedirs(f"""{c.getPath("rpcDir")}""")
-            rpc_cmds = (
-                f"""enum4linux -av {self.target} | tee {c.getPath("rpcEnum4linux")}"""
-            )
-            unsorted_commands.append(rpc_cmds)
-            if which("impacket-rpcdump" ""):
-                rpc_cmd_2 = (
-                    f"""impacket-rpcdump @{self.target} | tee {c.getPath("impRpc")}"""
-                )
-                unsorted_commands.append(rpc_cmd_2)
+            if not os.path.exists(c.getPath("rpc", "rpcDir")):
+                os.makedirs(c.getPath("rpc", "rpcDir"))
+            unsorted_commands.append(c.getCmd("rpc", "enum4linuxRpc"))
+            if which("impacket-rpcdump"):
+                unsorted_commands.append(c.getCmd("rpc", "rpcdump"))
         if len(cupsPorts) != 0:
             string_cups_ports = ",".join(map(str, cupsPorts))
-            cups_cmd = f"""nmap -vv -sV -Pn --script=cups-info.nse,cups-queue-info.nse -p {string_cups_ports} -oA {c.getPath("nmapCups")} {self.target}"""
-            unsorted_commands.append(cups_cmd)
+            unsorted_commands.append(c.getCmd("cups", "nmapCups", cupsPorts=string_cups_ports))
         if len(javaRmiPorts) != 0:
             string_java_rmi_ports = ",".join(map(str, javaRmiPorts))
-            javaRmi_cmd = f"""nmap -vv -sV -Pn --script=rmi-vuln-classloader.nse -p {string_java_rmi_ports} -oA {c.getPath("nmapJavaRmi")} {self.target}"""
-            javaRmi_cmd2 = f"""nmap -vv -sV -Pn --script=rmi-dumpregistry.nse -p {string_java_rmi_ports} -oA {c.getPath("nmapJavaRmiDump")} {self.target}"""
-            unsorted_commands.append(javaRmi_cmd)
-            unsorted_commands.append(javaRmi_cmd2)
+            unsorted_commands.append(c.getCmd("java", "javaRmiDump", javarmiPorts=string_java_rmi_ports))
+            unsorted_commands.append(c.getCmd("java", "javaRmiVulns", javarmiPorts=string_java_rmi_ports))
         if len(sipPorts) != 0:
-            if not os.path.exists(f"""{c.getPath("sipDir")}"""):
-                os.makedirs(f"""{c.getPath("sipDir")}""")
+            if not os.path.exists(c.getPath("sip", "sipDir")):
+                os.makedirs(c.getPath("sip", "sipDir"))
             string_sip_ports = ",".join(map(str, sipPorts))
-            sip_nmap_cmd = f"""nmap -sV -p {string_sip_ports} --script='banner,sip-enum-users,sip-methods' -oA {c.getPath("nmapSip")} {self.target}"""
-            sip_svwar_cmd2 = (
-                f"""svwar -D -m INVITE {self.target} 2>&1 | tee {c.getPath("svWar")}"""
-            )
-            unsorted_commands.append(sip_nmap_cmd)
-            unsorted_commands.append(sip_svwar_cmd2)
+            unsorted_commands.append(c.getCmd("sip", "nmapSip", sipPorts=string_sip_ports))
+            unsorted_commands.append(c.getCmd("sip", "svwar"))
         if len(vncPorts) != 0:
             string_vnc_ports = ",".join(map(str, vncPorts))
-            vnc_nmap_cmd = f"""nmap -Pn -sV -p {string_vnc_ports} --script='banner,(vnc* or realvnc* or ssl*) and not (brute or broadcast or dos or external or fuzzer) --script-args='unsafe=1' -oA {c.getPath("nmapVNC")} {self.target}"""
-            unsorted_commands.append(vnc_nmap_cmd)
+            unsorted_commands.append(c.getCmd("vnc", "nmapVnc", vncPorts=string_vnc_ports))
         if len(telnetPorts) != 0:
             string_telnet_ports = ",".join(map(str, telnetPorts))
-            telnet_nmap_cmd = f"""nmap -Pn -sV -p {string_telnet_ports} --script='banner,telnet-encryption,telnet-ntlm-info' -oA {c.getPath("nmapTelnet")} {self.target}"""
-            unsorted_commands.append(telnet_nmap_cmd)
+            unsorted_commands.append(c.getCmd("telnet", "nmapTelnet", telnetPorts=string_telnet_ports))
         if len(cassandraPorts) != 0:
             string_cassandra_ports = ",".join(map(str, cassandraPorts))
-            cassandra_nmap_cmd = f"""nmap -Pn -sV -p {string_cassandra_ports} --script="banner,(cassandra* or ssl*) and not (brute or broadcast or dos or external or fuzzer)" -oA {c.getPath("nmapCassandra")} {self.target}"""
-            unsorted_commands.append(cassandra_nmap_cmd)
+            unsorted_commands.append(c.getCmd("cassandra", "nmapCassandra", cassandraPorts=string_cassandra_ports))
         if len(mssqlPorts) != 0:
             string_mssql_ports = ",".join(map(str, mssqlPorts))
-            mssql_nmap_cmd = f"""nmap -Pn -sV -p {string_mssql_ports} --script="banner,(ms-sql* or ssl*) and not (brute or broadcast or dos or external or fuzzer)" --script-args="mssql.instance-port={mssqlPorts[0]},mssql.username=sa,mssql.password=sa" -oA {c.getPath("nmapMsSQL")} {self.target}"""
-            unsorted_commands.append(mssql_nmap_cmd)
+            unsorted_commands.append(c.getCmd("mssql", "nmapMssql", mssqlPorts=string_mssql_ports, mssqlPort=mssqlPorts[0]))
         if len(mysqlPorts) != 0:
             string_mysql_ports = ",".join(map(str, mysqlPorts))
-            mysql_nmap_cmd = f"""nmap -Pn -sV -p {string_mysql_ports} --script="banner,(mysql* or ssl*) and not (brute or broadcast or dos or external or fuzzer)" -oA {c.getPath("nmapMySQL")} {self.target}"""
-            unsorted_commands.append(mysql_nmap_cmd)
+            unsorted_commands.append(c.getCmd("mysql", "nmapMysql", mysqlPorts=string_mysql_ports))
         if len(mongoPorts) != 0:
             string_mongo_ports = ",".join(map(str, mongoPorts))
-            mongo_nmap_cmd = f"""nmap -Pn -sV -p {string_mongo_ports} --script="banner,(mongodb* or ssl*) and not (brute or broadcast or dos or external or fuzzer)" -oA {c.getPath("nmapMongo")} {self.target}"""
-            unsorted_commands.append(mongo_nmap_cmd)
+            unsorted_commands.append(c.getCmd("mongodb", "nmapMongo", mongoPorts=string_mongo_ports))
         if len(pop3Ports) != 0:
             string_pop3_ports = ",".join(map(str, pop3Ports))
-            pop3_nmap_cmd = f"""nmap -Pn -sV -p {string_pop3_ports} --script="banner,(pop3* or ssl*) and not (brute or broadcast or dos or external or fuzzer)" -oA {c.getPath("nmapPop3")} {self.target}"""
-            unsorted_commands.append(pop3_nmap_cmd)
+            unsorted_commands.append(c.getCmd("pop3", "nmapPop3", popPorts=string_pop3_ports))
         if len(kerberosPorts) != 0:
             string_kerberos_ports = ",".join(map(str, kerberosPorts))
-            kerberos_nmap_cmd = f"""nmap -Pn -sV -p {string_kerberos_ports} --script="banner,krb5-enum-users" -oA {c.getPath("nmapKerberos")} {self.target}"""
-            unsorted_commands.append(kerberos_nmap_cmd)
+            unsorted_commands.append(c.getCmd("kerberos", "nmapKerberos", kerberosPorts=string_kerberos_ports))
 
         set_sorted_cmds = sorted(set(unsorted_commands))
         cmds_to_run = []
@@ -141,4 +111,3 @@ class NmapOpenPorts:
             cmds_to_run.append(i)
         mpCmds = tuple(cmds_to_run)
         self.processes = mpCmds
-
