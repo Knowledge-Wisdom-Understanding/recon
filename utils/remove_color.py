@@ -3,7 +3,7 @@
 from subprocess import call, check_output, STDOUT
 import os
 import glob
-from utils import config_paths
+from utils import config_parser
 
 
 class Clean:
@@ -30,11 +30,10 @@ class Clean:
             sedCMD = f'sed "s,\x1B\[[0-9;]*[a-zA-Z],,g" {filename} > {newfilename} && rm {filename} && mv {newfilename} {filename}'
             return call(sedCMD, shell=True)
 
-        c = config_paths.Configurator(self.target)
-        c.createConfig()
+        c = config_parser.CommandParser(f"{os.getcwd()}/config/config.yaml", self.target)
         dir_list = [
             d
-            for d in glob.iglob(f"""{c.getPath("reportGlob")}""", recursive=True)
+            for d in glob.iglob(c.getPath("report", "reportGlob"), recursive=True)
             if os.path.isdir(d)
         ]
         for d in dir_list:
@@ -49,75 +48,75 @@ class Clean:
                         if "eyewitness" not in rf:
                             if "wafw00f" in rf:
                                 removeColor(
-                                    self, rf, f"""{c.getPath("webDir")}/wafw00f.txt"""
+                                    self, rf, f"""{c.getPath("web","webDir")}/wafw00f.txt"""
                                 )
                             if "whatweb" in rf:
                                 removeColor(
-                                    self, rf, f"""{c.getPath("webDir")}/whatweb.txt"""
+                                    self, rf, f"""{c.getPath("web","webDir")}/whatweb.txt"""
                                 )
                             if "sslscan" in rf:
                                 removeColor(
                                     self,
                                     rf,
-                                    f"""{c.getPath("webSSLDir")}/sslscan.txt""",
+                                    f"""{c.getPath("webSSL","webSSLDir")}/sslscan.txt""",
                                 )
                             if "dnsenum" in rf:
                                 removeColor(
-                                    self, rf, f"""{c.getPath("dnsDir")}/dnsenum.log"""
+                                    self, rf, f"""{c.getPath("dns","dnsDir")}/dnsenum.log"""
                                 )
                             if "oracle" in rf:
                                 removeColor(
                                     self,
                                     rf,
-                                    f"""{c.getPath("oracleDir")}/oracle-blah.log""",
+                                    f"""{c.getPath("oracle","oracleDir")}/oracle-blah.log""",
                                 )
                                 removeColor(
                                     self,
                                     rf,
-                                    f"""{c.getPath("oracleDir")}/oracle-blah.txt""",
+                                    f"""{c.getPath("oracle","oracleDir")}/oracle-blah.txt""",
                                 )
                             if "wpscan" in rf:
                                 removeColor(
                                     self,
                                     rf,
-                                    f"""{c.getPath("webDir")}/wpscanblah.log""",
+                                    f"""{c.getPath("web","webDir")}/wpscanblah.log""",
                                 )
                             if "vulns" in rf:
                                 if "ftp" in rf:
                                     removeColor(
                                         self,
                                         rf,
-                                        f"""{c.getPath("vulnDir")}/ftpblah.log""",
+                                        f"""{c.getPath("vuln","vulnDir")}/ftpblah.log""",
                                     )
                                 if "ssh" in rf:
                                     removeColor(
                                         self,
                                         rf,
-                                        f"""{c.getPath("vulnDir")}/sshblah.log""",
+                                        f"""{c.getPath("vuln","vulnDir")}/sshblah.log""",
                                     )
                                 if "smtp" in rf:
                                     removeColor(
                                         self,
                                         rf,
-                                        f"""{c.getPath("vulnDir")}/smtpblah.log""",
+                                        f"""{c.getPath("vuln","vulnDir")}/smtpblah.log""",
                                     )
                                 if "http" in rf:
                                     removeColor(
                                         self,
                                         rf,
-                                        f"""{c.getPath("vulnDir")}/http-title-blah.log""",
+                                        f"""{c.getPath("vuln","vulnDir")}/http-title-blah.log""",
                                     )
                                 if "https" in rf:
                                     removeColor(
                                         self,
                                         rf,
-                                        f"""{c.getPath("vulnDir")}/https-title-blah.log""",
+                                        f"""{c.getPath("vuln","vulnDir")}/https-title-blah.log""",
                                     )
                                 if "all-services" in rf:
                                     removeColor(
                                         self,
                                         rf,
-                                        f"""{c.getPath("vulnDir")}/all-services-blah.log""",
+                                        f"""{c.getPath("vuln","vulnDir")}/all-services-blah.log""",
                                     )
 
     def listFilesProxy(self):
@@ -135,12 +134,11 @@ class Clean:
             sedCMD = f'sed "s,\x1B\[[0-9;]*[a-zA-Z],,g" {filename} > {newfilename} && rm {filename} && mv {newfilename} {filename}'
             return call(sedCMD, shell=True)
 
-        c = config_paths.Configurator(self.target)
-        c.createConfig()
-        if os.path.exists(f"""{c.getPath("proxyDir")}"""):
+        c = config_parser.CommandParser(f"{os.getcwd()}/config/config.yaml", self.target)
+        if os.path.exists(c.getPath("proxy", "proxyDir")):
             dir_list = [
                 d
-                for d in glob.iglob(f"""{c.getPath("proxyGlob")}""", recursive=True)
+                for d in glob.iglob(c.getPath("proxy", "proxyGlob"), recursive=True)
                 if os.path.isdir(d)
             ]
             for d in dir_list:
@@ -157,43 +155,43 @@ class Clean:
                                     removeColor(
                                         self,
                                         rf,
-                                        f"""{c.getPath("proxyWeb")}/wafw00f.txt""",
+                                        f"""{c.getPath("proxy","proxyWeb")}/wafw00f.txt""",
                                     )
                                 if "whatweb" in rf:
                                     removeColor(
                                         self,
                                         rf,
-                                        f"""{c.getPath("proxyWeb")}/whatweb.txt""",
+                                        f"""{c.getPath("proxy","proxyWeb")}/whatweb.txt""",
                                     )
                                 if "wpscan" in rf:
                                     removeColor(
                                         self,
                                         rf,
-                                        f"""{c.getPath("proxyWeb")}/wpscanblah.txt""",
+                                        f"""{c.getPath("proxy","proxyWeb")}/wpscanblah.txt""",
                                     )
                                 if "sslscan" in rf:
                                     removeColor(
                                         self,
                                         rf,
-                                        f"""{c.getPath("proxyWebSSL")}/sslscan.txt""",
+                                        f"""{c.getPath("proxy","proxyWebSSL")}/sslscan.txt""",
                                     )
                                 if "dnsenum" in rf:
                                     removeColor(
                                         self,
                                         rf,
-                                        f"""{c.getPath("proxyDns")}/dnsenum.log""",
+                                        f"""{c.getPath("proxy","proxyDns")}/dnsenum.log""",
                                     )
                                 if "oracle" in rf:
                                     removeColor(
                                         self,
                                         rf,
-                                        f"""{c.getPath("proxyOracle")}/oracle-blah.log""",
+                                        f"""{c.getPath("proxy","proxyOracle")}/oracle-blah.log""",
                                     )
                                 if "oracle" in rf:
                                     removeColor(
                                         self,
                                         rf,
-                                        f"""{c.getPath("proxyOracle")}/oracl-eblah.txt""",
+                                        f"""{c.getPath("proxy","proxyOracle")}/oracl-eblah.txt""",
                                     )
                                 if "nikto" in rf:
                                     check_nikto_lines = (
@@ -209,29 +207,29 @@ class Clean:
                                         removeColor(
                                             self,
                                             rf,
-                                            f"""{c.getPath("proxyVulns")}/ftpblah.log""",
+                                            f"""{c.getPath("proxy","proxyVulns")}/ftpblah.log""",
                                         )
                                     if "ssh" in rf:
                                         removeColor(
                                             self,
                                             rf,
-                                            f"""{c.getPath("proxyVulns")}/sshblah.log""",
+                                            f"""{c.getPath("proxy","proxyVulns")}/sshblah.log""",
                                         )
                                     if "smtp" in rf:
                                         removeColor(
                                             self,
                                             rf,
-                                            f"""{c.getPath("proxyVulns")}/smtpblah.log""",
+                                            f"""{c.getPath("proxy","proxyVulns")}/smtpblah.log""",
                                         )
                                     if "http" in rf:
                                         removeColor(
                                             self,
                                             rf,
-                                            f"""{c.getPath("proxyVulns")}/http-title-blah.log""",
+                                            f"""{c.getPath("proxy","proxyVulns")}/http-title-blah.log""",
                                         )
                                     if "https" in rf:
                                         removeColor(
                                             self,
                                             rf,
-                                            f"""{c.getPath("proxyVulns")}/https-title-blah.log""",
+                                            f"""{c.getPath("proxy","proxyVulns")}/https-title-blah.log""",
                                         )
