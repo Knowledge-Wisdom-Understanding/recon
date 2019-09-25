@@ -45,8 +45,8 @@ class LdapEnum:
             print(fg.cyan + "Enumerating LDAP: Lightweight Directory Access Protocol, Running the following commands:" + fg.rs)
             string_ldap_ports = ",".join(map(str, ldap_ports))
             commands = []
-            commands.append(f"""echo {cmd_info} {green} {c.getCmd("ldap", "nmapLdap", ldapPorts=string_ldap_ports)} {reset}""")
+            commands.append(f"""echo {cmd_info}{green} '{c.getCmd("ldap", "nmapLdap", ldapPorts=string_ldap_ports)}' {reset}""")
             commands.append(c.getCmd("ldap", "nmapLdap", ldapPorts=string_ldap_ports))
-            commands.append(f"""echo {cmd_info} {green} {c.getCmd("ldap", "enum4linuxLdap")} {reset}""")
+            commands.append(f"""echo {cmd_info}{green} '{c.getCmd("ldap", "enum4linuxLdap")}' {reset}""")
             commands.append(c.getCmd("ldap", "enum4linuxLdap"))
             self.processes = tuple(commands)

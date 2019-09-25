@@ -9,8 +9,8 @@ class CommandParser:
     def __init__(self, config_path, target):
         self.pwd = getcwd()
         self.target = target
-        self.reportDir = f"{getcwd()}/{target}-Report"
-        self.nmapReportDir = f"{getcwd()}/{target}-Report/nmap"
+        self.reportDir = f"""{getcwd()}/{target}-Report"""
+        self.nmapReportDir = f"""{getcwd()}/{target}-Report/nmap"""
         try:
             with open(f"{config_path}", "r") as c:
                 self.config = yaml.load(c, Loader=yaml.Loader)

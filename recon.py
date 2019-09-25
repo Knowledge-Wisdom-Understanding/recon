@@ -89,7 +89,7 @@ def signal_handler(sig, frame):
     sys.exit(0)
 
 
-VERSION = 2.4
+VERSION = 3.0
 
 
 def main():
@@ -202,7 +202,7 @@ def main():
         validateIP()
         reset_timer()
         rc.scanTopTcpPorts()
-        # rc.getOpenPorts()  # Must Always be ON
+        rc.getOpenPorts()
         rc.enumDNS()
         rc.enumHTTP()
         rc.cmsEnum()
@@ -242,7 +242,7 @@ def main():
                     validateIP()
                     reset_timer()
                     rc.scanTopTcpPorts()
-                    rc.getOpenPorts()  # Must Always be ON
+                    rc.getOpenPorts()
                     rc.enumDNS()
                     rc.enumHTTP()
                     rc.cmsEnum()

@@ -232,16 +232,14 @@ class DirsearchURLS:
                             os.makedirs(c.getPath("web", "aquatoneDir"))
                         dirsearch_files.append(rf)
                     if "nikto" in rf:
-                        check_nikto_lines = f"""wc - l {rf} | cut - d ' ' - f 1"""
-                        num_lines_nikto = check_output(
-                            check_nikto_lines, stderr=STDOUT, shell=True
-                        ).rstrip()
+                        check_nikto_lines = f"""wc -l {rf} | cut -d ' ' -f 1"""
+                        num_lines_nikto = check_output(check_nikto_lines, stderr=STDOUT, shell=True).rstrip()
                         if int(num_lines_nikto) < 100:
                             call(f"cat {rf}", shell=True)
 
         if len(dirsearch_files) != 0:
             all_dirsearch_files_on_one_line = " ".join(map(str, dirsearch_files))
-            url_list_cmd = f"""cat {all_dirsearch_files_on_one_line} | grep - v '400' | awk '{awkprint}' | sort - u > {c.getPath("web","aquatoneDirUrls")}"""
+            url_list_cmd = f"""cat {all_dirsearch_files_on_one_line} | grep -Ev '400|403' | awk '{awkprint}' | sort -u > {c.getPath("web", "aquatoneDirUrls")}"""
             call(url_list_cmd, shell=True)
 
     def genProxyDirsearchUrlList(self):
@@ -274,7 +272,7 @@ class DirsearchURLS:
 
             if len(dirsearch_files) != 0:
                 all_dirsearch_files_on_one_line = " ".join(map(str, dirsearch_files))
-                url_list_cmd = f"""cat {all_dirsearch_files_on_one_line} | grep - v '400' | awk '{awkprint}' | sort - u > {c.getPath("web","aquatoneDirPUrls")}"""
+                url_list_cmd = f"""cat {all_dirsearch_files_on_one_line} | grep -Ev '400|403' | awk '{awkprint}' | sort -u > {c.getPath("web", "aquatoneDirPUrls")}"""
                 call(url_list_cmd, shell=True)
 
 
@@ -774,6 +772,4 @@ class topPortsToScan:
             5353,
             9200,
             9876,
-            49152,
-            49154,
         ]

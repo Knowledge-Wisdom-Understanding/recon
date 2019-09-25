@@ -84,17 +84,17 @@ class EnumWeb:
 
                     commands.append(f"""echo {cmd_info}{green} '{c.getCmd("web", "whatwebHttpTarget", port=port)}' {reset}""")
                     commands.append(c.getCmd("web", "whatwebHttpTarget", port=port))
-                    commands.append(f"""echo {cmd_info}{green} '{c.getCmd("web","eyewitnessTarget", port=port)}' {reset}""")
+                    commands.append(f"""echo {cmd_info}{green} '{c.getCmd("web", "eyewitnessTarget", port=port)}' {reset}""")
                     commands.append(c.getCmd("web", "eyewitnessTarget", port=port))
-                    commands.append(f"""echo {cmd_info}{green} '{c.getCmd("web","wafw00fTarget", port=port)}' {reset}""")
+                    commands.append(f"""echo {cmd_info}{green} '{c.getCmd("web", "wafw00fTarget", port=port)}' {reset}""")
                     commands.append(c.getCmd("web", "wafw00fTarget", port=port))
-                    commands.append(f"""echo {cmd_info}{green} '{c.getCmd("web","curlRobotsTarget", port=port)}' {reset}""")
+                    commands.append(f"""echo {cmd_info}{green} '{c.getCmd("web", "curlRobotsTarget", port=port)}' {reset}""")
                     commands.append(c.getCmd("web", "curlRobotsTarget", port=port))
-                    commands.append(f"""echo {cmd_info}{green} '{c.getCmd("web","dirsearchHttpTargetBig", port=port)}' {reset}""")
+                    commands.append(f"""echo {cmd_info}{green} '{c.getCmd("web", "dirsearchHttpTargetBig", port=port)}' {reset}""")
                     commands.append(c.getCmd("web", "dirsearchHttpTargetBig", port=port))
-                    commands.append(f"""echo {cmd_info}{green} '{c.getCmd("web","dirsearchHttpTargetDict", port=port)}' {reset}""")
+                    commands.append(f"""echo {cmd_info}{green} '{c.getCmd("web", "dirsearchHttpTargetDict", port=port)}' {reset}""")
                     commands.append(c.getCmd("web", "dirsearchHttpTargetDict", port=port))
-                    commands.append(f"""echo {cmd_info}{green} '{c.getCmd("web","niktoTarget", port=port)}' {reset}""")
+                    commands.append(f"""echo {cmd_info}{green} '{c.getCmd("web", "niktoTarget", port=port)}' {reset}""")
                     commands.append(c.getCmd("web", "niktoTarget", port=port))
 
             # sorted_cmds = sorted(set(commands), reverse=True)
@@ -220,67 +220,72 @@ class EnumWeb:
                             "Drupal",
                             "Joomla",
                         ]
-                        with open(i, "r") as wwf:
-                            for word in wwf:
-                                fword = (
-                                    word.replace("[", " ")
-                                    .replace("]", " ")
-                                    .replace(",", " ")
-                                )
-                                for cms in cms_strings:
-                                    if cms in fword:
-                                        if "WordPress" in cms:
-                                            wpscan_cmd = c.getCmd("web", "wpscanHttpTarget", httpPort=http_port)
-                                            cms_commands.append(wpscan_cmd)
-                                            manual_brute_force_script = f"""#!/bin/bash
+                        try:
+                            with open(i, "r") as wwf:
+                                for word in wwf:
+                                    fword = (
+                                        word.replace("[", " ")
+                                        .replace("]", " ")
+                                        .replace(",", " ")
+                                    )
+                                    for cms in cms_strings:
+                                        if cms in fword:
+                                            if "WordPress" in cms:
+                                                wpscan_cmd = c.getCmd("web", "wpscanHttpTarget", httpPort=http_port)
+                                                cms_commands.append(wpscan_cmd)
+                                                manual_brute_force_script = f"""
+    #!/bin/bash
 
-if [[ -n $(grep -i "User(s) Identified" {c.getPath("web","wpscanHttpTarget", httpPort=http_port)}) ]]; then
-    grep -w -A 100 "User(s)" {c.getPath("web","wpscanHttpTarget", httpPort=http_port)} | grep -w "[+]" | cut -d " " -f 2 | head -n -7 >{c.getPath("web", "wordpressUsers")}
-    {c.getCmd("web", "CewlWeb", httpPort=http_port)}
-    sleep 10
-    echo "Adding John Rules to Cewl Wordlist!"
-    {c.getCmd("web", "cewl2John")}
-    sleep 3
-    # brute force again with wpscan
-    {c.getCmd("web", "wpscanCewlBrute", httpPort=http_port)}
-    sleep 1
-    if grep -i "No Valid Passwords Found" {c.getPath("web", "wpscanCewlBrute")}; then
-        if [[ -s {c.getPath("web", "johnCewlWordlist")} ]]; then
-            {c.getCmd("web", "wpscanCewlJohnBrute", httpPort=http_port)}
-        else
-            echo "John wordlist is empty :("
-        fi
+    if [[ -n $(grep -i "User(s) Identified" {c.getPath("web","wpscanHttpTarget", httpPort=http_port)}) ]]; then
+        grep -w -A 100 "User(s)" {c.getPath("web","wpscanHttpTarget", httpPort=http_port)} | grep -w "[+]" | cut -d " " -f 2 | head -n -7 >{c.getPath("web", "wordpressUsers")}
+        {c.getCmd("web", "CewlWeb", httpPort=http_port)}
+        sleep 10
+        echo "Adding John Rules to Cewl Wordlist!"
+        {c.getCmd("web", "cewl2John")}
+        sleep 3
+        # brute force again with wpscan
+        {c.getCmd("web", "wpscanCewlBrute", httpPort=http_port)}
         sleep 1
-        if grep -i "No Valid Passwords Found" {c.getPath("web", "wordpressJohnCewlBrute")}; then
-            {c.getCmd("web", "wpscanFastTrackBrute", httpPort=http_port)}
+        if grep -i "No Valid Passwords Found" {c.getPath("web", "wpscanCewlBrute")}; then
+            if [[ -s {c.getPath("web", "johnCewlWordlist")} ]]; then
+                {c.getCmd("web", "wpscanCewlJohnBrute", httpPort=http_port)}
+            else
+                echo "John wordlist is empty :("
+            fi
+            sleep 1
+            if grep -i "No Valid Passwords Found" {c.getPath("web", "wordpressJohnCewlBrute")}; then
+                {c.getCmd("web", "wpscanFastTrackBrute", httpPort=http_port)}
+            fi
         fi
     fi
-fi
-                                            """.rstrip()
-                                            try:
-                                                with open(c.getPath("web", "wpscanBashBruteScript"), "w") as wpb:
-                                                    print("Creating wordpress Brute Force Script...")
-                                                    wpb.write(manual_brute_force_script)
-                                                call(f"""chmod +x {c.getPath("web", "wpscanBashBruteScript")}""", shell=True)
-                                            except FileNotFoundError as fnf_error:
-                                                print(fnf_error)
+                                                """.rstrip()
+                                                try:
+                                                    with open(c.getPath("web", "wpscanBashBruteScript"), "w") as wpb:
+                                                        print("Creating wordpress Brute Force Script...")
+                                                        wpb.write(manual_brute_force_script)
+                                                    call(f"""chmod +x {c.getPath("web", "wpscanBashBruteScript")}""", shell=True)
+                                                except FileNotFoundError as fnf_error:
+                                                    print(fnf_error)
 
-                                        if "Drupal" in cms:
-                                            cms_commands.append(c.getCmd("web", "droopescan", httpPort=http_port))
-                                        if "Joomla" in cms:
-                                            cms_commands.append(c.getCmd("web", "joomscan", httpPort=http_port))
-                                        if "Magento" in cms:
-                                            cms_commands.append(c.getCmd("web", "magescan", httpPort=http_port))
-                                        if "WebDAV" in cms or ("Microsoft-IIS 6.0" in cms):
-                                            webdav_cmd = c.getCmd("web", "davtest")
-                                            webdav_cmd2 = c.getCmd("web", "webDavNmap", httpPort=http_port)
-                                            cms_commands.append(webdav_cmd)
-                                            cms_commands.append(webdav_cmd2)
-                                        if "tomcat" in cms:
-                                            tomcat_cmd = c.getCmd("web", "tomcatHydra", httpPort=http_port)
-                                            print("Manual Brute Force Command to run")
-                                            print(tomcat_cmd)
+                                            if "Drupal" in cms:
+                                                cms_commands.append(c.getCmd("web", "droopescan", httpPort=http_port))
+                                            if "Joomla" in cms:
+                                                cms_commands.append(c.getCmd("web", "joomscan", httpPort=http_port))
+                                            if "Magento" in cms:
+                                                cms_commands.append(c.getCmd("web", "magescan", httpPort=http_port))
+                                            if "WebDAV" in cms or ("Microsoft-IIS 6.0" in cms):
+                                                webdav_cmd = c.getCmd("web", "davtest")
+                                                webdav_cmd2 = c.getCmd("web", "webDavNmap", httpPort=http_port)
+                                                cms_commands.append(webdav_cmd)
+                                                cms_commands.append(webdav_cmd2)
+                                            if "tomcat" in cms:
+                                                tomcat_cmd = c.getCmd("web", "tomcatHydra", httpPort=http_port)
+                                                print("Manual Brute Force Command to run")
+                                                print(tomcat_cmd)
 
+                        except FileNotFoundError as fnf_error:
+                            print(fnf_error)
+                            exit()
             sorted_commands = sorted(set(cms_commands))
             commands_to_run = [i for i in sorted_commands]
             self.cms_processes = tuple(commands_to_run)
