@@ -53,8 +53,8 @@ class TopOpenPorts:
         commands = []
         commands.append(f"""echo {cmd_info} {green} {c.getCmd("nmap", "nmapFullTcpScan")} {reset}""")
         commands.append(c.getCmd("nmap", "nmapFullTcpScan"))
-        commands.append(f"""echo {cmd_info}{green} {c.getCmd("nmap", "nmapTopUdpScan", topUdpPorts=topUdpPortsString)}""")
+        commands.append(f"""echo {cmd_info}{green} {c.getCmd("nmap", "nmapTopUdpScan", topUdpPorts=topUdpPortsString)} {reset}""")
         commands.append(c.getCmd("nmap", "nmapTopUdpScan", topUdpPorts=topUdpPortsString))
-        commands.append(f"""echo {cmd_info}{green} {c.getCmd("nmap", "nmapVulners", openTcpPorts=string_tcp_ports)}""")
+        commands.append(f"""echo {cmd_info}{green} {c.getCmd("nmap", "nmapVulners", openTcpPorts=string_tcp_ports)} {reset}""")
         commands.append(c.getCmd("nmap", "nmapVulners", openTcpPorts=string_tcp_ports))
         self.processes = tuple(commands)
