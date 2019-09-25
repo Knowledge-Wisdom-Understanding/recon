@@ -3,7 +3,7 @@
 import os
 from sty import fg, bg, ef, rs
 from lib import nmapParser
-from utils import config_paths
+from utils import config_parser
 
 
 class SmbEnum:
@@ -24,39 +24,30 @@ class SmbEnum:
         if len(smb_ports) == 0:
             pass
         else:
-            c = config_paths.Configurator(self.target)
-            c.createConfig()
-            c.cmdConfig()
+            c = config_parser.CommandParser(f"{os.getcwd()}/config/config.yaml", self.target)
             green = fg.li_green
             reset = fg.rs
             cmd_info = "[" + green + "+" + reset + "]"
-            if not os.path.exists(f"""{c.getPath("smbDir")}"""):
-                os.makedirs(f"""{c.getPath("smbDir")}""")
-            print(
-                fg.cyan
-                + "Enumerating NetBios SMB Samba Ports, Running the following commands:"
-                + fg.rs
-            )
-            commands = (
-                f"""echo {cmd_info} {green} 'smbclient -L //{self.target} -U 'guest'% | tee -a {c.getPath("smbScan")}' {reset}""",
-                f"""smbclient -L //{self.target} -U 'guest'% | tee -a {c.getPath("smbScan")}""",
-                f"""echo {cmd_info} {green} 'nmblookup -A {self.target} | tee -a {c.getPath("smbScan")}' {reset}""",
-                f"""nmblookup -A {self.target} | tee -a {c.getPath("smbScan")}""",
-                f"""echo {cmd_info} {green} '{c.getCmd("nmapSMB")} -oA {c.getPath("nmapSmb")} {self.target} | tee -a {c.getPath("smbScan")}' {reset}""",
-                f"""{c.getCmd("nmapSMB")} -oA {c.getPath("nmapSmb")} {self.target} | tee -a {c.getPath("smbScan")}""",
-                f"""echo {cmd_info} {green} 'nbtscan -rvh {self.target} | tee -a {c.getPath("smbScan")}' {reset}""",
-                f"""nbtscan -rvh {self.target} | tee -a {c.getPath("smbScan")}""",
-                f"""echo {cmd_info} {green} 'smbmap -H {self.target} | tee -a {c.getPath("smbScan")}' {reset}""",
-                f"""smbmap -H {self.target} | tee -a {c.getPath("smbScan")}""",
-                f"""echo {cmd_info} {green} 'smbmap -H {self.target} -R | tee -a {c.getPath("smbScan")}' {reset}""",
-                f"""smbmap -H {self.target} -R | tee -a {c.getPath("smbScan")}""",
-                f"""echo {cmd_info} {green} 'smbmap -u null -p "" -H {self.target} | tee -a {c.getPath("smbScan")}' {reset}""",
-                f"""smbmap -u null -p "" -H {self.target} | tee -a {c.getPath("smbScan")}""",
-                f"""echo {cmd_info} {green} 'smbmap -u null -p "" -H {self.target} -R | tee -a {c.getPath("smbScan")}' {reset}""",
-                f"""smbmap -u null -p "" -H {self.target} -R | tee -a {c.getPath("smbScan")}""",
-                f"""echo {cmd_info} {green} 'smbmap -u null -p "" -H {self.target} | tee -a {c.getPath("smbScan")}' {reset}""",
-                f"""smbmap -u null -p "" -H {self.target} | tee -a {c.getPath("smbScan")}""",
-                f"""echo {cmd_info} {green} 'enum4linux -av {self.target} | tee -a {c.getPath("smbScan")}' {reset}""",
-                f"""enum4linux -av {self.target} | tee -a {c.getPath("smbScan")}""",
-            )
-            self.processes = commands
+            if not os.path.exists(c.getPath("smb", "smbDir")):
+                os.makedirs(c.getPath("smb", "smbDir"))
+            print(fg.cyan + "Enumerating NetBios SMB Samba Ports, Running the following commands:" + fg.rs)
+            commands = []
+            commands.append(f"""echo {cmd_info}{green} {c.getCmd("smb", "smbclient")} {reset}""")
+            commands.append(c.getCmd("smb", "smbclient"))
+            commands.append(f"""echo {cmd_info} {green} {c.getCmd("smb", "nmblookup")} {reset}""")
+            commands.append(c.getCmd("smb", "nmblookup"))
+            commands.append(f"""echo {cmd_info} {green} {c.getCmd("smb", "nmapSmb")} {reset}""")
+            commands.append(c.getCmd("smb", "nmapSmb"))
+            commands.append(f"""echo {cmd_info} {green} {c.getCmd("smb", "nbtscan")} {reset}""")
+            commands.append(c.getCmd("smb", "nbtscan"))
+            commands.append(f"""echo {cmd_info} {green} {c.getCmd("smb", "smbmapH")} {reset}""")
+            commands.append(c.getCmd("smb", "smbmapH"))
+            commands.append(f"""echo {cmd_info} {green} {c.getCmd("smb", "smbmapHR")} {reset}""")
+            commands.append(c.getCmd("smb", "smbmapHR"))
+            commands.append(f"""echo {cmd_info} {green} {c.getCmd("smb", "smbmapNull")} {reset}""")
+            commands.append(c.getCmd("smb", "smbmapNull"))
+            commands.append(f"""echo {cmd_info} {green} {c.getCmd("smb", "smbmapNullR")} {reset}""")
+            commands.append(c.getCmd("smb", "smbmapNullR"))
+            commands.append(f"""echo {cmd_info} {green} {c.getCmd("smb", "enum4linuxd")} {reset}""")
+            commands.append(c.getCmd("smb", "enum4linux"))
+            self.processes = tuple(commands)
