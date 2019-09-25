@@ -63,6 +63,26 @@ commands:
     "niktoSSLTarget": "nikto -ask=no -ssl -host https://$target:$port >$reportDir/webSSL/nikto-$target-$port.txt 2>&1 &"
     "niktoSSLHost": "nikto -ask=no -ssl -host https://$host:$port >$reportDir/webSSL/nikto-$host-$port.txt 2>&1 &"
     "sslscan": "sslscan https://$target:$sslport | tee $reportDir/webSSL/sslscan-color-$target-$sslport.log"
+    "wpscanSSLTarget": "wpscan --no-update --disable-tls-checks --url https://$target:$sslPort/ --wp-content-dir wp-content --enumerate vp,vt,cb,dbe,u,m --plugins-detection aggressive | tee $reportDir/webSSL/wpscan-$sslPort.log"
+    "wpscanSSLHost": "wpscan --no-update --disable-tls-checks --url https://$host:$sslPort/ --wp-content-dir wp-content --enumerate vp,vt,cb,dbe,u,m --plugins-detection aggressive | tee $reportDir/webSSL/wpscan-$host-$sslPort.log"
+    "cewlSSLTarget": "cewl https://$target:$sslPort/ -m 3 -w $reportDir/webSSL/cewl-list.txt"
+    "cewlSSLHost": "cewl https://$host:$sslPort/ -m 3 -w $reportDir/webSSL/cewl-list.txt"
+    "johnCewl": "john --rules --wordlist=$reportDir/webSSL/cewl-list.txt --stdout > $reportDir/webSSL/john-cool-list.txt"
+    "wpscanCewlBruteTarget": "wpscan --no-update --disable-tls-checks --url https://$target:$sslPort/ --wp-content-dir wp-login.php -U $reportDir/webSSL/wp-users.txt -P $reportDir/webSSL/cewl-list.txt threads 50 | tee $reportDir/webSSL/wordpress-cewl-brute.txt"
+    "wpscanCewlBruteHost": "wpscan --no-update --disable-tls-checks --url https://$host:$sslPort/ --wp-content-dir wp-login.php -U $reportDir/webSSL/wp-users.txt -P $reportDir/webSSL/cewl-list.txt threads 50 | tee $reportDir/webSSL/wordpress-cewl-brute.txt"
+    "wpscanJohnCewlBruteTarget": "wpscan --no-update --disable-tls-checks --url https://$target:$sslPort/ --wp-content-dir wp-login.php -U $reportDir/webSSL/wp-users.txt -P $reportDir/webSSL/john-cool-list.txt threads 50 | tee $reportDir/webSSL/wordpress-john-cewl-brute.txt"
+    "wpscanJohnCewlBruteHost": "wpscan --no-update --disable-tls-checks --url https://$host:$sslPort/ --wp-content-dir wp-login.php -U $reportDir/webSSL/wp-users.txt -P $reportDir/webSSL/john-cool-list.txt threads 50 | tee $reportDir/webSSL/wordpress-john-cewl-brute.txt"
+    "wpscanFastTrackTarget": "wpscan --no-update --disable-tls-checks --url https://$target:$sslPort/ --wp-content-dir wp-login.php -U $reportDir/webSSL/wp-users.txt -P /usr/share/wordlists/fasttrack.txt threads 50 | tee $reportDir/webSSL/wordpress-fasttrack-brute.txt"
+    "wpscanFastTrackHost": "wpscan --no-update --disable-tls-checks --url https://$host:$sslPort/ --wp-content-dir wp-login.php -U $reportDir/webSSL/wp-users.txt -P /usr/share/wordlists/fasttrack.txt threads 50 | tee $reportDir/webSSL/wordpress-fasttrack-brute.txt"
+    "droopescanSSLTarget": "droopescan scan drupal -u https://$target:$sslPort/ -t 32 | tee $reportDir/webSSL/drupalscan-$target-$sslPort.log"
+    "droopescanSSLHost": "droopescan scan drupal -u https://$host:$sslPort/ -t 32 | tee $reportDir/webSSL/drupalscan-$host-$sslPort.log"
+    "joomscanTarget": "joomscan --url https://$target:$sslPort/ -ec | tee $reportDir/webSSL/joomlascan-$target-$sslPort.log"
+    "joomscanHost": "joomscan --url https://$host:$sslPort/ -ec | tee $reportDir/webSSL/joomlascan-$host-$sslPort.log"
+    "magescanTarget": "cd /opt/magescan && bin/magescan scan:all -n --insecure https://$target:$sslPort/ | tee $reportDir/webSSL/magentoscan-$target-$sslPort.log && cd - &>/dev/null"
+    "magescanHost": "cd /opt/magescan && bin/magescan scan:all -n --insecure https:$host:$sslPort/ | tee $reportDir/webSSL/magentoscan-$host-$sslPort.log && cd - &>/dev/null"
+    "davtestTarget": "davtest -move -sendbd auto -url https://$target/ | tee $reportDir/webSSL/davtestscan-$target.log"
+    "davtestHost": "davtest -move -sendbd auto -url https://$host/ | tee $reportDir/webSSL/davtestscan-$host.log"
+    "nmapWebDav": "nmap -Pn -v -sV -p $sslPort --script=http-iis-webdav-vuln.nse -oA $nmapReportDir/webdav $target"
   proxy:
     "aquatoneProxy": "cat $reportDir/aquatone/proxy-urls.txt | aquatone -ports $allWebProxyPorts -proxy http://$target:$proxyPorts -out $reportDir/aquatone/aquatone-proxy/aquatone_report.html -screenshot-timeout 40000"
     "proxychainsNmapTopPorts": "proxychains nmap -vv -sT -Pn -sV -p $topTcpPorts -oA $reportDir/proxychain-top-ports 127.0.0.1"
@@ -87,7 +107,8 @@ commands:
   proxySSL:
     "whatwebSSLProxy": "whatweb -v -a 3 --proxy $target:$proxy https://127.0.0.1:$sslPort | tee $reportDir/proxy/webSSL/whatweb-proxy-$target-$sslPort.txt"
     "niktoSSLProxy": "nikto -ask=no -host https://127.0.0.1:$proxySSLPort/ -ssl -useproxy https://$target:$proxy/ > $reportDir/proxy/webSSL/nikto-$target-$proxySslPort-proxy-scan.txt 2>&1 &"
-    "dirsearchProxySSL": "python3 /opt/dirsearch/dirsearch.py --proxy $target:$proxySSLport -u https://127.0.0.1:$proxy -e php,asp,aspx,txt,html -x 400,405,500,502 -t 50 -w $pwd/wordlists/dict.txt --plain-text-report $reportDir/proxy/webSSL/dirsearch-proxy-Dict-$target-$proxy.log"
+    "dirsearchProxySSLDict": "python3 /opt/dirsearch/dirsearch.py --proxy $target:$proxySSLport -u https://127.0.0.1:$proxy -e php,asp,aspx,txt,html -x 400,405,500,502 -t 50 -w $pwd/wordlists/dict.txt --plain-text-report $reportDir/proxy/webSSL/dirsearch-proxy-Dict-$target-$proxy.log"
+    "dirsearchProxySSLBig": "python3 /opt/dirsearch/dirsearch.py --proxy $target:$proxySSLport -u https://127.0.0.1:$proxy -e php,asp,aspx,txt,html -x 400,405,500,502 -t 50 -w /usr/share/wordlists/dirb/big.txt --plain-text-report $reportDir/proxy/webSSL/dirsearch-proxy-Big-$target-$proxy.log"
   ssh:
     "ssh_user_enum": "python $pwd/scripts/ssh_user_enum.py --port $port --userList $pwd/wordlists/usernames.txt $target --outputFile $reportDir/ssh/ssh-usernames.json --outputFormat json"
     "patator_ssh_auto": "patator ssh_login host=$target port=$port user=$user password=FILE0 0=$pwd/wordlists/probable-v2-top1575.txt persistent=0 -l $reportDir/ssh/patatorBrute-$user -x free=user:code=0 -x ignore:mesg='Authentication failed.'"
@@ -161,7 +182,7 @@ commands:
     "nmapVnc": "nmap -Pn -sV -p $vncPorts --script='banner,(vnc* or realvnc* or ssl*) and not (brute or broadcast or dos or external or fuzzer) --script-args='unsafe=1' -oA $nmapReportDir/vnc $target"
   vuln:
     "searchsploit": "searchsploit $strang >> $reportDir/vulns/$name.log"
-# These are all the Paths that are used throughout this entire project
+# These are all the Paths that are used throughout this entire project. Some paths aren't being used but are there just in case they become useful later.
 paths:
   web:
     "dsBig": "$reportDir/web/dirsearch-big-$port.log"
@@ -220,6 +241,13 @@ paths:
     "webSSLDirsearchBig": "$reportDir/webSSL/dirsearch-big-$host-$sslport.log"
     "webSSLDirsearchPT": "$reportDir/proxy/webSSL/dirsearch-127.0.0.1"
     "webSSLDirsearchPTB": "$reportDir/proxy/webSSL/dirsearch-127.0.0.1-big"
+    "wpscanSSL": "$reportDir/webSSL/wpscan-$sslPort.log"
+    "wpUsers": "$reportDir/webSSL/wp-users.txt"
+    "cewlWordlist": "$reportDir/webSSL/cewl-list.txt"
+    "wpscanCewlBruteReport": "$reportDir/webSSL/wordpress-cewl-brute.txt"
+    "cewlJohnList": "$reportDir/webSSL/john-cool-list.txt"
+    "wordpressJohnCewlBrute": "$reportDir/webSSL/wordpress-john-cewl-brute.txt"
+    "wordpressBruteBashScript": "$reportDir/webSSL/wordpressBrute.sh"
   report:
     "reportGlob": "$reportDir/*"
     "nmapDir": "$nmapReportDir"
@@ -295,6 +323,7 @@ paths:
     "raftLarge": "/usr/share/seclists/Discovery/Web-Content/raft-large-files-lowercase.txt"
     "raftLd": "/usr/share/seclists/Discovery/Web-Content/raft-large-directories.txt"
     "CewlPlus": "$reportDir/wordlists/all.txt"
+    "CewlCounter": "$reportDir/wordlists/cewl-$counter-list.txt"
     "CustomPass1575": "$pwd/wordlists/probable-v2-top1575.txt"
     "probPass1575": "/usr/share/seclists/Passwords/probable-v2-top1575.txt"
     "wlDict": "$pwd/wordlists/dict.txt"
