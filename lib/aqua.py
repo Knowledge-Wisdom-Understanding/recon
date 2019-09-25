@@ -48,7 +48,7 @@ class Aquatone:
             num_urls = check_output(check_lines, stderr=STDOUT, shell=True).rstrip()
             # ToDo: open urls.txt and sort urls by occurance of response codes.
             if int(num_urls) < 150:
-                aquatone_cmd = c.webCmd("aquatone", allWebPorts=all_web_ports_comma_list)
+                aquatone_cmd = c.getCmd("web", "aquatone", allWebPorts=all_web_ports_comma_list)
                 print(cmd_info, aquatone_cmd)
                 call(aquatone_cmd, shell=True)
                 if not which("firefox"):

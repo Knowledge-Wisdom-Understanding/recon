@@ -202,7 +202,7 @@ def main():
         validateIP()
         reset_timer()
         rc.scanTopTcpPorts()
-        rc.getOpenPorts()  # Must Always be ON
+        # rc.getOpenPorts()  # Must Always be ON
         rc.enumDNS()
         rc.enumHTTP()
         rc.cmsEnum()
