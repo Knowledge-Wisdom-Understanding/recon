@@ -1,6 +1,10 @@
 123456
 password
 spongebob
+Password12345
+Password123456
+password!
+password123!
 snowflake
 f16tomcat!
 5AYRft73VtFpc84k
