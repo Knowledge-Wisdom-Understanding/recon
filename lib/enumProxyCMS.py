@@ -64,7 +64,7 @@ class EnumProxyCMS:
                             count += 1
                             try:
                                 # whatweb_proxy_cmd = f"""whatweb -v -a 3 --proxy {self.target}:{proxy_ports[0]} {wpdir} > {c.getPath("reportDir")}/proxy/web/whatweb-proxy-{proxy_http_port}-{count}.txt"""
-                                whatweb_proxy_cmd = c.getCmd("proxy", "whatwebProxy", proxyPorts=proxy_ports[0], wordpressDirs=wpdir, httpProxy=proxy_http_port, count=count)
+                                whatweb_proxy_cmd = c.getCmd("proxy", "whatwebProxyWP", proxyPorts=proxy_ports[0], wordpressDirs=wpdir, httpProxy=proxy_http_port, count=count)
                                 call(whatweb_proxy_cmd, shell=True)
                                 if count >= 2:
                                     break
