@@ -2,7 +2,7 @@
 
 import os
 from libnmap.parser import NmapParser
-from utils import config_paths
+from utils import config_parser
 
 
 class NmapParserFunk:
@@ -90,9 +90,8 @@ class NmapParserFunk:
         """The openPorts function will parse all found ports from the nmap.xml file fed to
         the report variable. All ports will be appended to the lists in __init__ and will
         then be accessible from the NmapParserFunk Class."""
-        c = config_paths.Configurator(self.target)
-        c.createConfig()
-        report = NmapParser.parse_fromfile(f"""{c.getPath("nmap_top_ports_xml")}""")
+        c = config_parser.CommandParser(f"{os.getcwd()}/config/config.yaml", self.target)
+        report = NmapParser.parse_fromfile(c.getPath("nmap", "nmap_top_ports_xml"))
         self.nmap_services += report.hosts[0].services
         self.nmap_services = sorted(self.nmap_services, key=lambda s: s.port)
         # print(self.nmap_services)
@@ -253,9 +252,8 @@ class NmapParserFunk:
         """The openPorts function will parse all found ports from the FullTcpNmap.xml file fed to
         the report variable. All ports will be appended to the lists in __init__ and will
         then be accessible from the NmapParserFunk Class."""
-        c = config_paths.Configurator(self.target)
-        c.createConfig()
-        report = NmapParser.parse_fromfile(f"""{c.getPath("nmap_full_tcp_xml")}""")
+        c = config_parser.CommandParser(f"{os.getcwd()}/config/config.yaml", self.target)
+        report = NmapParser.parse_fromfile(c.getPath("nmap", "nmap_full_tcp_xml"))
         self.nmap_services += report.hosts[0].services
         self.nmap_services = sorted(self.nmap_services, key=lambda s: s.port)
         # print(self.nmap_services)
@@ -399,15 +397,12 @@ class NmapParserFunk:
         """The openProxyPorts function will parse all found ports from the proxychains nmap xml file fed to
         the report variable. All ports will be appended to the lists in __init__ and will
         then be accessible from the NmapParserFunk Class."""
-        c = config_paths.Configurator(self.target)
-        c.createConfig()
         self.openPorts()
-        if not os.path.exists(f"""{c.getPath('nmap_proxychain_top_ports')}"""):
+        c = config_parser.CommandParser(f"{os.getcwd()}/config/config.yaml", self.target)
+        if not os.path.exists(c.getPath("nmap", "nmap_proxychain_top_ports")):
             pass
         else:
-            proxy_report = NmapParser.parse_fromfile(
-                f"{c.getPath('nmap_proxychain_top_ports')}"
-            )
+            proxy_report = NmapParser.parse_fromfile(c.getPath("nmap", "nmap_proxychain_top_ports"))
             self.proxy_nmap_services += proxy_report.hosts[0].services
             self.proxy_nmap_services = sorted(
                 self.proxy_nmap_services, key=lambda s: s.port
@@ -492,12 +487,10 @@ class NmapParserFunk:
         """The openUdpPorts function will parse all found ports from the UDP nmap xml file fed to
         the report variable. All ports will be appended to the lists in __init__ and will
         then be accessible from the NmapParserFunk Class."""
-        c = config_paths.Configurator(self.target)
-        c.createConfig()
-        report = NmapParser.parse_fromfile(f"""{c.getPath('nmap_top_udp_ports_xml')}""")
+        c = config_parser.CommandParser(f"{os.getcwd()}/config/config.yaml", self.target)
+        report = NmapParser.parse_fromfile(c.getPath("nmap", "nmap_top_udp_ports_xml"))
         self.udp_nmap_services += report.hosts[0].services
         self.udp_nmap_services = sorted(self.udp_nmap_services, key=lambda s: s.port)
-        # print(self.nmap_services)
         for service in self.udp_nmap_services:
             if "open" not in service.state:
                 continue
