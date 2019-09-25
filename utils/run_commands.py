@@ -22,6 +22,7 @@ from lib import enumProxyCMS
 from utils import remove_color
 from utils import peaceout_banner
 from utils import helper_lists
+# from lib import _wfuzz_ignore_200
 
 
 class RunCommands:
@@ -212,3 +213,6 @@ class RunCommands:
         nocolor = remove_color.Clean(self.target)
         nocolor.listfiles()
         nocolor.listFilesProxy()
+
+    # def testFalsePositives(self):
+    #     fp = _wfuzz_ignore_200

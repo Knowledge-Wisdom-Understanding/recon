@@ -5,7 +5,7 @@ from sty import fg, bg, ef, rs
 from lib import nmapParser
 from lib import dnsenum
 import glob
-from utils import config_paths
+from utils import config_parser
 from subprocess import call
 
 
@@ -34,54 +34,48 @@ class EnumWebSSL:
             green = fg.li_green
             reset = fg.rs
             cmd_info = "[" + green + "+" + reset + "]"
-            c = config_paths.Configurator(self.target)
-            c.createConfig()
-            c.cmdConfig()
-            if not os.path.exists(f"""{c.getPath("webSSLDir")}"""):
-                os.makedirs(f"""{c.getPath("webSSLDir")}""")
-            if not os.path.exists(f"""{c.getPath("aquatoneDir")}"""):
-                os.makedirs(f"""{c.getPath("aquatoneDir")}""")
-            print(
-                fg.li_cyan
-                + "Enumerating HTTPS/SSL Ports, Running the following commands:"
-                + fg.rs
-            )
-            commands = ()
+            c = config_parser.CommandParser(f"{os.getcwd()}/config/config.yaml", self.target)
+            if not os.path.exists(c.getPath("webSSL", "webSSLDir")):
+                os.makedirs(c.getPath("webSSL", "webSSLDir"))
+            if not os.path.exists(c.getPath("web", "aquatoneDir")):
+                os.makedirs(c.getPath("web", "aquatoneDir"))
+            print(fg.li_cyan + "Enumerating HTTPS/SSL Ports, Running the following commands:" + fg.rs)
+            commands = []
             if len(hostnames) == 0:
                 for sslport in ssl_ports:
-                    commands = commands + (
-                        f"""echo {cmd_info} {green} '{c.getCmd("whatwebSSLt")}:{sslport} | tee {c.getPath("webSSLWhatWebT")}-{sslport}.txt' {reset}""",
-                        f"""{c.getCmd("whatwebSSLt")}:{sslport} | tee {c.getPath("webSSLWhatWebT")}-{sslport}.txt""",
-                        f"""echo {cmd_info} {green} 'wafw00f https://{self.target}:{sslport} >{c.getPath("webSSLwafw00fT")}-{sslport}.txt' {reset}""",
-                        f"""wafw00f https://{self.target}:{sslport} >{c.getPath("webSSLwafw00fT")}-{sslport}.txt""",
-                        f"""echo {cmd_info} {green} 'curl -sSik https://{self.target}:{sslport}/robots.txt -m 10 -o {c.getPath("webSSLRobotsT")}-{sslport}.txt &>/dev/null' {reset}""",
-                        f"""curl -sSik https://{self.target}:{sslport}/robots.txt -m 10 -o {c.getPath("webSSLRobotsT")}-{sslport}.txt &>/dev/null""",
-                        f"""echo {cmd_info} {green} '{c.getCmd("dirsearchSSLTarget")}:{sslport}/ -t 30 -e {c.getCmd("ext")} -x {c.getCmd("hc")} -w {c.getPath("wlDict")} --plain-text-report {c.getPath("webSSLDirsearchT")}-{sslport}.log' {reset}""",
-                        f"""{c.getCmd("dirsearchSSLTarget")}:{sslport}/ -t 30 -e {c.getCmd("ext")} -x {c.getCmd("hc")} -w {c.getPath("wlDict")} --plain-text-report {c.getPath("webSSLDirsearchT")}-{sslport}.log""",
-                        f"""echo {cmd_info} {green} '{c.getCmd("dirsearchSSLTarget")}:{sslport}/ -t 80 -e {c.getCmd("ext")} -w {c.getPath("Big")} -x {c.getCmd("hc")} --plain-text-report {c.getPath("webSSLDirsearchBigT")}-{sslport}.log' {reset}""",
-                        f"""{c.getCmd("dirsearchSSLTarget")}:{sslport}/ -t 80 -e {c.getCmd("ext")} -w {c.getPath("Big")} -x {c.getCmd("hc")} --plain-text-report {c.getPath("webSSLDirsearchBigT")}-{sslport}.log""",
-                        f"""echo {cmd_info} {green} 'nikto -ask=no -host https://{self.target}:{sslport} -ssl  >{c.getPath("webSSLNiktoT")}-{sslport}.txt 2>&1 &' {reset}""",
-                        f"""nikto -ask=no -host https://{self.target}:{sslport} -ssl  >{c.getPath("webSSLNiktoT")}-{sslport}.txt 2>&1 &""",
-                    )
+                    commands.append(f"""echo {cmd_info}{green} '{c.getCmd("webSSL", "whatwebSSLTarget", port=sslport)}' {reset}""")
+                    commands.append(c.getCmd("webSSL", "whatwebSSLTarget", port=sslport))
+                    commands.append(f"""echo {cmd_info}{green} '{c.getCmd("webSSL","eyewitnessSSLTarget", port=sslport)}' {reset}""")
+                    commands.append(c.getCmd("webSSL", "eyewitnessSSLTarget", port=sslport))
+                    commands.append(f"""echo {cmd_info}{green} '{c.getCmd("webSSL","wafw00fSSLTarget", port=sslport)}' {reset}""")
+                    commands.append(c.getCmd("webSSL", "wafw00fSSLTarget", port=sslport))
+                    commands.append(f"""echo {cmd_info}{green} '{c.getCmd("webSSL","curlRobotsSSLTarget", port=sslport)}' {reset}""")
+                    commands.append(c.getCmd("webSSL", "curlRobotsSSLTarget", port=sslport))
+                    commands.append(f"""echo {cmd_info}{green} '{c.getCmd("webSSL","dirsearchSSLTargetBig", port=sslport)}' {reset}""")
+                    commands.append(c.getCmd("webSSL", "dirsearchSSLTargetBig", port=sslport))
+                    commands.append(f"""echo {cmd_info}{green} '{c.getCmd("webSSL","dirsearchSSLTargetDict", port=sslport)}' {reset}""")
+                    commands.append(c.getCmd("webSSL", "dirsearchSSLTargetDict", port=sslport))
+                    commands.append(f"""echo {cmd_info}{green} '{c.getCmd("webSSL","niktoSSLTarget", port=sslport)}' {reset}""")
+                    commands.append(c.getCmd("webSSL", "niktoSSLTarget", port=sslport))
             else:
                 for sslport in ssl_ports:
                     for host in hostnames:
-                        commands = commands + (
-                            f"""echo {cmd_info} {green} '{c.getCmd("whatwebSSL")}{host}:{sslport} >{c.getPath("webSSLWhatWeb")}-{host}-{sslport}.txt' {reset}""",
-                            f"""{c.getCmd("whatwebSSL")}{host}:{sslport} >{c.getPath("webSSLWhatWeb")}-{host}-{sslport}.txt""",
-                            f"""echo {cmd_info} {green} 'wafw00f https://{host}:{sslport} >{c.getPath("webSSLwafw00f")}-{host}-{sslport}.txt' {reset}""",
-                            f"""wafw00f https://{host}:{sslport} >{c.getPath("webSSLwafw00f")}-{host}-{sslport}.txt""",
-                            f"""echo {cmd_info} {green} 'curl -sSik https://{host}:{sslport}/robots.txt -m 10 -o {c.getPath("webSSLRobots")}-{host}-{sslport}.txt &>/dev/null' {reset}""",
-                            f"""curl -sSik https://{host}:{sslport}/robots.txt -m 10 -o {c.getPath("webSSLRobots")}-{host}-{sslport}.txt &>/dev/null""",
-                            f"""echo {cmd_info} {green} '{c.getCmd("dirsearchSSL")}{host}:{sslport}/ -t 50 -e {c.getCmd("ext")} -x {c.getCmd("hc")} --plain-text-report {c.getPath("webSSLDirsearch")}-{host}-{sslport}.log' {reset}""",
-                            f"""{c.getCmd("dirsearchSSL")}{host}:{sslport}/ -t 50 -e {c.getCmd("ext")} -x {c.getCmd("hc")} --plain-text-report {c.getPath("webSSLDirsearch")}-{host}-{sslport}.log""",
-                            f"""echo {cmd_info} {green} '{c.getCmd("dirsearchSSL")}{host}:{sslport}/ -t 50 -e {c.getCmd("ext")} -w {c.getPath("Big")} -x {c.getCmd("ext")} --plain-text-report {c.getPath("webSSLDirsearchBig")}-{host}-{sslport}.log' {reset}""",
-                            f"""{c.getCmd("dirsearchSSL")}{host}:{sslport}/ -t 50 -e {c.getCmd("ext")} -w {c.getPath("Big")} -x {c.getCmd("ext")} --plain-text-report {c.getPath("webSSLDirsearchBig")}-{host}-{sslport}.log""",
-                            f"""echo {cmd_info} {green} 'nikto -ask=no -host https://{host}:{sslport} -ssl  >{c.getPath("webSSLNikto")}-{host}-{sslport}.txt 2>&1 &' {reset}""",
-                            f"""nikto -ask=no -host https://{host}:{sslport} -ssl  >{c.getPath("webSSLNikto")}-{host}-{sslport}.txt 2>&1 &""",
-                        )
+                        commands.append(f"""echo {cmd_info}{green} '{c.getCmd("webSSL","whatwebSSLHost",host=host, port=sslport)}' {reset}""")
+                        commands.append(c.getCmd("webSSL", "whatwebSSLHost", host=host, port=sslport))
+                        commands.append(f"""echo {cmd_info}{green} '{c.getCmd("webSSL","eyewitnessHost",host=host, port=sslport)}' {reset}""")
+                        commands.append(c.getCmd("webSSL", "eyewitnessHost", host=host, port=sslport))
+                        commands.append(f"""echo {cmd_info}{green} '{c.getCmd("webSSL","wafw00fHost",host=host, port=sslport)}' {reset}""")
+                        commands.append(c.getCmd("webSSL", "wafw00fHost", host=host, port=sslport))
+                        commands.append(f"""echo {cmd_info}{green} '{c.getCmd("webSSL","curlRobotsHost",host=host, port=sslport)}' {reset}""")
+                        commands.append(c.getCmd("webSSL", "curlRobotsHost", host=host, port=sslport))
+                        commands.append(f"""echo {cmd_info}{green} '{c.getCmd("webSSL","dirsearchSSLHostDict",host=host, port=sslport)}' {reset}""")
+                        commands.append(c.getCmd("webSSL", "dirsearchSSLHostDict", host=host, port=sslport))
+                        commands.append(f"""echo {cmd_info}{green} '{c.getCmd("webSSL","dirsearchSSLHostBig",host=host, port=sslport)}' {reset}""")
+                        commands.append(c.getCmd("webSSL", "dirsearchSSLHostBig", host=host, port=sslport))
+                        commands.append(f"""echo {cmd_info}{green} '{c.getCmd("webSSL","niktoHost",host=host, port=sslport)}' {reset}""")
+                        commands.append(c.getCmd("webSSL", "niktoHost", host=host, port=sslport))
 
-            self.processes = commands
+            self.processes = tuple(commands)
 
     def ScanWebOption(self):
         """Enumerate Web Server ports based on nmaps output. This function will run the following tools;
@@ -98,65 +92,59 @@ class EnumWebSSL:
         if len(ssl_ports) == 0:
             pass
         else:
+            commands = []
             green = fg.li_green
             reset = fg.rs
             cmd_info = "[" + green + "+" + reset + "]"
-            c = config_paths.Configurator(self.target)
-            c.createConfig()
-            c.cmdConfig()
-            if not os.path.exists(f"""{c.getPath("webSSLDir")}"""):
-                os.makedirs(f"""{c.getPath("webSSLDir")}""")
-            if not os.path.exists(f"""{c.getPath("aquatoneDir")}"""):
-                os.makedirs(f"""{c.getPath("aquatoneDir")}""")
-            print(
-                fg.li_cyan
-                + "Enumerating HTTPS/SSL Ports, Running the following commands:"
-                + fg.rs
-            )
+            c = config_parser.CommandParser(f"{os.getcwd()}/config/config.yaml", self.target)
+            if not os.path.exists(c.getPath("webSSL", "webSSLDir")):
+                os.makedirs(c.getPath("webSSL", "webSSLDir"))
+            if not os.path.exists(c.getPath("web", "aquatoneDir")):
+                os.makedirs(c.getPath("web", "aquatoneDir"))
+            print(fg.li_cyan + "Enumerating HTTPS/SSL Ports, Running the following commands:" + fg.rs)
             if len(hostnames) == 0:
                 for sslport in ssl_ports:
-                    commands = (
-                        f"""echo {cmd_info} {green} 'whatweb -v -a 3 https://{self.target}:{sslport} | tee {c.getPath("webSSLWhatWebT")}-{sslport}.txt' {reset}""",
-                        f"""whatweb -v -a 3 https://{self.target}:{sslport} | tee {c.getPath("webSSLWhatWebT")}-{sslport}.txt""",
-                        f"""echo {cmd_info} {green} 'wafw00f https://{self.target}:{sslport} >{c.getPath("webSSLwafw00fT")}-{sslport}.txt' {reset}""",
-                        f"""wafw00f https://{self.target}:{sslport} >{c.getPath("webSSLwafw00fT")}-{sslport}.txt""",
-                        f"""echo {cmd_info} {green} 'curl -sSik https://{self.target}:{sslport}/robots.txt -m 10 -o {c.getPath("webSSLRobotsT")}-{sslport}.txt &>/dev/null' {reset}""",
-                        f"""curl -sSik https://{self.target}:{sslport}/robots.txt -m 10 -o {c.getPath("webSSLRobotsT")}-{sslport}.txt &>/dev/null""",
-                        f"""echo {cmd_info} {green} '{c.getCmd("dirsearchSSLT")}:{sslport} -t 80 -e {c.getCmd("ext")} -w {c.getPath("dlistMed")} -x {c.getCmd("hc")} --plain-text-report {c.getPath("webSSLDirsearchDLMT")}-{sslport}.log' {reset}""",
-                        f"""{c.getCmd("dirsearchSSLT")}:{sslport} -t 80 -e {c.getCmd("ext")} -w {c.getPath("dlistMed")} -x {c.getCmd("hc")} --plain-text-report {c.getPath("webSSLDirsearchDLMT")}-{sslport}.log""",
-                        f"""echo {cmd_info} {green} '{c.getCmd("dirsearchSSLT")}:{sslport} -t 50 -e {c.getCmd("ext2")} -x {c.getCmd("hc")} -w {c.getPath("raftLarge")} --plain-text-report {c.getPath("webSSLDirsearchRFT")}-{sslport}.log' {reset}""",
-                        f"""{c.getCmd("dirsearchSSLT")}:{sslport} -t 50 -e {c.getCmd("ext2")} -x {c.getCmd("hc")} -w {c.getPath("raftLarge")} --plain-text-report {c.getPath("webSSLDirsearchRFT")}-{sslport}.log""",
-                        f"""echo {cmd_info} {green} '{c.getCmd("dirsearchSSLT")}:{sslport} -t 50 -e {c.getCmd("ext")} -x {c.getCmd("hc")} -w {c.getPath("raftLd")} --plain-text-report {c.getPath("webSSLDirsearchRLDT")}-{sslport}.log' {reset}""",
-                        f"""{c.getCmd("dirsearchSSLT")}:{sslport} -t 50 -e {c.getCmd("ext")} -x {c.getCmd("hc")} -w {c.getPath("raftLd")} --plain-text-report {c.getPath("webSSLDirsearchRLDT")}-{sslport}.log""",
-                        f"""echo {cmd_info} {green} '{c.getCmd("dirsearchSSLT")}:{sslport} -t 50 -e {c.getCmd("ext")} -w wordlists/foreign.txt -x {c.getCmd("hc")} --plain-text-report {c.getPath("webSSLDirsearchFT")}-{sslport}.log' {reset}""",
-                        f"""{c.getCmd("dirsearchSSLT")}:{sslport} -t 50 -e {c.getCmd("ext")} -w wordlists/foreign.txt -x {c.getCmd("hc")} --plain-text-report {c.getPath("webSSLDirsearchFT")}-{sslport}.log""",
-                        f"""echo {cmd_info} {green} 'nikto -ask=no -host https://{self.target}:{sslport} -ssl  >{c.getPath("webSSLNiktoT")}-{sslport}.txt 2>&1 &' {reset}""",
-                        f"""nikto -ask=no -host https://{self.target}:{sslport} -ssl  >{c.getPath("webSSLNiktoT")}-{sslport}.txt 2>&1 &""",
-                    )
+                    commands.append(f"""echo {cmd_info}{green} '{c.getCmd("webSSL","whatwebSSLTarget",port=sslport)}' {reset}""")
+                    commands.append(c.getCmd("webSSL", "whatwebSSLTarget", port=sslport))
+                    commands.append(f"""echo {cmd_info}{green} '{c.getCmd("webSSL","eyewitnessSSLTarget",port=sslport)}' {reset}""")
+                    commands.append(c.getCmd("webSSL", "eyewitnessSSLTarget", port=sslport))
+                    commands.append(f"""echo {cmd_info}{green} '{c.getCmd("webSSL","wafw00fSSLTarget",port=sslport)}' {reset}""")
+                    commands.append(c.getCmd("webSSL", "wafw00fSSLTarget", port=sslport))
+                    commands.append(f"""echo {cmd_info}{green} '{c.getCmd("webSSL","curlRobotsSSLTarget",port=sslport)}' {reset}""")
+                    commands.append(c.getCmd("webSSL", "curlRobotsSSLTarget", port=sslport))
+                    commands.append(f"""echo {cmd_info}{green} '{c.getCmd("webSSL","dirsearchSSLTargetDListMed",port=sslport)}' {reset}""")
+                    commands.append(c.getCmd("webSSL", "dirsearchSSLTargetDListMed", port=sslport))
+                    commands.append(f"""echo {cmd_info}{green} '{c.getCmd("webSSL","dirsearchSSLTargetRaftLargeFiles",port=sslport)}' {reset}""")
+                    commands.append(c.getCmd("webSSL", "dirsearchSSLTargetRaftLargeFiles", port=sslport))
+                    commands.append(f"""echo {cmd_info}{green} '{c.getCmd("webSSL","dirsearchSSLTargetRaftLargeDirs",port=sslport)}' {reset}""")
+                    commands.append(c.getCmd("webSSL", "dirsearchSSLTargetRaftLargeDirs", port=sslport))
+                    commands.append(f"""echo {cmd_info}{green} '{c.getCmd("webSSL","dirsearchSSLTargetForeign",port=sslport)}' {reset}""")
+                    commands.append(c.getCmd("webSSL", "dirsearchSSLTargetForeign", port=sslport))
+                    commands.append(f"""echo {cmd_info}{green} '{c.getCmd("webSSL","niktoSSLHost",port=sslport)}' {reset}""")
+                    commands.append(c.getCmd("webSSL", "niktoSSLHost", port=sslport))
             else:
-                for ssl_port2 in ssl_ports:
-                    commands = ()
-                    for i in hostnames:
-                        commands = commands + (
-                            f"""echo {cmd_info} {green} 'whatweb -v -a 3 https://{i}:{ssl_port2} >{self.target}-Report/webSSL/whatweb-{i}-{ssl_port2}.txt' {reset}""",
-                            f"""whatweb -v -a 3 https://{i}:{ssl_port2} >{self.target}-Report/webSSL/whatweb-{i}-{ssl_port2}.txt""",
-                            f"""echo {cmd_info} {green} 'wafw00f https://{i}:{ssl_port2} >{self.target}-Report/webSSL/wafw00f-{i}-{ssl_port2}.txt' {reset}""",
-                            f"""wafw00f https://{i}:{ssl_port2} >{self.target}-Report/webSSL/wafw00f-{i}-{ssl_port2}.txt""",
-                            f"""echo {cmd_info} {green} 'curl -sSik https://{i}:{ssl_port2}/robots.txt -m 10 -o {c.getPath("webSSLRobots")}-{i}-{ssl_port2}.txt &>/dev/null' {reset}""",
-                            f"""curl -sSik https://{i}:{ssl_port2}/robots.txt -m 10 -o {c.getPath("webSSLRobots")}-{i}-{ssl_port2}.txt &>/dev/null""",
-                            f"""echo {cmd_info} {green} '{c.getCmd("dirsearchSSL")}{i}:{ssl_port2} -t 50 -e {c.getCmd("ext2")} -x {c.getCmd("hc")} -w {c.getPath("raftLarge")} --plain-text-report {c.getPath("webSSLDirsearchRF")}-{i}-{ssl_port2}.log' {reset}""",
-                            f"""{c.getCmd("dirsearchSSL")}{i}:{ssl_port2} -t 50 -e {c.getCmd("ext2")} -x {c.getCmd("hc")} -w {c.getPath("raftLarge")} --plain-text-report {c.getPath("webSSLDirsearchRF")}-{i}-{ssl_port2}.log""",
-                            f"""echo {cmd_info} {green} '{c.getCmd("dirsearchSSL")}{i}:{ssl_port2} -t 50 -e {c.getCmd("ext")} -w {c.getPath("dlistMed")} -x {c.getCmd("hc")} --plain-text-report {c.getPath("webSSLDirsearchDLM")}-{i}-{ssl_port2}.log' {reset}""",
-                            f"""{c.getCmd("dirsearchSSL")}{i}:{ssl_port2} -t 50 -e {c.getCmd("ext")} -w {c.getPath("dlistMed")} -x {c.getCmd("hc")} --plain-text-report {c.getPath("webSSLDirsearchDLM")}-{i}-{ssl_port2}.log""",
-                            f"""echo {cmd_info} {green} '{c.getCmd("dirsearchSSL")}{i}:{ssl_port2} -t 50 -e {c.getCmd("ext")} -w wordlists/foreign.txt -x {c.getCmd("hc")} --plain-text-report {c.getPath("webSSLDirsearchF")}-{i}-{ssl_port2}.log' {reset}""",
-                            f"""{c.getCmd("dirsearchSSL")}{i}:{ssl_port2} -t 50 -e {c.getCmd("ext")} -w wordlists/foreign.txt -x {c.getCmd("hc")} --plain-text-report {c.getPath("webSSLDirsearchF")}-{i}-{ssl_port2}.log""",
-                            f"""echo {cmd_info} {green} '{c.getCmd("dirsearchSSL")}{i}:{ssl_port2} -t 50 -e {c.getCmd("ext")} -x {c.getCmd("hc")} -w {c.getPath("raftLd")} --plain-text-report {c.getPath("webSSLDirsearchRLD")}-{i}-{ssl_port2}.log' {reset}""",
-                            f"""{c.getCmd("dirsearchSSL")}{i}:{ssl_port2} -t 50 -e {c.getCmd("ext")} -x {c.getCmd("hc")} -w {c.getPath("raftLd")} --plain-text-report {c.getPath("webSSLDirsearchRLD")}-{i}-{ssl_port2}.log""",
-                            f"""echo {cmd_info} {green} 'nikto -ask=no -host https://{i}:{ssl_port2} -ssl  >{c.getPath("webSSLNikto")}-{i}-{ssl_port2}.txt 2>&1 &' {reset}""",
-                            f"""nikto -ask=no -host https://{i}:{ssl_port2} -ssl  >{c.getPath("webSSLNikto")}-{i}-{ssl_port2}.txt 2>&1 &""",
-                        )
+                for sslport in ssl_ports:
+                    for hostname in hostnames:
+                        commands.append(f"""echo {cmd_info}{green} '{c.getCmd("webSSL","whatwebSSLHost",host=hostname, port=sslport)}' {reset}""")
+                        commands.append(c.getCmd("webSSL", "whatwebSSLHost", host=hostname, port=sslport))
+                        commands.append(f"""echo {cmd_info}{green} '{c.getCmd("webSSL","eyewitnessHost",host=hostname, port=sslport)}' {reset}""")
+                        commands.append(c.getCmd("webSSL", "eyewitnessHost", host=hostname, port=sslport))
+                        commands.append(f"""echo {cmd_info}{green} '{c.getCmd("webSSL","wafw00fHost",host=hostname, port=sslport)}' {reset}""")
+                        commands.append(c.getCmd("webSSL", "wafw00fHost", host=hostname, port=sslport))
+                        commands.append(f"""echo {cmd_info}{green} '{c.getCmd("webSSL","curlRobotsHost",host=hostname, port=sslport)}' {reset}""")
+                        commands.append(c.getCmd("webSSL", "curlRobotsHost", host=hostname, port=sslport))
+                        commands.append(f"""echo {cmd_info}{green} '{c.getCmd("webSSL","dirsearchSSLHostDListMed",host=hostname, port=sslport)}' {reset}""")
+                        commands.append(c.getCmd("webSSL", "dirsearchSSLHostDListMed", host=hostname, port=sslport))
+                        commands.append(f"""echo {cmd_info}{green} '{c.getCmd("webSSL","dirsearchSSLHostRaftLargeFiles",host=hostname, port=sslport)}' {reset}""")
+                        commands.append(c.getCmd("webSSL", "dirsearchSSLHostRaftLargeFiles", host=hostname, port=sslport))
+                        commands.append(f"""echo {cmd_info}{green} '{c.getCmd("webSSL","dirsearchSSLHostRaftLargeDirs",host=hostname, port=sslport)}' {reset}""")
+                        commands.append(c.getCmd("webSSL", "dirsearchSSLHostRaftLargeDirs", host=hostname, port=sslport))
+                        commands.append(f"""echo {cmd_info}{green} '{c.getCmd("webSSL","dirsearchSSLHostForeign",host=hostname, port=sslport)}' {reset}""")
+                        commands.append(c.getCmd("webSSL", "dirsearchSSLHostForeign", host=hostname, port=sslport))
+                        commands.append(f"""echo {cmd_info}{green} '{c.getCmd("webSSL","niktoSSLHost",host=hostname, port=sslport)}' {reset}""")
+                        commands.append(c.getCmd("webSSL", "niktoSSLHost", host=hostname, port=sslport))
 
-            self.processes = commands
+            self.processes = tuple(commands)
 
     def sslProxyScan(self):
         """This function is called by lib/enumProxy.py and will enumerate HTTPS/SSL Web Servers.
@@ -173,35 +161,29 @@ class EnumWebSSL:
             green = fg.li_green
             reset = fg.rs
             cmd_info = "[" + green + "+" + reset + "]"
-            c = config_paths.Configurator(self.target)
-            c.createConfig()
-            c.cmdConfig()
-            if not os.path.exists(f"""{c.getPath("proxyDir")}"""):
-                os.makedirs(f"""{c.getPath("proxyDir")}""")
-            if not os.path.exists(f"""{c.getPath("proxyWebSSL")}"""):
-                os.makedirs(f"""{c.getPath("proxyWebSSL")}""")
-            proxy_commands = ()
+            c = config_parser.CommandParser(f"{os.getcwd()}/config/config.yaml", self.target)
+            if not os.path.exists(c.getPath("proxy", "proxyDir")):
+                os.makedirs(c.getPath("proxy", "proxyDir"))
+            if not os.path.exists(c.getPath("proxy", "proxyWebSSL")):
+                os.makedirs(c.getPath("proxy", "proxyWebSSL"))
+            proxy_commands = []
             for proxy in proxy_ports:
-                print(
-                    f"""{fg.li_cyan} Enumerating HTTPS Ports Through {proxy}, Running the following commands: {fg.rs}"""
-                )
+                print(f"""{fg.li_cyan} Enumerating HTTPS Ports Through {proxy}, Running the following commands: {fg.rs}""")
                 for proxy_ssl_port in proxy_ssl_ports:
-                    proxy_commands = proxy_commands + (
-                        f"""echo {cmd_info} {green} 'whatweb -v -a 3 --proxy {self.target}:{proxy} https://127.0.0.1:{proxy_ssl_port} | tee {self.target}-Report/proxy/webSSL/whatweb-proxy-{self.target}-{proxy_ssl_port}.txt' {reset}""",
-                        f"""whatweb -v -a 3 --proxy {self.target}:{proxy} https://127.0.0.1:{proxy_ssl_port} | tee {self.target}-Report/proxy/webSSL/whatweb-proxy-{self.target}-{proxy_ssl_port}.txt""",
-                        f"""echo {cmd_info} {green} '{c.getCmd("dirsearchProxyT")}:{proxy} -u https://127.0.0.1:{proxy_ssl_port} --plain-text-report {c.getPath("webSSLDirsearchPT")}-{proxy}-{proxy_ssl_port}.log' {reset}""",
-                        f"""{c.getCmd("dirsearchProxyT")}:{proxy} -u https://127.0.0.1:{proxy_ssl_port} --plain-text-report {c.getPath("webSSLDirsearchPT")}-{proxy}-{proxy_ssl_port}.log""",
-                        f"""echo {cmd_info} {green} '{c.getCmd("dirsearchE")} {c.getCmd("ext")} -x {c.getCmd("hc")} -t 50 -w {c.getCmd("Big")} --proxy {self.target}:{proxy} -u https://127.0.0.1:{proxy_ssl_port} --plain-text-report {c.getPath("webSSLDirsearchPTB")}-{proxy}-{proxy_ssl_port}.log' {reset}""",
-                        f"""{c.getCmd("dirsearchE")} {c.getCmd("ext")} -x {c.getCmd("hc")} -t 50 -w {c.getCmd("Big")} --proxy {self.target}:{proxy} -u https://127.0.0.1:{proxy_ssl_port} --plain-text-report {c.getPath("webSSLDirsearchPTB")}-{proxy}-{proxy_ssl_port}.log""",
-                        f"""echo {cmd_info} {green} 'nikto -ask=no -host https://127.0.0.1:{proxy_ssl_port}/ -ssl -useproxy https://{self.target}:{proxy}/ > {self.target}-Report/proxy/webSSL/nikto-{self.target}-{proxy_ssl_port}-proxy-scan.txt 2>&1 &' {reset}""",
-                        f"""nikto -ask=no -host https://127.0.0.1:{proxy_ssl_port}/ -ssl -useproxy https://{self.target}:{proxy}/ > {self.target}-Report/proxy/webSSL/nikto-{self.target}-{proxy_ssl_port}-proxy-scan.txt 2>&1 &""",
-                    )
+                    proxy_commands.append(f"""echo {cmd_info}{green} '{c.getCmd("proxySSL", "whatwebSSLProxy", proxy=proxy, proxySSLPort=proxy_ssl_port)}' {reset}""")
+                    proxy_commands.append(c.getCmd("proxySSL", "whatwebSSLProxy", proxy=proxy, proxySSLPort=proxy_ssl_port))
+                    proxy_commands.append(f"""echo {cmd_info}{green} '{c.getCmd("proxySSL", "dirsearchProxySSLDict", proxySSLport=proxy_ports, proxy=proxy_ssl_port)}' {reset}""")
+                    proxy_commands.append(c.getCmd("proxySSL", "dirsearchProxySSLDict", proxySslPort=proxy_ports, proxy=proxy_ssl_port))
+                    proxy_commands.append(f"""echo {cmd_info}{green} '{c.getCmd("proxySSL", "dirsearchProxySSLBig", proxySSLPort=proxy_ports, proxy=proxy_ssl_port)}' {reset}""")
+                    proxy_commands.append(c.getCmd("proxySSL", "dirsearchProxySSLBig", proxySSLPort=proxy_ports, proxy=proxy_ssl_port))
+                    proxy_commands.append(f"""echo {cmd_info}{green} '{c.getCmd("proxySSL", "niktoProxySSL", proxySSLPort=proxy, proxy=proxy_ssl_port)}' {reset}""")
+                    proxy_commands.append(c.getCmd("proxySSL", "niktoProxySSL", proxySSLPort=proxy, proxy=proxy_ssl_port))
 
-            self.proxy_processes = proxy_commands
+            self.proxy_processes = tuple(proxy_commands)
             # print(self.processes)
 
     def sslEnumCMS(self):
-        """If a valid CMS is found from initial Web Enumeration, more specifically, WhatWebs results, Then proceed to 
+        """If a valid CMS is found from initial Web Enumeration, more specifically, WhatWebs results, Then proceed to
         Enumerate the CMS further using Wpscan, Magescan, Nmap, Droopescan, Joomscan, and davtest, hydra, and will
         create a brute force bash script using Cewl, which will then be used by WpScan to try and brute force
         Users and passwords."""
@@ -215,17 +197,13 @@ class EnumWebSSL:
         if len(ssl_ports) == 0:
             pass
         else:
-            c = config_paths.Configurator(self.target)
-            c.createConfig()
-            c.cmdConfig()
+            c = config_parser.CommandParser(f"{os.getcwd()}/config/config.yaml", self.target)
             for ssl_port in ssl_ports:
                 whatweb_files = []
                 whatweb_hostnames = []
                 dir_list = [
                     d
-                    for d in glob.iglob(
-                        f"""{c.getPath("reportGlobWebSSL")}""", recursive=True
-                    )
+                    for d in glob.iglob(c.getPath("webSSL", "reportGlobWebSSL"), recursive=True)
                     if os.path.isdir(d)
                 ]
                 for d in dir_list:
@@ -264,97 +242,64 @@ class EnumWebSSL:
                                     if cms in fword:
                                         if len(whatweb_hostnames) == 0:
                                             if "WordPress" in cms:
-                                                wpscan_cmd = f"""wpscan --no-update --disable-tls-checks --url https://{self.target}:{ssl_port}/ --wp-content-dir wp-content --enumerate vp,vt,cb,dbe,u,m --plugins-detection aggressive | tee {c.getPath("reportDir")}/webSSL/wpscan-{ssl_port}.log"""
-                                                cms_commands.append(wpscan_cmd)
+                                                cms_commands.append(c.getCmd("webSSL", "wpscanSSLTarget", sslPort=ssl_port))
                                                 manual_brute_force_script = f"""
 #!/bin/bash
 
-if [[ -n $(grep -i "User(s) Identified" {c.getPath("reportDir")}/webSSL/wpscan-{ssl_port}.log) ]]; then
-    grep -w -A 100 "User(s)" {c.getPath("reportDir")}/webSSL/wpscan-{ssl_port}.log | grep -w "[+]" | cut -d " " -f 2 | head -n -7 >{c.getPath("reportDir")}/webSSL/wp-users.txt
-    cewl https://{self.target}:{ssl_port}/ -m 3 -w {c.getPath("reportDir")}/webSSL/cewl-list.txt
+if [[ -n $(grep -i "User(s) Identified" {c.getPath("webSSL", "wpscanSSL", sslPort=ssl_port)}) ]]; then
+    grep -w -A 100 "User(s)" {c.getPath("webSSL", "wpscanSSL", sslPort=ssl_port)} | grep -w "[+]" | cut -d " " -f 2 | head -n -7 >{c.getPath("webSSL", "wpUsers")}
+    {c.getCmd("webSSL", "cewlSSLTarget", sslPort=ssl_port)}
     sleep 10
     echo "Adding John Rules to Cewl Wordlist!"
-    john --rules --wordlist={c.getPath("reportDir")}/webSSL/cewl-list.txt --stdout >{c.getPath("reportDir")}/webSSL/john-cool-list.txt
+    {c.getCmd("webSSL", "johnCewl")}
     sleep 3
     # brute force again with wpscan
-    wpscan --no-update --disable-tls-checks --url https://{self.target}:{ssl_port}/ --wp-content-dir wp-login.php -U {c.getPath("reportDir")}/webSSL/wp-users.txt -P {c.getPath("reportDir")}/webSSL/cewl-list.txt threads 50 | tee {c.getPath("reportDir")}/webSSL/wordpress-cewl-brute.txt
+    {c.getCmd("webSSL", "wpscanCewlBruteTarget", sslPort=ssl_port)}
     sleep 1
-    if grep -i "No Valid Passwords Found" {c.getPath("reportDir")}/webSSL/wordpress-cewl-brute.txt; then
-        if [ -s {c.getPath("reportDir")}/webSSL/john-cool-list.txt ]; then
-            wpscan --no-update --disable-tls-checks --url https://{self.target}:{ssl_port}/ --wp-content-dir wp-login.php -U {c.getPath("reportDir")}/webSSL/wp-users.txt -P {c.getPath("reportDir")}/webSSL/john-cool-list.txt threads 50 | tee {c.getPath("reportDir")}/webSSL/wordpress-john-cewl-brute.txt
+    if grep -i "No Valid Passwords Found" {c.getPath("webSSL", "wpscanCewlBruteReport")}; then
+        if [ -s {c.getPath("webSSL", "cewlJohnList")} ]; then
+            {c.getCmd("webSSL", "wpscanJohnCewlBruteTarget", sslPort=ssl_port)}
         else
             echo "John wordlist is empty :("
         fi
         sleep 1
-        if grep -i "No Valid Passwords Found" {c.getPath("reportDir")}/webSSL/wordpress-john-cewl-brute.txt; then
-            wpscan --no-update --disable-tls-checks --url https://{self.target}:{ssl_port}/ --wp-content-dir wp-login.php -U {c.getPath("reportDir")}/webSSL/wp-users.txt -P /usr/share/wordlists/fasttrack.txt threads 50 | tee {c.getPath("reportDir")}/webSSL/wordpress-fasttrack-brute.txt
+        if grep -i "No Valid Passwords Found" {c.getPath("webSSL", "wordpressJohnCewlBrute")}; then
+            {c.getCmd("webSSL", "wpscanFastTrackHost", sslPort=ssl_port)}
         fi
     fi
 fi
                                             """.rstrip()
                                             try:
-                                                with open(
-                                                    f"""{c.getPath("reportDir")}/webSSL/wordpressBrute.sh""",
-                                                    "w",
-                                                ) as wpb:
-                                                    print(
-                                                        "Creating wordpress Brute Force Script..."
-                                                    )
+                                                with open(c.getPath("webSSL", "wordpressBruteBashScript"), "w") as wpb:
+                                                    print("Creating wordpress Brute Force Script...")
                                                     wpb.write(manual_brute_force_script)
-                                                call(
-                                                    f"""chmod +x {c.getPath("reportDir")}/webSSL/wordpressBrute.sh""",
-                                                    shell=True,
-                                                )
+                                                call(f"""chmod +x {c.getPath("webSSL", "wordpressBruteBashScript")}""", shell=True)
                                             except FileNotFoundError as fnf_error:
                                                 print(fnf_error)
                                                 continue
                                             if "Drupal" in cms:
-                                                drupal_cmd = f"""droopescan scan drupal -u https://{self.target}:{ssl_port}/ -t 32 | tee {c.getPath("reportDir")}/webSSL/drupalscan-{self.target}-{ssl_port}.log"""
-                                                cms_commands.append(drupal_cmd)
+                                                cms_commands.append(c.getCmd("webSSL", "droopescanSSLHost", sslPort=ssl_port))
                                             if "Joomla" in cms:
-                                                joomla_cmd = f"""joomscan --url https://{self.target}:{ssl_port}/ -ec | tee {c.getPath("reportDir")}/webSSL/joomlascan-{self.target}-{ssl_port}.log"""
-                                                cms_commands.append(joomla_cmd)
+                                                cms_commands.append(c.getCmd("webSSL", "joomscanTarget", sslPort=ssl_port))
                                             if "Magento" in cms:
-                                                magento_cmd = f"""cd /opt/magescan && bin/magescan scan:all -n --insecure https://{self.target}:{ssl_port}/ | tee {c.getPath("reportDir")}/webSSL/magentoscan-{self.target}-{ssl_port}.log && cd - &>/dev/null"""
-                                                cms_commands.append(magento_cmd)
+                                                cms_commands.append(c.getCmd("webSSL", "magescanTarget", sslPort=ssl_port))
                                             if "WebDAV" in cms:
-                                                webdav_cmd = f"""davtest -move -sendbd auto -url https://{self.target}:{ssl_port}/ | tee {c.getPath("reportDir")}/webSSL/davtestscan-{self.target}-{ssl_port}.log"""
-                                                webdav_cmd2 = f"""nmap -Pn -v -sV -p {ssl_port} --script=http-iis-webdav-vuln.nse -oA {self.target}-Report/nmap/webdav {self.target}"""
-                                                cms_commands.append(webdav_cmd)
-                                                cms_commands.append(webdav_cmd2)
+                                                cms_commands.append(c.getCmd("webSSL", "davtestTarget"))
+                                                cms_commands.append(c.getCmd("webSSL", "nmapWebDav", sslPot=ssl_port))
                                         else:
                                             for hn in hostnames:
                                                 for whatweb_hn in whatweb_hostnames:
                                                     if hn in whatweb_hn:
                                                         if "WordPress" in cms:
-                                                            wpscan_cmd = f"""wpscan --no-update --disable-tls-checks --url https://{hn}:{ssl_port}/ --wp-content-dir wp-content --enumerate vp,vt,cb,dbe,u,m --plugins-detection aggressive | tee {c.getPath("reportDir")}/webSSL/wpscan-{hn}-{ssl_port}.log"""
-                                                            cms_commands.append(
-                                                                wpscan_cmd
-                                                            )
+                                                            cms_commands.append(c.getCmd("webSSL", "wpscanSSLHost", host=hn, sslPort=ssl_port))
                                                         if "Drupal" in cms:
-                                                            drupal_cmd = f"""droopescan scan drupal -u https://{hn}:{ssl_port}/ -t 32 | tee {c.getPath("reportDir")}/webSSL/drupalscan-{hn}-{ssl_port}.log"""
-                                                            cms_commands.append(
-                                                                drupal_cmd
-                                                            )
+                                                            cms_commands.append(c.getCmd("webSSL", "droopescanSSLHost", host=hn, sslPort=ssl_port))
                                                         if "Joomla" in cms:
-                                                            joomla_cmd = f"""joomscan --url https://{hn}:{ssl_port}/ -ec | tee {c.getPath("reportDir")}/webSSL/joomlascan-{hn}-{ssl_port}.log"""
-                                                            cms_commands.append(
-                                                                joomla_cmd
-                                                            )
+                                                            cms_commands.append(c.getCmd("webSSL", "joomscanHost", host=hn, sslPort=ssl_port))
                                                         if "Magento" in cms:
-                                                            magento_cmd = f"""cd /opt/magescan && bin/magescan scan:all https://{hn}:{ssl_port}/ | tee {c.getPath("reportDir")}/webSSL/magentoscan-{hn}-{ssl_port}.log && cd - &>/dev/null"""
-                                                            cms_commands.append(
-                                                                magento_cmd
-                                                            )
+                                                            cms_commands.append(c.getCmd("webSSL", "magescanHost", host=hn, sslPort=ssl_port))
                                                         if "WebDAV" in cms:
-                                                            webdav_cmd = f"""davtest -move -sendbd auto -url https://{hn}:{ssl_port}/ | tee {c.getPath("reportDir")}/webSSL/davtestscan-{hn}-{ssl_port}.log"""
-                                                            webdav_cmd2 = f"""nmap -Pn -v -sV -p {ssl_port} --script=http-iis-webdav-vuln.nse -oA {c.getPath("reportDir")}/nmap/webdav {self.target}"""
-                                                            cms_commands.append(
-                                                                webdav_cmd
-                                                            )
-                                                            cms_commands.append(
-                                                                webdav_cmd2
-                                                            )
+                                                            cms_commands.append(c.getCmd("webSSL", "davtestHost", host=hn))
 
             sorted_commands = sorted(set(cms_commands))
             commands_to_run = []

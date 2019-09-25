@@ -50,7 +50,7 @@ def banner():
         valid_colors = ("red", "green", "yellow", "blue", "magenta", "cyan")
         return random.choice(valid_colors)
 
-    autoRecon = """
+    autoRecon = r"""
        _____________          ____    ________________
       /___/___      \        /  / |  /___/__          \                   _____
           /  /   _   \______/__/  |______|__|_____ *   \_________________/__/  |___
@@ -89,7 +89,7 @@ def signal_handler(sig, frame):
     sys.exit(0)
 
 
-VERSION = 2.4
+VERSION = 3.0
 
 
 def main():
@@ -179,10 +179,13 @@ def main():
 
     def sshSingleUserBruteCustom():
         """Helper Function to Call the SSHBRUTE option / Class for a single specified username With a custom PasswordList."""
-        sb = brute.BruteSingleUserCustom(
-            args.target, args.brute, args.port, args.user, args.PASSWORDS
-        )
+        sb = brute.BruteSingleUserCustom(args.target, args.brute, args.port, args.user, args.PASSWORDS)
         sb.SshSingleUserBruteCustom()
+
+    def sshMultipleUsersBruteCustom():
+        """Helper Function to Call the SSHBRUTE option / Class for a single specified username With a custom PasswordList."""
+        sb = brute.BruteMultipleUsersCustom(args.target, args.brute, args.port, args.USERS, args.PASSWORDS)
+        sb.SshMultipleUsersBruteCustom()
 
     rc = run_commands.RunCommands(args.target)
 
@@ -199,7 +202,7 @@ def main():
         validateIP()
         reset_timer()
         rc.scanTopTcpPorts()
-        rc.getOpenPorts()  # Must Always be ON
+        rc.getOpenPorts()
         rc.enumDNS()
         rc.enumHTTP()
         rc.cmsEnum()
@@ -239,7 +242,7 @@ def main():
                     validateIP()
                     reset_timer()
                     rc.scanTopTcpPorts()
-                    rc.getOpenPorts()  # Must Always be ON
+                    rc.getOpenPorts()
                     rc.enumDNS()
                     rc.enumHTTP()
                     rc.cmsEnum()
@@ -313,12 +316,8 @@ def main():
                     and (args.PASSWORDS is None)
                     and (args.USERS is None)
                 ):
-                    print(
-                        f"{teal}Brute Forcing SSH usernames with wordlist: {cwd}/wordlists/usernames.txt on default SSH port,{reset} {args.port}"
-                    )
-                    if os.path.exists(
-                        f"{args.target}-Report/nmap/top-ports-{args.target}.nmap"
-                    ):
+                    print(f"{teal}Brute Forcing SSH usernames with wordlist: {cwd}/wordlists/usernames.txt on default SSH port,{reset} {args.port}")
+                    if os.path.exists(f"{args.target}-Report/nmap/top-ports-{args.target}.nmap"):
                         sshUserBrute()
                     else:
                         rc.scanTopTcpPorts()
@@ -329,18 +328,12 @@ def main():
                     print(f"Brute Forcing {args.user}'s password with default wordlist")
                     sshSingleUserBrute()
                 elif args.user and args.PASSWORDS:
-                    print(
-                        f"Brute Forcing username, {args.user} with password list, {args.PASSWORDS}"
-                    )
+                    print(f"Brute Forcing username, {args.user} with password list, {args.PASSWORDS}")
                     sshSingleUserBruteCustom()
                 elif args.USERS and (args.PASSWORDS is None):
-                    print(
-                        f"Brute Forcing SSH with username list, {args.USERS} and default password list"
-                    )
+                    print(f"Brute Forcing SSH with username list, {args.USERS} and default password list")
                 elif args.USERS and args.PASSWORDS:
-                    print(
-                        f"Brute Forcing SSH with username list, {args.USERS} and password list, {args.PASSWORDS}"
-                    )
+                    print(f"Brute Forcing SSH with username list, {args.USERS} and password list, {args.PASSWORDS}")
                 else:
                     print(EXAMPLES)
             else:
@@ -349,34 +342,23 @@ def main():
                     and (args.PASSWORDS is None)
                     and (args.USERS is None)
                 ):
-                    print(
-                        f"{teal}Brute Forcing SSH usernames on port,{reset} {args.port}"
-                    )
-                    if os.path.exists(
-                        f"{args.target}-Report/nmap/top-ports-{args.target}.nmap"
-                    ):
+                    print(f"{teal}Brute Forcing SSH usernames on port,{reset} {args.port}")
+                    if os.path.exists(f"{args.target}-Report/nmap/top-ports-{args.target}.nmap"):
                         sshUserBrute()
                     else:
                         rc.scanTopTcpPorts()
                         sshUserBrute()
                 elif args.user and (args.PASSWORDS is None):
-                    print(
-                        f"Brute Forcing {args.user}'s password with default wordlist on port, {args.port}"
-                    )
+                    print(f"Brute Forcing {args.user}'s password with default wordlist on port, {args.port}")
                     sshSingleUserBrute()
                 elif args.user and args.PASSWORDS:
-                    print(
-                        f"Brute Forcing username, {args.user} with password list, {args.PASSWORDS} on port, {args.port}"
-                    )
+                    print(f"Brute Forcing username, {args.user} with password list, {args.PASSWORDS} on port, {args.port}")
                     sshSingleUserBruteCustom()
                 elif args.USERS and (args.PASSWORDS is None):
-                    print(
-                        f"Brute Forcing SSH with username list, {args.USERS} and default password list on port, {args.port}"
-                    )
+                    print(f"Brute Forcing SSH with username list, {args.USERS} and default password list on port, {args.port}")
                 elif args.USERS and args.PASSWORDS:
-                    print(
-                        f"Brute Forcing SSH with username list, {args.USERS} and password list, {args.PASSWORDS} on port, {args.port}"
-                    )
+                    print(f"Brute Forcing SSH with username list, {args.USERS} and password list, {args.PASSWORDS} on port, {args.port}")
+                    sshMultipleUsersBruteCustom()
                 else:
                     print(EXAMPLES)
         elif "smb" in args.brute:

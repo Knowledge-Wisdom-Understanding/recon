@@ -6,7 +6,7 @@ from lib import nmapParser
 from utils import helper_lists
 from subprocess import call
 import glob
-from utils import config_paths
+from utils import config_parser
 
 
 class EnumProxyCMS:
@@ -40,16 +40,15 @@ class EnumProxyCMS:
         if len(proxy_ports) == 0:
             pass
         else:
-            c = config_paths.Configurator(self.target)
-            c.createConfig()
+            c = config_parser.CommandParser(f"{os.getcwd()}/config/config.yaml", self.target)
             for proxy_http_port in proxy_http_ports:
                 whatweb_files = []
                 wordpress_url = []
                 wp = helper_lists.Wordpress(self.target)
                 wordpressDirs = wp.wordpress_dirs
-                if os.path.exists(f"""{c.getPath("aquatoneDirPUrls")}"""):
+                if os.path.exists(c.getPath("proxy", "aquatoneDirProxyUrls")):
                     try:
-                        with open(f"""{c.getPath("aquatoneDirPUrls")}""", "r") as purls:
+                        with open(c.getPath("proxy", "aquatoneDirProxyUrls"), "r") as purls:
                             for url in purls:
                                 uline = url.rstrip()
                                 for word in wordpressDirs:
@@ -64,7 +63,8 @@ class EnumProxyCMS:
                         for wpdir in sorted_wp_dirs:
                             count += 1
                             try:
-                                whatweb_proxy_cmd = f"""whatweb -v -a 3 --proxy {self.target}:{proxy_ports[0]} {wpdir} > {c.getPath("reportDir")}/proxy/web/whatweb-proxy-{proxy_http_port}-{count}.txt"""
+                                # whatweb_proxy_cmd = f"""whatweb -v -a 3 --proxy {self.target}:{proxy_ports[0]} {wpdir} > {c.getPath("reportDir")}/proxy/web/whatweb-proxy-{proxy_http_port}-{count}.txt"""
+                                whatweb_proxy_cmd = c.getCmd("proxy", "whatwebProxyWP", proxyPorts=proxy_ports[0], wordpressDirs=wpdir, httpProxy=proxy_http_port, count=count)
                                 call(whatweb_proxy_cmd, shell=True)
                                 if count >= 2:
                                     break
@@ -73,7 +73,7 @@ class EnumProxyCMS:
 
                 dir_list = [
                     d
-                    for d in glob.iglob(f"""{c.getPath("proxyGlob")}""", recursive=True)
+                    for d in glob.iglob(c.getPath("proxy", "proxyGlob"), recursive=True)
                     if os.path.isdir(d)
                 ]
                 for d in dir_list:
@@ -110,65 +110,55 @@ class EnumProxyCMS:
                                             print(f"{teal}Found WordPress!{reset}")
                                             cms_counter += 1
                                             if len(sorted_wp_dirs) != 0:
-                                                wpscan_cmd = f"""wpscan --no-update --url {sorted_wp_dirs[0]} --proxy http://{self.target}:{proxy_ports[0]} --wp-content-dir wp-content --enumerate vp,vt,cb,dbe,u,m --plugins-detection aggressive | tee {c.getPath("reportDir")}/proxy/web/wpscan-{proxy_http_port}.log"""
+                                                wpscan_cmd = c.getCmd("proxy", "wpscanProxy", sortedWpDirs=sorted_wp_dirs, httpProxy=proxy_ports[0], httpProxyPort=proxy_http_port)
                                                 cms_commands.append(wpscan_cmd)
                                                 if cms_counter >= 1:
                                                     hasPrinted = True
                                             manual_brute_force_script = f"""
 #!/bin/bash
 
-if [[ -n $(grep -i "User(s) Identified" {c.getPath("reportDir")}/proxy/web/wpscan-{proxy_http_port}.log) ]]; then
-    grep -w -A 100 "User(s)" {c.getPath("reportDir")}/proxy/web/wpscan-{proxy_http_port}.log | grep -w "[+]" | cut -d " " -f 2 | head -n -7 >{c.getPath("reportDir")}/proxy/web/wp-users.txt
-    proxychains cewl http://127.0.0.1:{proxy_http_port}/ -m 3 -w {c.getPath("reportDir")}/proxy/web/cewl-list.txt
+if [[ -n $(grep -i "User(s) Identified" {c.getPath("proxy", "wpscanReport", proxyPort=proxy_http_port)}) ]]; then
+    grep -w -A 100 "User(s)" {c.getPath("proxy", "wpscanReport", proxyPort=proxy_http_port)} | grep -w "[+]" | cut -d " " -f 2 | head -n -7 >{c.getPath("proxy", "wpUsers")}
+    {c.getCmd("proxy", "proxychainsCewl", proxyPorts=proxy_http_port)}
     sleep 10
     echo "Adding John Rules to Cewl Wordlist!"
-    john --rules --wordlist={c.getPath("reportDir")}/proxy/web/cewl-list.txt --stdout >{c.getPath("reportDir")}/proxy/web/john-cool-list.txt
+    {c.getCmd("proxy", "john")}
     sleep 3
     # brute force again with wpscan
-    wpscan --no-update --url http://127.0.0.1:{proxy_http_port}/ --proxy http://{self.target}:{proxy_ports[0]} --wp-content-dir wp-login.php -U {c.getPath("reportDir")}/proxy/web/wp-users.txt -P {c.getPath("reportDir")}/proxy/web/cewl-list.txt threads 50 | tee {c.getPath("reportDir")}/proxy/web/wordpress-cewl-brute.txt
+    {c.getCmd("proxy", "wpscanCewlBrute", proxyPorts=proxy_http_port, httpProxy=proxy_ports[0])}
     sleep 1
     if grep -i "No Valid Passwords Found" wordpress-cewl-brute2.txt; then
-        if [ -s {c.getPath("reportDir")}/proxy/web/john-cool-list.txt ]; then
-            wpscan --no-update --url http://127.0.0.1:{proxy_http_port}/ --proxy http://{self.target}:{proxy_ports[0]} --wp-content-dir wp-login.php -U {c.getPath("reportDir")}/proxy/web/wp-users.txt -P {c.getPath("reportDir")}/proxy/web/john-cool-list.txt threads 50 | tee {c.getPath("reportDir")}/proxy/web/wordpress-john-cewl-brute.txt
+        if [ -s {c.getPath("proxy", "johnCewl")} ]; then
+            {c.getCmd("proxy", "wpscanJohnCewlBrute", proxyPorts=proxy_http_port, httpProxy=proxy_ports[0])}
         else
             echo "John wordlist is empty :("
         fi
         sleep 1
-        if grep -i "No Valid Passwords Found" {c.getPath("reportDir")}/proxy/web/wordpress-john-cewl-brute.txt; then
-            wpscan --no-update --url http://127.0.0.1:{proxy_http_port}/ --proxy http://{self.target}:{proxy_ports[0]} --wp-content-dir wp-login.php -U {c.getPath("reportDir")}/proxy/web/wp-users.txt -P /usr/share/wordlists/fasttrack.txt threads 50 | tee {c.getPath("reportDir")}/proxy/web/wordpress-fasttrack-brute.txt
+        if grep -i "No Valid Passwords Found" {c.getPath("proxy","wpscanJohnCoolBrute")}; then
+            {c.getCmd("proxy", "wpscanFastTrackBrute", proxyPorts=proxy_http_port, httpProxy=proxy_ports[0])}
         fi
     fi
 fi
                                             """.rstrip()
                                             try:
-                                                with open(
-                                                    f"""{c.getPath("reportDir")}/proxy/web/wordpressBrute.sh""",
-                                                    "w",
-                                                ) as wpb:
-                                                    print(
-                                                        "Creating wordpress Brute Force Script..."
-                                                    )
+                                                with open(c.getPath("proxy", "wordpressBashBruteScript"), "w") as wpb:
+                                                    print("Creating wordpress Brute Force Script...")
                                                     wpb.write(manual_brute_force_script)
-                                                call(
-                                                    f"""chmod +x {c.getPath("reportDir")}/proxy/web/wordpressBrute.sh""",
-                                                    shell=True,
-                                                )
+                                                call(f"""chmod +x {c.getPath("proxy", "wordpressBashBruteScript")}""", shell=True)
                                             except FileNotFoundError as fnf_error:
                                                 print(fnf_error)
 
                                         if "Drupal" in cms:
-                                            drupal_cmd = f"""proxychains droopescan scan drupal -u http://127.0.0.1:{proxy_http_port}/ -t 32 | tee {c.getPath("reportDir")}/proxy/web/drupalscan-{self.target}-{proxy_http_port}.log"""
+                                            drupal_cmd = c.getCmd("proxy", "droopescan", proxyPorts=proxy_http_port)
                                             cms_commands.append(drupal_cmd)
                                         if "Joomla" in cms:
-                                            joomla_cmd = f"""joomscan --url http://127.0.0.1:{proxy_http_port}/ -ec --proxy http://{self.target}:{proxy_ports[0]} | tee {c.getPath("reportDir")}/proxy/web/joomlascan-{self.target}-{proxy_http_port}.log"""
+                                            joomla_cmd = c.getCmd("proxy", "joomscan", proxyPorts=proxy_http_port, httpProxy=proxy_ports[0])
                                             cms_commands.append(joomla_cmd)
                                         if "Magento" in cms:
-                                            magento_cmd = f"""cd /opt/magescan && proxychains bin/magescan scan:all http://127.0.0.1:{proxy_http_port}/ | tee {c.getPath("reportDir")}/proxy/web/magentoscan-{self.target}-{proxy_http_port}.log && cd - &>/dev/null"""
+                                            magento_cmd = c.getCmd("proxy", "magescan", proxyPorts=proxy_http_port)
                                             cms_commands.append(magento_cmd)
-                                        if "WebDAV" in cms:
-                                            webdav_cmd = f"""proxychains davtest -move -sendbd auto -url http://127.0.0.1:{proxy_http_port}/ | tee {c.getPath("reportDir")}/proxy/web/davtestscan-{self.target}-{proxy_http_port}.log"""
-                                            webdav_cmd2 = f"""proxychains nmap -Pn -vv -sT -sV -p {proxy_http_port} --script=http-iis-webdav-vuln.nse -oA {self.target}-Report/nmap/webdav 127.0.0.1"""
-                                            cms_commands.append(webdav_cmd)
+                                        if "WebDAV" in cms or ("Microsoft-IIS 6.0" in cms):
+                                            webdav_cmd2 = c.getCmd("proxy", "webdavNmap", proxyPort=proxy_http_port)
                                             cms_commands.append(webdav_cmd2)
 
             sorted_commands = sorted(set(cms_commands))
