@@ -5,7 +5,7 @@ from subprocess import call, check_output, STDOUT
 from sty import fg, bg, ef, rs
 from lib import nmapParser
 import glob
-from utils import config_paths
+from utils import config_parser
 
 
 class DefaultLinuxUsers:
@@ -142,13 +142,12 @@ class Cewl:
         slports = []
         if len(ssl_ports) == 1:
             slports.append(ssl_ports[0])
-        c = config_paths.Configurator(self.target)
-        c.createConfig()
-        if os.path.exists(f"""{c.getPath("aquatoneDirUrls")}"""):
-            if not os.path.exists(f"""{c.getPath("wordlistsDir")}"""):
-                os.makedirs(f"""{c.getPath("wordlistsDir")}""")
+        c = config_parser.CommandParser(f"{os.getcwd()}/config/config.yaml", self.target)
+        if os.path.exists(c.getPath("web", "aquatoneDirUrls")):
+            if not os.path.exists(c.getPath("wordlists", "wordlistsDir")):
+                os.makedirs(c.getPath("wordlists", "wordlistsDir"))
             url_list = []
-            urls_file = f"""{c.getPath("aquatoneDirUrls")}"""
+            urls_file = c.getPath("web", "aquatoneDirUrls")
             if os.path.exists(urls_file):
                 try:
                     with open(urls_file, "r") as uf:
@@ -170,9 +169,7 @@ class Cewl:
                     counter = 0
                     for url in wordlist:
                         counter += 1
-                        cewl_cmds.append(
-                            f"""cewl {url} -m 3 -w {c.getPath("reportDir")}/wordlists/cewl-{counter}-list.txt"""
-                        )
+                        cewl_cmds.append(f"""cewl {url} -m 3 -w {c.getPath("wordlists","CewlCounter", counter=counter)}""")
                 if len(cewl_cmds) != 0:
                     try:
                         for cmd in cewl_cmds:
@@ -181,17 +178,17 @@ class Cewl:
                         print(cre_error)
                 words = []
                 try:
-                    with open(f"""{c.getPath("CustomPass1575")}""", "r") as prob:
+                    with open(c.getPath("wordlists", "CustomPass1575"), "r") as prob:
                         for line in prob:
                             words.append(line.rstrip())
-                    for wl in os.listdir(f"""{c.getPath("wordlistsDir")}"""):
-                        wlfile = f"""{c.getPath("wordlistsDir")}/{wl}"""
+                    for wl in os.listdir(c.getPath("wordlists", "wordlistsDir")):
+                        wlfile = f"""{c.getPath("wordlists","wordlistsDir")}/{wl}"""
                         with open(wlfile, "r") as wlf:
                             for line in wlf:
                                 words.append(line.rstrip())
                     set_unique_words = sorted(set(words))
                     unique_words = list(set_unique_words)
-                    with open(f"""{c.getPath("CewlPlus")}""", "a") as allwls:
+                    with open(c.getPath("wordlists", "CewlPlus"), "a") as allwls:
                         string_words = "\n".join(map(str, unique_words))
                         allwls.write(str(string_words))
                 except FileNotFoundError as fnf_error:
@@ -214,13 +211,12 @@ class DirsearchURLS:
         self.target = target
 
     def genDirsearchUrlList(self):
-        c = config_paths.Configurator(self.target)
-        c.createConfig()
+        c = config_parser.CommandParser(f"{os.getcwd()}/config/config.yaml", self.target)
         awkprint = "{print $3}"
         dirsearch_files = []
         dir_list = [
             d
-            for d in glob.iglob(f"""{c.getPath("reportGlob")}""", recursive=True)
+            for d in glob.iglob(c.getPath("report", "reportGlob"), recursive=True)
             if os.path.isdir(d)
         ]
         for d in dir_list:
@@ -232,11 +228,11 @@ class DirsearchURLS:
             for rf in reportFile_list:
                 if "nmap" not in rf:
                     if "dirsearch" in rf:
-                        if not os.path.exists(f"""{c.getPath("aquatoneDir")}"""):
-                            os.makedirs(f"""{c.getPath("aquatoneDir")}""")
+                        if not os.path.exists(c.getPath("web", "aquatoneDir")):
+                            os.makedirs(c.getPath("web", "aquatoneDir"))
                         dirsearch_files.append(rf)
                     if "nikto" in rf:
-                        check_nikto_lines = f"""wc -l {rf} | cut -d ' ' -f 1"""
+                        check_nikto_lines = f"""wc - l {rf} | cut - d ' ' - f 1"""
                         num_lines_nikto = check_output(
                             check_nikto_lines, stderr=STDOUT, shell=True
                         ).rstrip()
@@ -245,7 +241,7 @@ class DirsearchURLS:
 
         if len(dirsearch_files) != 0:
             all_dirsearch_files_on_one_line = " ".join(map(str, dirsearch_files))
-            url_list_cmd = f"""cat {all_dirsearch_files_on_one_line} | grep -v '400' | awk '{awkprint}' | sort -u > {c.getPath("aquatoneDirUrls")}"""
+            url_list_cmd = f"""cat {all_dirsearch_files_on_one_line} | grep - v '400' | awk '{awkprint}' | sort - u > {c.getPath("web","aquatoneDirUrls")}"""
             call(url_list_cmd, shell=True)
 
     def genProxyDirsearchUrlList(self):
@@ -254,14 +250,13 @@ class DirsearchURLS:
         list that will be fed to Aquatone to generate a nice HTML report that will
         Be opened up in the firefox web browser."""
 
-        c = config_paths.Configurator(self.target)
-        c.createConfig()
-        if os.path.exists(f"""{c.getPath("proxyDir")}"""):
+        c = config_parser.CommandParser(f"{os.getcwd()}/config/config.yaml", self.target)
+        if os.path.exists(c.getPath("proxy", "proxyDir")):
             awkprint = "{print $3}"
             dirsearch_files = []
             dir_list = [
                 d
-                for d in glob.iglob(f"""{c.getPath("proxyGlob")}""", recursive=True)
+                for d in glob.iglob(c.getPath("proxy", "proxyGlob"), recursive=True)
                 if os.path.isdir(d)
             ]
             for d in dir_list:
@@ -273,13 +268,13 @@ class DirsearchURLS:
                 for rf in reportFile_list:
                     if "nmap" not in rf:
                         if "dirsearch" in rf:
-                            if not os.path.exists(f"""{c.getPath("aquatoneDir")}"""):
-                                os.makedirs(f"""{c.getPath("aquatoneDir")}""")
+                            if not os.path.exists(c.getPath("web", "aquatoneDir")):
+                                os.makedirs(c.getPath("web", "aquatoneDir"))
                             dirsearch_files.append(rf)
 
             if len(dirsearch_files) != 0:
                 all_dirsearch_files_on_one_line = " ".join(map(str, dirsearch_files))
-                url_list_cmd = f"""cat {all_dirsearch_files_on_one_line} | grep -v '400' | awk '{awkprint}' | sort -u > {c.getPath("aquatoneDirPUrls")}"""
+                url_list_cmd = f"""cat {all_dirsearch_files_on_one_line} | grep - v '400' | awk '{awkprint}' | sort - u > {c.getPath("web","aquatoneDirPUrls")}"""
                 call(url_list_cmd, shell=True)
 
 
