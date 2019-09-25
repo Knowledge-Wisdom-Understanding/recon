@@ -8,7 +8,7 @@ from bs4 import BeautifulSoup, Comment
 import requests
 import re
 from python_hosts.hosts import Hosts, HostsEntry
-from utils import config_paths
+from utils import config_parser
 
 
 class checkSource:
@@ -30,14 +30,13 @@ class checkSource:
         http_ports = np.http_ports
         cmd_info = "[" + fg.li_green + "+" + fg.rs + "]"
         cmd_info_orange = "[" + fg.li_yellow + "+" + fg.rs + "]"
-        c = config_paths.Configurator(self.target)
-        c.createConfig()
+        c = config_parser.CommandParser(f"{os.getcwd()}/config/config.yaml", self.target)
         if len(http_ports) != 0:
-            if not os.path.exists(f"""{c.getPath("webDir")}"""):
-                os.makedirs(f"""{c.getPath("webDir")}""")
+            if not os.path.exists(c.getPath("web", "webDir")):
+                os.makedirs(c.getPath("web", "webDir"))
             for hp in http_ports:
                 url = f"""http://{self.target}:{hp}"""
-                wfuzzReport = f"""{c.getPath("wfuzzReport")}"""
+                wfuzzReport = c.getPath("web", "wfuzzReport")
                 page = requests.get(url)
                 data = page.text
                 soup = BeautifulSoup(data, "html.parser")
@@ -62,7 +61,7 @@ class checkSource:
                     try:
                         import wfuzz
 
-                        tk5 = f"""{c.getPath("top5Ksubs")}"""
+                        tk5 = c.getPath("wordlists", "top5Ksubs")
                         print(f"""{cmd_info} wfuzz -z file,{tk5} -u {source_domain_name[0]} -H 'Host: FUZZ.{source_domain_name[0]}'""")
                         str_domain = source_domain_name[0]
                         fuzz_domain = f"""FUZZ.{source_domain_name[0]}"""
@@ -124,30 +123,33 @@ class checkSource:
 
 
 class sourceCommentChecker:
-    """sourceCommentChecker does what you think it does. If you don't think you know what it does, Read the code.
-    Line by flippin line."""
+    """sourceCommentChecker does what you think it does. If you don't think you know what it does, Read the code. Line by flippin line."""
 
     def __init__(self, target):
         self.target = target
 
     def extract_source_comments(self):
-        """Search home page for comments in the HTML source code. If any comments are found, 
-        Write them to a file in the report/web directory."""
-        url = f"""http://{self.target}"""
-        c = config_paths.Configurator(self.target)
-        c.createConfig()
-        page = requests.get(url)
-        data = page.text
-        soup = BeautifulSoup(data, "html.parser")
-        comments = soup.find_all(string=lambda text: isinstance(text, Comment))
-        comments_arr = [c.extract() for c in comments]
-        if len(comments_arr) != 0:
-            print(f"Found Comments in the Source! on page {url}")
-            print(f"""Writing Comments to {c.getPath("sourceComments")}""")
-            try:
-                with open(f"""{c.getPath("sourceComments")}""", "w") as com:
-                    for c in comments_arr:
-                        com_str = c.rstrip("\n")
-                        com.write(com_str)
-            except FileNotFoundError as fnf:
-                print(fnf)
+        """Search home page for comments in the HTML source code. If any comments are found, Write them to a file in the report/web directory."""
+
+        np = nmapParser.NmapParserFunk(self.target)
+        np.openPorts()
+        http_ports = np.http_ports
+        c = config_parser.CommandParser(f"{os.getcwd()}/config/config.yaml", self.target)
+        if len(http_ports) != 0:
+            for port in http_ports:
+                url = f"""http://{self.target}:{port}"""
+                page = requests.get(url)
+                data = page.text
+                soup = BeautifulSoup(data, "html.parser")
+                comments = soup.find_all(string=lambda text: isinstance(text, Comment))
+                comments_arr = [c.extract() for c in comments]
+                if len(comments_arr) != 0:
+                    print(f"Found Comments in the Source! on page {url}")
+                    print(f"""Writing Comments to {c.getPath("web","sourceComments")}""")
+                    try:
+                        with open(c.getPath("web", "sourceComments"), "a+") as com:
+                            for c in comments_arr:
+                                com_str = c.rstrip("\n")
+                                com.write(f"{com_str}\n")
+                    except FileNotFoundError as fnf:
+                        print(fnf)

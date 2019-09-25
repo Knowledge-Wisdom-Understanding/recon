@@ -7,7 +7,7 @@ import re
 from lib import nmapParser
 from utils import dig_parser
 from subprocess import call
-from utils import config_paths
+from utils import config_parser
 from utils import helper_lists
 
 
@@ -31,13 +31,12 @@ class DomainFinder:
         ssl_ports = np.ssl_ports
         dnsPort = np.dns_ports
         cmd_info = "[" + fg.li_green + "+" + fg.rs + "]"
-        c = config_paths.Configurator(self.target)
-        c.createConfig()
+        c = config_parser.CommandParser(f"{os.getcwd()}/config/config.yaml", self.target)
         ig = helper_lists.ignoreDomains()
         ignore = ig.ignore
         dns = []
         try:
-            with open(f"""{c.getPath("nmap_top_ports_nmap")}""", "r") as nm:
+            with open(c.getPath("nmap", "nmap_top_ports_nmap"), "r") as nm:
                 for line in nm:
                     new = (
                         line.replace("=", " ")
@@ -47,17 +46,11 @@ class DomainFinder:
                         .replace(",", " ")
                         .replace("_", " ")
                     )
-                    # print(new)
-                    matches = re.findall(
-                        r"(?:[a-zA-Z0-9](?:[a-zA-Z0-9\-]{,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{3,6}",
-                        new,
-                    )
-                    # print(matches)
+                    matches = re.findall(r"(?:[a-zA-Z0-9](?:[a-zA-Z0-9\-]{,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{3,6}", new)
                     for x in matches:
                         if not any(s in x for s in ignore):
                             dns.append(x)
                     if "|_http-title: Did not follow redirect to http:" in line:
-                        # print(line)
                         split_line = line.split()
                         last_word = split_line[-1]
                         redirect_domain = (
@@ -65,14 +58,10 @@ class DomainFinder:
                             .replace("/", "")
                             .replace("'", "")
                         )
-                        print(
-                            f"""{self.target} is redirecting to: {redirect_domain}, adding {redirect_domain} to /etc/hosts file"""
-                        )
+                        print(f"""{self.target} is redirecting to: {redirect_domain}, adding {redirect_domain} to /etc/hosts file""")
                         dns.append(redirect_domain)
                         self.redirect_hostname.append(redirect_domain)
-            # print(dns)
             sdns = sorted(set(dns))
-            # print(sdns)
             tmpdns = []
             for x in sdns:
                 tmpdns.append(x)
@@ -93,28 +82,25 @@ class DomainFinder:
             for x in allsortedhostnames:
                 allsortedhostnameslist.append(x)
         else:
-            if not os.path.exists(f"""{c.getPath("webSSLDir")}"""):
-                os.makedirs(f"""{c.getPath("webSSLDir")}""")
-            if not os.path.exists(f"""{c.getPath("aquatoneDir")}"""):
-                os.makedirs(f"""{c.getPath("aquatoneDir")}""")
+            if not os.path.exists(c.getPath("webSSL", "webSSLDir")):
+                os.makedirs(c.getPath("webSSL", "webSSLDir"))
+            if not os.path.exists(c.getPath("webSSL", "aquatoneDir")):
+                os.makedirs(c.getPath("webSSL", "aquatoneDir"))
             for sslport in ssl_ports:
-                sslscanCMD = f"""sslscan https://{self.target}:{sslport} | tee {c.getPath("webSSLScanT")}-{sslport}.log"""
+                sslscanCMD = c.getCmd("webSSL", "sslscan", sslport=sslport)
                 print(cmd_info, sslscanCMD)
                 call(sslscanCMD, shell=True)
-                if not os.path.exists(f"""{c.getPath("webSSLScanT")}-{sslport}.log"""):
+                if not os.path.exists(c.getPath("webSSL", "webSSLScanTarget", sslport=sslport)):
                     pass
                 else:
-                    sslscanFile = f"""{c.getPath("webSSLScanT")}-{sslport}.log"""
-                    # print(sslscanFile)
+                    sslscanFile = c.getPath("webSSL", "webSSLScanTarget", sslport=sslport)
                     domainName = []
                     altDomainNames = []
                     with open(sslscanFile, "rt") as f:
                         for line in f:
                             if "Subject:" in line:
                                 n = line.lstrip("Subject:").rstrip("\n")
-                                # print(n)
                                 na = n.lstrip()
-                                # print(na)
                                 if na not in ignore:
                                     domainName.append(na)
                             if "Altnames:" in line:
@@ -127,9 +113,6 @@ class DomainFinder:
                                 for x in alname2:
                                     if x not in ignore:
                                         altDomainNames.append(x)
-                    # print(domainName)
-                    # print(altDomainNames)
-                    # print(alname2)
                     both = []
                     for x in domainName:
                         both.append(x)
@@ -159,9 +142,7 @@ class DomainFinder:
                 for x in allsortedhostnameslist:
                     if x not in ignore:
                         self.redirect_hostname.append(x)
-                print(
-                    f"""{cmd_info} Adding {fg.li_cyan}{allsortedhostnameslist} {fg.rs}to /etc/hosts"""
-                )
+                print(f"""{cmd_info} Adding {fg.li_cyan}{allsortedhostnameslist} {fg.rs}to /etc/hosts""")
                 hosts = Hosts(path="/etc/hosts")
                 new_entry = HostsEntry(
                     entry_type="ipv4", address=self.target, names=allsortedhostnameslist
@@ -170,18 +151,14 @@ class DomainFinder:
                 hosts.write()
 
         else:
-            if not os.path.exists(f"""{c.getPath("dnsDir")}"""):
-                os.makedirs(f"""{c.getPath("dnsDir")}""")
-            dig_cmd = (
-                f"""dig -x {self.target} @{self.target} | tee {c.getPath("dnsDig")}"""
-            )
+            if not os.path.exists(c.getPath("dns", "dnsDir")):
+                os.makedirs(c.getPath("dns", "dnsDir"))
+            dig_cmd = c.getCmd("dns", "dnsDig")
             print(cmd_info, dig_cmd)
             dp = dig_parser.digParse(self.target, dig_cmd)
             dp.parseDig()
             dig_hosts = dp.hosts
             sub_hosts = dp.subdomains
-            # print(dig_hosts)
-            # print(sub_hosts)
             if len(dig_hosts) != 0:
                 for x in dig_hosts:
                     allsortedhostnameslist.append(x)
@@ -194,12 +171,11 @@ class DomainFinder:
             if len(allsortedhostnameslist) != 0:
                 alldns = " ".join(map(str, allsortedhostnameslist))
                 zonexferDns = []
-                dig_command = f"""dig axfr @{self.target} {alldns} | tee {c.getPath("dnsZoneXfer")}"""
+                dig_command = c.getCmd("dns", "dnsDigAxfr", alldns=alldns)
                 print(cmd_info, dig_command)
                 dp2 = dig_parser.digParse(self.target, dig_command)
                 dp2.parseDigAxfr()
                 subdomains = dp2.subdomains
-                # print(subdomains)
                 for x in subdomains:
                     zonexferDns.append(x)
                 sortedAllDomains = sorted(set(zonexferDns))
@@ -208,9 +184,7 @@ class DomainFinder:
                     sortedAllDomainsList.append(x)
                     self.redirect_hostname.append(x)
                 if len(zonexferDns) != 0:
-                    print(
-                        f"""{cmd_info} Adding {fg.li_cyan}{sortedAllDomainsList} {fg.rs}to /etc/hosts"""
-                    )
+                    print(f"""{cmd_info} Adding {fg.li_cyan}{sortedAllDomainsList} {fg.rs}to /etc/hosts""")
                     hosts = Hosts(path="/etc/hosts")
                     new_entry = HostsEntry(
                         entry_type="ipv4",
@@ -225,12 +199,11 @@ class DomainFinder:
         np = nmapParser.NmapParserFunk(self.target)
         np.openPorts()
         dnsPort = np.dns_ports
-        c = config_paths.Configurator(self.target)
-        c.createConfig()
+        c = config_parser.CommandParser(f"{os.getcwd()}/config/config.yaml", self.target)
         ig = helper_lists.ignoreDomains()
         ignore = ig.ignore
         try:
-            with open(f"""{c.getPath("nmap_top_ports_nmap")}""", "r") as nm:
+            with open(c.getPath("nmap", "nmap_top_ports_nmap"), "r") as nm:
                 for line in nm:
                     new = (
                         line.replace("=", " ")
@@ -240,10 +213,7 @@ class DomainFinder:
                         .replace(",", " ")
                         .replace("_", " ")
                     )
-                    matches = re.findall(
-                        r"(?:[a-zA-Z0-9](?:[a-zA-Z0-9\-]{,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{3,6}",
-                        new,
-                    )
+                    matches = re.findall(r"(?:[a-zA-Z0-9](?:[a-zA-Z0-9\-]{,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{3,6}", new)
                     for x in matches:
                         if not any(s in x for s in ignore):
                             self.redirect_hostname.append(x)
@@ -260,9 +230,9 @@ class DomainFinder:
         except FileNotFoundError as fnf_error:
             print(fnf_error)
         if len(dnsPort) != 0:
-            if not os.path.exists(f"""{c.getPath("dnsDir")}"""):
-                os.makedirs(f"""{c.getPath("dnsDir")}""")
-            dig_cmd = f"""dig -x {self.target} @{self.target}"""
+            if not os.path.exists(c.getPath("dns", "dnsDir")):
+                os.makedirs(c.getPath("dns", "dnsDir"))
+            dig_cmd = c.getCmd("dns", "dnsDig")
             dp = dig_parser.digParse(self.target, dig_cmd)
             dp.parseDig()
             dig_hosts = dp.hosts
@@ -276,7 +246,7 @@ class DomainFinder:
             if len(self.redirect_hostname) != 0:
                 alldns = " ".join(map(str, self.redirect_hostname))
                 zonexferDns = []
-                dig_command = f"""dig axfr @{self.target} {alldns}"""
+                dig_command = c.getCmd("dns", "dnsDigAxfr", alldns=alldns)
                 dp2 = dig_parser.digParse(self.target, dig_command)
                 dp2.parseDigAxfr()
                 subdomains = dp2.subdomains
