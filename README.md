@@ -6,12 +6,10 @@
 ## Features!
 
 - This tool is intended for CTF's and can be fairly noisy. (Not the most stealth conscious tool...)
-- This tool must be ran from it's base directory. For instance, If you cloned the repo into /opt. Then, you need to run the Tool in the corresponding directory, ie. /opt/recon
 - All tools in this project are compliant with the OSCP exam rules.
 - If Virtual Host Routing is detected, _Auto-Recon_ will add the host names to your /etc/hosts file and continue to enumerate the newly discovered host names.
 - DNS enumeration is nerfed to ignore .com .co .eu .uk domains etc... since this tool was designed for CTF's like for instance, "hack the box". It will try to find most .htb domains.
 - This project use's various tools and chains them together as needed to enumerate a target based off nmap results.
-- Using python multiprocessing, services can be scanned quickly.
 
 ### INSTALLATION
 
