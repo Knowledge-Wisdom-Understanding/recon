@@ -268,7 +268,7 @@ if [[ -n $(grep -i "User(s) Identified" {c.getPath("webSSL", "wpscanSSL", sslPor
         fi
     fi
 fi
-                                            """.rstrip()
+                                            """
                                             try:
                                                 with open(c.getPath("webSSL", "wordpressBruteBashScript"), "w") as wpb:
                                                     print("Creating wordpress Brute Force Script...")
