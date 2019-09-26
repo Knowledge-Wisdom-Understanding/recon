@@ -58,10 +58,6 @@ cd vulscan/utilities/updater
 chmod +x updateFiles.sh
 ./updateFiles.sh
 
-echo -e "${DOPE} Installing Sublist3r"
-cd /opt
-git clone https://github.com/aboul3la/Sublist3r.git
-
 cd /opt
 git clone https://github.com/michenriksen/aquatone.git
 cd aquatone
@@ -69,10 +65,6 @@ wget https://github.com/michenriksen/aquatone/releases/download/v1.7.0/aquatone_
 unzip -o aquatone_linux_amd64_1.7.0.zip
 apt install chromium -y
 ln -s /opt/aquatone/aquatone /usr/local/bin/aquatone
-
-echo "hopefully you have go installed and your go path configured correctly. Other-wise you'll have to install subfinder manually."
-echo "trying: go get github.com/subfinder/subfinder"
-go get github.com/subfinder/subfinder
 
 echo -e "${DOPE} Installing snmp-mibs-downloader. This will beautify snmp-walk output to more human readable format"
 apt install snmp-mibs-downloader -y

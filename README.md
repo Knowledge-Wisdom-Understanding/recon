@@ -67,31 +67,31 @@ optional arguments:
 
 To scan a single target and enumerate based off of nmap results:
 
-```
+```shell
 python3 recon.py -t 10.10.10.10
 ```
 
 To Enumerate Web with larger wordlists
 
-```
+```shell
 python3 recon.py -w 10.10.10.10
 ```
 
 To Scan + Enumerate all IPv4 addr's in ips.txt file
 
-```
+```shell
 python3 recon.py -f ips.txt
 ```
 
 Brute force ssh users on default port 22 If unique valid users found, brute force passwords
 
-```
+```shell
 python3 recon.py -t 10.10.10.10 -b ssh
 ```
 
 Same as above but for ssh on port 2222 etc...
 
-```
+```shell
 python3 recon.py -t 10.10.10.10 -b ssh -p 2222
 ```
 
