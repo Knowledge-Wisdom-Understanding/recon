@@ -258,7 +258,7 @@ class EnumWeb:
             fi
         fi
     fi
-                                                """.rstrip()
+                                                """
                                                 try:
                                                     with open(c.getPath("web", "wpscanBashBruteScript"), "w") as wpb:
                                                         print("Creating wordpress Brute Force Script...")
