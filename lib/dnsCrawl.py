@@ -132,22 +132,26 @@ class sourceCommentChecker:
     def extract_source_comments(self):
         """Search home page for comments in the HTML source code. If any comments are found, Write them to a file in the report/web directory."""
 
-        np = nmapParser.NmapParserFunk(self.target)
-        np.openPorts()
-        http_ports = np.http_ports
         cmd_info = "[" + fg.li_green + "+" + fg.rs + "]"
         c = config_parser.CommandParser(f"{os.getcwd()}/config/config.yaml", self.target)
-        if len(http_ports) != 0:
-            for port in http_ports:
-                url = f"""http://{self.target}:{port}"""
-                page = requests.get(url)
+        if os.path.exists(c.getPath("web", "aquatoneDirUrls")):
+            url_list = []
+            try:
+                with open(f"""{c.getPath("web", "aquatoneDirUrls")}""", "r") as urls:
+                    for line in urls:
+                        _url = line.rstrip()
+                        url_list.append(_url)
+            except FileNotFoundError as fnf_error:
+                print(fnf_error)
+                pass
+            for link in url_list:
+                page = requests.get(link)
                 data = page.text
                 soup = BeautifulSoup(data, "html.parser")
                 comments = soup.find_all(string=lambda text: isinstance(text, Comment))
                 comments_arr = [c.extract() for c in comments]
                 if len(comments_arr) != 0:
-                    print(f"{cmd_info}{fg.li_red} Found Comments in the Source!{fg.rs} {fg.li_blue}{url}{fg.rs}")
-                    print(f"""{cmd_info} Writing Comments to {c.getPath("web","sourceComments")}""")
+                    print(f"{cmd_info}{fg.li_red} Found Comments in the Source!{fg.rs} {fg.li_blue}{link}{fg.rs}")
                     try:
                         with open(c.getPath("web", "sourceComments"), "a+") as com:
                             for c in comments_arr:
@@ -155,3 +159,4 @@ class sourceCommentChecker:
                                 com.write(f"{com_str}\n")
                     except FileNotFoundError as fnf:
                         print(fnf)
+            print(f"""{cmd_info} Writing Comments to {c.getPath("web","sourceComments")}""")
