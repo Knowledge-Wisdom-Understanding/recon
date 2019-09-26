@@ -202,7 +202,6 @@ def main():
         validateIP()
         reset_timer()
         rc.scanTopTcpPorts()
-        rc.getOpenPorts()
         rc.enumDNS()
         rc.enumHTTP()
         rc.cmsEnum()
@@ -242,7 +241,6 @@ def main():
                     validateIP()
                     reset_timer()
                     rc.scanTopTcpPorts()
-                    rc.getOpenPorts()
                     rc.enumDNS()
                     rc.enumHTTP()
                     rc.cmsEnum()
@@ -282,7 +280,6 @@ def main():
         validateIP()
         if os.path.exists(f"{args.target}-Report/nmap/top-ports-{args.target}.nmap"):
             reset_timer()
-            rc.getOpenPorts()
             rc.enumDNS()
             rc.enumHTTP2()
             rc.cmsEnum()
@@ -295,7 +292,6 @@ def main():
         else:
             reset_timer()
             rc.scanTopTcpPorts()
-            rc.getOpenPorts()
             rc.enumDNS()
             rc.enumHTTP2()
             rc.cmsEnum()

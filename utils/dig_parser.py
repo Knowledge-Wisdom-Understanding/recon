@@ -5,7 +5,7 @@ from subprocess import PIPE, Popen
 
 class digParse:
     """The digParse Class will parse the output of a dig query against the target IP address
-    along with a Zone Transer dig parser which is then appended to subdomains and hosts which 
+    along with a Zone Transer dig parser which is then appended to subdomains and hosts which
     will then be utilized by both domainFinder, enumDNS, and both enumWeb and enumWebSSL enumeration
     lib files."""
 

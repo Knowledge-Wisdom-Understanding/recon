@@ -12,7 +12,7 @@ from utils import config_parser
 
 
 class CheckProxy:
-    """The CheckProxy Class will Attempt to run a nmap scan using proxychains if any valid 
+    """The CheckProxy Class will Attempt to run a nmap scan using proxychains if any valid
     http-proxy ports are found to be open from nmap's initial scanning results from the NmapParserFunk class
     located in lib/nmapParser.py"""
 

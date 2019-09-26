@@ -136,9 +136,9 @@ class Search:
 
     def vulnCheck(self):
         """Vuln Check will check if OpenSSH is vulnerable to Username Enumeration.
-        If it is, A message will be printed to the User. This feature can be enabled to automatically 
+        If it is, A message will be printed to the User. This feature can be enabled to automatically
         always brute force SSH if the instance is a vulnerable version, however, I've changed this
-        feature to not run automatically as that option should be left up to the user, among various other 
+        feature to not run automatically as that option should be left up to the user, among various other
         reasons."""
         cmd_info = "[" + fg.green + "+" + fg.rs + "]"
         manual_cmd_info = "[" + fg.li_yellow + "+" + fg.rs + "]"

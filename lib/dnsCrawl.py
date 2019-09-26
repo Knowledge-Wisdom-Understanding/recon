@@ -2,7 +2,7 @@
 
 import os
 from sty import fg, bg, ef, rs
-from subprocess import PIPE, Popen, check_output, STDOUT, call
+from subprocess import PIPE, Popen, check_output, STDOUT
 from lib import nmapParser
 from bs4 import BeautifulSoup, Comment
 import requests
@@ -36,7 +36,7 @@ class checkSource:
                 os.makedirs(c.getPath("web", "webDir"))
             for hp in http_ports:
                 url = f"""http://{self.target}:{hp}"""
-                wfuzzReport = c.getPath("web", "wfuzzReport")
+                wfuzzReport = c.getPath("web", "wfuzzReport", port=hp)
                 page = requests.get(url)
                 data = page.text
                 soup = BeautifulSoup(data, "html.parser")
@@ -62,9 +62,10 @@ class checkSource:
                         import wfuzz
 
                         tk5 = c.getPath("wordlists", "top5Ksubs")
-                        print(f"""{cmd_info} wfuzz -z file,{tk5} -u {source_domain_name[0]} -H 'Host: FUZZ.{source_domain_name[0]}'""")
-                        str_domain = source_domain_name[0]
-                        fuzz_domain = f"""FUZZ.{source_domain_name[0]}"""
+                        print(f"""{cmd_info} wfuzz -z file,{tk5} -u {source_domain_name[0]}:{hp} -H 'Host: FUZZ.{source_domain_name[0]}:{hp}'""")
+                        print(f"{fg.li_yellow}Wfuzz's STDOUT is Hidden to prevent filling up Terminal. Desired Response Codes are unpredictable during initial fuzz session. Output is unfiltered.{fg.rs} STDOUT will be written to {fg.li_magenta}{wfuzzReport}{fg.rs}")
+                        str_domain = f"""{source_domain_name[0]}:{hp}"""
+                        fuzz_domain = f"""FUZZ.{source_domain_name[0]}:{hp}"""
                         for r in wfuzz.fuzz(
                             url=str_domain,
                             hc=[404],
@@ -109,7 +110,7 @@ class checkSource:
                                     subdomains[0], source_domain_name[0]
                                 )
 
-                                print(f"""{cmd_info_orange} {fg.li_blue}Found Subdomain!{fg.rs} {fg.li_green}{sub_d}{fg.rs}""")
+                                print(f"""{cmd_info_orange}{fg.li_blue} Found Subdomain!{fg.rs} {fg.li_green}{sub_d}{fg.rs}""")
                                 print(f"""{cmd_info}{fg.li_magenta} Adding{fg.rs} {fg.li_cyan}{sub_d}{fg.rs} to /etc/hosts file""")
                                 hosts = Hosts(path="/etc/hosts")
                                 new_entry = HostsEntry(
@@ -134,6 +135,7 @@ class sourceCommentChecker:
         np = nmapParser.NmapParserFunk(self.target)
         np.openPorts()
         http_ports = np.http_ports
+        cmd_info = "[" + fg.li_green + "+" + fg.rs + "]"
         c = config_parser.CommandParser(f"{os.getcwd()}/config/config.yaml", self.target)
         if len(http_ports) != 0:
             for port in http_ports:
@@ -144,8 +146,8 @@ class sourceCommentChecker:
                 comments = soup.find_all(string=lambda text: isinstance(text, Comment))
                 comments_arr = [c.extract() for c in comments]
                 if len(comments_arr) != 0:
-                    print(f"Found Comments in the Source! on page {url}")
-                    print(f"""Writing Comments to {c.getPath("web","sourceComments")}""")
+                    print(f"{cmd_info}{fg.li_red} Found Comments in the Source!{fg.rs} {fg.li_blue}{url}{fg.rs}")
+                    print(f"""{cmd_info} Writing Comments to {c.getPath("web","sourceComments")}""")
                     try:
                         with open(c.getPath("web", "sourceComments"), "a+") as com:
                             for c in comments_arr:

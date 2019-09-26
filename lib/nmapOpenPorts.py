@@ -7,7 +7,7 @@ from utils import config_parser
 
 
 class NmapOpenPorts:
-    """NmapOpenPorts will enumerate all remaining found open ports services that were discovered from the 
+    """NmapOpenPorts will enumerate all remaining found open ports services that were discovered from the
     fullTcp and Top UDP nmap scan results."""
 
     def __init__(self, target):

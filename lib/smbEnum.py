@@ -48,6 +48,6 @@ class SmbEnum:
             commands.append(c.getCmd("smb", "smbmapNull"))
             commands.append(f"""echo {cmd_info}{green} '{c.getCmd("smb", "smbmapNullR")}' {reset}""")
             commands.append(c.getCmd("smb", "smbmapNullR"))
-            commands.append(f"""echo {cmd_info}{green} '{c.getCmd("smb", "enum4linuxd")}' {reset}""")
+            commands.append(f"""echo {cmd_info}{green} '{c.getCmd("smb", "enum4linux")}' {reset}""")
             commands.append(c.getCmd("smb", "enum4linux"))
             self.processes = tuple(commands)

@@ -34,7 +34,7 @@ class EnumWeb:
         if len(http_ports) == 0:
             pass
         else:
-            print(f"""{fg.li_cyan} Enumerating HTTP Ports! {fg.rs}""")
+            print(f"""{fg.li_cyan}Enumerating HTTP Ports! {fg.rs}""")
             c = config_parser.CommandParser(f"{os.getcwd()}/config/config.yaml", self.target)
             dn = domainFinder.DomainFinder(self.target)
             dn.getRedirect()

@@ -2,7 +2,6 @@
 
 import os
 from subprocess import call, check_output, STDOUT
-from sty import fg, bg, ef, rs
 from lib import nmapParser
 import glob
 from utils import config_parser
@@ -504,6 +503,7 @@ class topPortsToScan:
             1801,
             1808,
             1809,
+            1880,
             1900,
             1935,
             1998,

@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
 
-from subprocess import PIPE, Popen, call
+from subprocess import call
 from tqdm import tqdm
 from multiprocessing import Pool
 from functools import partial
-from termcolor import colored
-from sty import fg, bg, ef, rs
+from sty import fg, rs
 from lib import topOpenPorts
 from lib import nmapOpenPorts
 from lib import nmapParser
@@ -130,7 +129,7 @@ class RunCommands:
         self.mpRun(nmap_commands)
 
     def aquatone(self):
-        """Helper Funtion to run Aquatone provided there are open web servers and found urls which is 
+        """Helper Funtion to run Aquatone provided there are open web servers and found urls which is
         handled in the lib/aqua.py logic."""
         aq = aqua.Aquatone(self.target)
         aq.Scan()
