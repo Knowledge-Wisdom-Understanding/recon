@@ -278,12 +278,16 @@ fi
                                                 print(fnf_error)
                                                 continue
                                             if "Drupal" in cms:
+                                                cms_commands.append(c.getCmd("vuln", "searchsploit", strang=str(cms), name="Drupal"))
                                                 cms_commands.append(c.getCmd("webSSL", "droopescanSSLHost", sslPort=ssl_port))
                                             if "Joomla" in cms:
+                                                cms_commands.append(c.getCmd("vuln", "searchsploit", strang=str(cms), name="Joomla"))
                                                 cms_commands.append(c.getCmd("webSSL", "joomscanTarget", sslPort=ssl_port))
                                             if "Magento" in cms:
+                                                cms_commands.append(c.getCmd("vuln", "searchsploit", strang=str(cms), name="Magento"))
                                                 cms_commands.append(c.getCmd("webSSL", "magescanTarget", sslPort=ssl_port))
                                             if "WebDAV" in cms:
+                                                cms_commands.append(c.getCmd("vuln", "searchsploit", strang=str(cms), name="WebDAV"))
                                                 cms_commands.append(c.getCmd("webSSL", "davtestTarget"))
                                                 cms_commands.append(c.getCmd("webSSL", "nmapWebDav", sslPot=ssl_port))
                                         else:
@@ -291,14 +295,19 @@ fi
                                                 for whatweb_hn in whatweb_hostnames:
                                                     if hn in whatweb_hn:
                                                         if "WordPress" in cms:
+                                                            cms_commands.append(c.getCmd("vuln", "searchsploit", strang=str(cms), name="WordPress"))
                                                             cms_commands.append(c.getCmd("webSSL", "wpscanSSLHost", host=hn, sslPort=ssl_port))
                                                         if "Drupal" in cms:
+                                                            cms_commands.append(c.getCmd("vuln", "searchsploit", strang=str(cms), name="Drupal"))
                                                             cms_commands.append(c.getCmd("webSSL", "droopescanSSLHost", host=hn, sslPort=ssl_port))
                                                         if "Joomla" in cms:
+                                                            cms_commands.append(c.getCmd("vuln", "searchsploit", strang=str(cms), name="Joomla"))
                                                             cms_commands.append(c.getCmd("webSSL", "joomscanHost", host=hn, sslPort=ssl_port))
                                                         if "Magento" in cms:
+                                                            cms_commands.append(c.getCmd("vuln", "searchsploit", strang=str(cms), name="Magento"))
                                                             cms_commands.append(c.getCmd("webSSL", "magescanHost", host=hn, sslPort=ssl_port))
                                                         if "WebDAV" in cms:
+                                                            cms_commands.append(c.getCmd("vuln", "searchsploit", strang=str(cms), name="WebDAV"))
                                                             cms_commands.append(c.getCmd("webSSL", "davtestHost", host=hn))
 
             sorted_commands = sorted(set(cms_commands))

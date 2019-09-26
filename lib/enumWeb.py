@@ -268,20 +268,23 @@ class EnumWeb:
                                                     print(fnf_error)
 
                                             if "Drupal" in cms:
+                                                cms_commands.append(c.getCmd("vuln", "searchsploit", strang=str(cms), name="Drupal"))
                                                 cms_commands.append(c.getCmd("web", "droopescan", httpPort=http_port))
                                             if "Joomla" in cms:
+                                                cms_commands.append(c.getCmd("vuln", "searchsploit", strang=str(cms), name="Joomla"))
                                                 cms_commands.append(c.getCmd("web", "joomscan", httpPort=http_port))
                                             if "Magento" in cms:
+                                                cms_commands.append(c.getCmd("vuln", "searchsploit", strang=str(cms), name="Magento"))
                                                 cms_commands.append(c.getCmd("web", "magescan", httpPort=http_port))
                                             if "WebDAV" in cms or ("Microsoft-IIS 6.0" in cms):
+                                                cms_commands.append(c.getCmd("vuln", "searchsploit", strang=str(cms), name="WebDAV"))
                                                 webdav_cmd = c.getCmd("web", "davtest")
                                                 webdav_cmd2 = c.getCmd("web", "webDavNmap", httpPort=http_port)
                                                 cms_commands.append(webdav_cmd)
                                                 cms_commands.append(webdav_cmd2)
                                             if "tomcat" in cms:
-                                                tomcat_cmd = c.getCmd("web", "tomcatHydra", httpPort=http_port)
-                                                print("Manual Brute Force Command to run")
-                                                print(tomcat_cmd)
+                                                cms_commands.append(c.getCmd("vuln", "searchsploit", strang=str(cms), name="tomcat"))
+                                                cms_commands.append(c.getCmd("web", "tomcatHydra", httpPort=http_port))
 
                         except FileNotFoundError as fnf_error:
                             print(fnf_error)

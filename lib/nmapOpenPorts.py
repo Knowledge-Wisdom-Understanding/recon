@@ -36,11 +36,14 @@ class NmapOpenPorts:
         mongoPorts = np.mongo_ports
         pop3Ports = np.pop3_ports
         kerberosPorts = np.kerberos_ports
+        tcpPorts = np.tcp_ports
+        string_tcp_ports = ",".join(map(str, tcpPorts))
         unp = nmapParser.NmapParserFunk(self.target)
         unp.openUdpPorts()
         snmpPorts = unp.snmp_ports
         c = config_parser.CommandParser(f"{os.getcwd()}/config/config.yaml", self.target)
         unsorted_commands = []
+        unsorted_commands.append(c.getCmd("nmap", "nmapVulners", openTcpPorts=string_tcp_ports))
         if len(snmpPorts) != 0:
             if not os.path.exists(c.getPath("snmp", "snmpDir")):
                 os.makedirs(c.getPath("snmp", "snmpDir"))

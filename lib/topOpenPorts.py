@@ -45,8 +45,6 @@ class TopOpenPorts:
         c = config_parser.CommandParser(f"{os.getcwd()}/config/config.yaml", self.target)
         np = nmapParser.NmapParserFunk(self.target)
         np.openPorts()
-        tcpPorts = np.tcp_ports
-        string_tcp_ports = ",".join(map(str, tcpPorts))
         hpl = helper_lists.topPortsToScan()
         topUDP = hpl.topUDP
         topUdpPortsString = ",".join(map(str, topUDP))
@@ -55,6 +53,4 @@ class TopOpenPorts:
         commands.append(c.getCmd("nmap", "nmapFullTcpScan"))
         commands.append(f"""echo {cmd_info}{green} '{c.getCmd("nmap", "nmapTopUdpScan", topUdpPorts=topUdpPortsString)}' {reset}""")
         commands.append(c.getCmd("nmap", "nmapTopUdpScan", topUdpPorts=topUdpPortsString))
-        commands.append(f"""echo {cmd_info}{green} '{c.getCmd("nmap", "nmapVulners", openTcpPorts=string_tcp_ports)}' {reset}""")
-        commands.append(c.getCmd("nmap", "nmapVulners", openTcpPorts=string_tcp_ports))
         self.processes = tuple(commands)

@@ -21,6 +21,9 @@ from lib import enumProxyCMS
 from utils import remove_color
 from utils import peaceout_banner
 from utils import helper_lists
+import psutil
+import os
+import signal
 # from lib import _wfuzz_ignore_200
 
 
@@ -29,19 +32,34 @@ class RunCommands:
 
     def __init__(self, target):
         self.target = target
+        self.parent_id = os.getpid()
+
+    def worker_init(self):
+        def sig_int(signal_num, frame):
+            parent = psutil.Process(self.parent_id)
+            for child in parent.children():
+                if child.pid != os.getpid():
+                    child.kill()
+            parent.kill()
+            psutil.Process(os.getpid()).kill()
+        signal.signal(signal.SIGINT, sig_int)
 
     def mpRun(self, commands):
         """Pool all commands to run from each service class and run them 2 at a time.,"""
         if len(commands) != 0:
-            with Pool(processes=2) as p:
-                max_ = len(commands)
-                with tqdm(total=max_) as pbar:
-                    for i, returncode in enumerate(
-                        p.imap_unordered(partial(call, shell=True), commands)
-                    ):
-                        pbar.update()
-                        if returncode != 0:
-                            print(f"{i} command failed: {returncode}")
+            try:
+                with Pool(2, self.worker_init) as p:
+                    max_ = len(commands)
+                    with tqdm(total=max_) as pbar:
+                        for i, returncode in enumerate(
+                            p.imap_unordered(partial(call, shell=True), commands)
+                        ):
+                            pbar.update()
+                            if returncode != 0:
+                                print(f"{i} command failed: {returncode}")
+            except KeyboardInterrupt:
+                p.close()
+                p.join()
 
     def infoMpRun(self, commands):
         """Pool all commmands to run from certain services and print the commands before running the Pool commands."""
@@ -49,15 +67,19 @@ class RunCommands:
         if len(commands) != 0:
             for command in commands:
                 print(cmd_info, command)
-            with Pool(processes=2) as p:
-                max_ = len(commands)
-                with tqdm(total=max_) as pbar:
-                    for i, returncode in enumerate(
-                        p.imap_unordered(partial(call, shell=True), commands)
-                    ):
-                        pbar.update()
-                        if returncode != 0:
-                            print(f"{i} command failed: {returncode}")
+            try:
+                with Pool(2, self.worker_init) as p:
+                    max_ = len(commands)
+                    with tqdm(total=max_) as pbar:
+                        for i, returncode in enumerate(
+                            p.imap_unordered(partial(call, shell=True), commands)
+                        ):
+                            pbar.update()
+                            if returncode != 0:
+                                print(f"{i} command failed: {returncode}")
+            except KeyboardInterrupt:
+                p.close()
+                p.join()
 
     def enumHTTP(self):
         """Helper function to call the lib/enumWeb Class."""

@@ -4,6 +4,7 @@ from subprocess import call, check_output, STDOUT
 import os
 import glob
 from utils import config_parser
+from fnmatch import fnmatch
 
 
 class Clean:
@@ -64,6 +65,10 @@ class Clean:
                                 removeColor(
                                     self, rf, f"""{c.getPath("dns","dnsDir")}/dnsenum.log"""
                                 )
+                            if "drupal" in rf:
+                                removeColor(
+                                    self, rf, f"""{c.getPath("dns","dnsDir")}/drupal.log"""
+                                )
                             if "oracle" in rf:
                                 removeColor(
                                     self,
@@ -82,41 +87,11 @@ class Clean:
                                     f"""{c.getPath("web","webDir")}/wpscanblah.log""",
                                 )
                             if "vulns" in rf:
-                                if "ftp" in rf:
+                                if fnmatch(rf, "*.log"):
                                     removeColor(
                                         self,
                                         rf,
-                                        f"""{c.getPath("vuln","vulnDir")}/ftpblah.log""",
-                                    )
-                                if "ssh" in rf:
-                                    removeColor(
-                                        self,
-                                        rf,
-                                        f"""{c.getPath("vuln","vulnDir")}/sshblah.log""",
-                                    )
-                                if "smtp" in rf:
-                                    removeColor(
-                                        self,
-                                        rf,
-                                        f"""{c.getPath("vuln","vulnDir")}/smtpblah.log""",
-                                    )
-                                if "http" in rf:
-                                    removeColor(
-                                        self,
-                                        rf,
-                                        f"""{c.getPath("vuln","vulnDir")}/http-title-blah.log""",
-                                    )
-                                if "https" in rf:
-                                    removeColor(
-                                        self,
-                                        rf,
-                                        f"""{c.getPath("vuln","vulnDir")}/https-title-blah.log""",
-                                    )
-                                if "all-services" in rf:
-                                    removeColor(
-                                        self,
-                                        rf,
-                                        f"""{c.getPath("vuln","vulnDir")}/all-services-blah.log""",
+                                        f"""{c.getPath("vuln","vulnDir")}/doesntmatter.log""",
                                     )
 
     def listFilesProxy(self):
@@ -181,6 +156,12 @@ class Clean:
                                         rf,
                                         f"""{c.getPath("proxy","proxyDns")}/dnsenum.log""",
                                     )
+                                if "drupal" in rf:
+                                    removeColor(
+                                        self,
+                                        rf,
+                                        f"""{c.getPath("proxy","proxyDns")}/drupal.log""",
+                                    )
                                 if "oracle" in rf:
                                     removeColor(
                                         self,
@@ -203,33 +184,9 @@ class Clean:
                                     if int(num_lines_nikto) < 50:
                                         call(f"cat {rf}", shell=True)
                                 if "vulns" in rf:
-                                    if "ftp" in rf:
+                                    if fnmatch(rf, "*.log"):
                                         removeColor(
                                             self,
                                             rf,
-                                            f"""{c.getPath("proxy","proxyVulns")}/ftpblah.log""",
-                                        )
-                                    if "ssh" in rf:
-                                        removeColor(
-                                            self,
-                                            rf,
-                                            f"""{c.getPath("proxy","proxyVulns")}/sshblah.log""",
-                                        )
-                                    if "smtp" in rf:
-                                        removeColor(
-                                            self,
-                                            rf,
-                                            f"""{c.getPath("proxy","proxyVulns")}/smtpblah.log""",
-                                        )
-                                    if "http" in rf:
-                                        removeColor(
-                                            self,
-                                            rf,
-                                            f"""{c.getPath("proxy","proxyVulns")}/http-title-blah.log""",
-                                        )
-                                    if "https" in rf:
-                                        removeColor(
-                                            self,
-                                            rf,
-                                            f"""{c.getPath("proxy","proxyVulns")}/https-title-blah.log""",
+                                            f"""{c.getPath("vuln","vulnDir")}/doesntmatter.log""",
                                         )
