@@ -243,6 +243,7 @@ paths:
     "webSSLDirsearchPT": "$reportDir/proxy/webSSL/dirsearch-127.0.0.1"
     "webSSLDirsearchPTB": "$reportDir/proxy/webSSL/dirsearch-127.0.0.1-big"
     "wpscanSSL": "$reportDir/webSSL/wpscan-$sslPort.log"
+    "wpscanSSLHost": "$reportDir/webSSL/wpscan-$host-$sslPort.log"
     "wpUsers": "$reportDir/webSSL/wp-users.txt"
     "cewlWordlist": "$reportDir/webSSL/cewl-list.txt"
     "wpscanCewlBruteReport": "$reportDir/webSSL/wordpress-cewl-brute.txt"

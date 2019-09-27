@@ -136,6 +136,10 @@ class DomainFinder:
                     for x in allsortedhostnames:
                         if x not in ignore:
                             allsortedhostnameslist.append(x)
+                    for x in allsortedhostnameslist:
+                        ips = re.findall(r"[0-9]+(?:\.[0-9]+){3}", x)
+                        if len(ips) > 0:
+                            allsortedhostnameslist.remove(x)
 
         if len(dnsPort) == 0:
             if len(allsortedhostnameslist) != 0:
