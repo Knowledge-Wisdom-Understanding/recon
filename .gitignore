@@ -41,3 +41,4 @@ utils/command_parser.py
 config/web_cmds.j2
 lib/_wfuzz_ignore_200.py
 wordlists/testFalsePositives.txt
+utils/helper_funcs.py
