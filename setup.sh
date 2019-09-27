@@ -50,6 +50,12 @@ git clone https://github.com/quentinhardy/odat.git
 echo -e "${DOPE} Installing Seclists"
 apt install seclists -y
 
+echo -e "${DOPE} Installing Joomscan"
+apt install joomscan -y
+
+echo -e "${DOPE} Installing droopescan"
+pip install droopescan
+
 echo -e "${DOPE} Installing Nmap Vulners & Vulscan scripts"
 cd /usr/share/nmap/scripts/
 git clone https://github.com/vulnersCom/nmap-vulners.git
