@@ -49,49 +49,49 @@ class Clean:
                         if "eyewitness" not in rf:
                             if "wafw00f" in rf:
                                 removeColor(
-                                    self, rf, f"""{c.getPath("web","webDir")}/wafw00f.txt"""
+                                    self, rf, "/tmp/wafw00f.txt"
                                 )
                             if "whatweb" in rf:
                                 removeColor(
-                                    self, rf, f"""{c.getPath("web","webDir")}/whatweb.txt"""
+                                    self, rf, "/tmp/whatweb.txt"
                                 )
                             if "sslscan" in rf:
                                 removeColor(
                                     self,
                                     rf,
-                                    f"""{c.getPath("webSSL","webSSLDir")}/sslscan.txt""",
+                                    "/tmp/sslscan.txt",
                                 )
                             if "dnsenum" in rf:
                                 removeColor(
-                                    self, rf, f"""{c.getPath("dns","dnsDir")}/dnsenum.log"""
+                                    self, rf, "/tmp/dnsenum.log"
                                 )
                             if "drupal" in rf:
                                 removeColor(
-                                    self, rf, f"""{c.getPath("dns","dnsDir")}/drupal.log"""
+                                    self, rf, "/tmp/drupal.log"
                                 )
                             if "oracle" in rf:
                                 removeColor(
                                     self,
                                     rf,
-                                    f"""{c.getPath("oracle","oracleDir")}/oracle-blah.log""",
+                                    "/tmp/oracle-blah.log",
                                 )
                                 removeColor(
                                     self,
                                     rf,
-                                    f"""{c.getPath("oracle","oracleDir")}/oracle-blah.txt""",
+                                    "/tmp/oracle-blah.txt",
                                 )
                             if "wpscan" in rf:
                                 removeColor(
                                     self,
                                     rf,
-                                    f"""{c.getPath("web","webDir")}/wpscanblah.log""",
+                                    "/tmp/wpscanblah.log",
                                 )
                             if "vulns" in rf:
                                 if fnmatch(rf, "*.log"):
                                     removeColor(
                                         self,
                                         rf,
-                                        f"""{c.getPath("vuln","vulnDir")}/doesntmatter.log""",
+                                        "/tmp/doesntmatter.log",
                                     )
 
     def listFilesProxy(self):
@@ -130,49 +130,49 @@ class Clean:
                                     removeColor(
                                         self,
                                         rf,
-                                        f"""{c.getPath("proxy","proxyWeb")}/wafw00f.txt""",
+                                        "/tmp/wafw00f.txt",
                                     )
                                 if "whatweb" in rf:
                                     removeColor(
                                         self,
                                         rf,
-                                        f"""{c.getPath("proxy","proxyWeb")}/whatweb.txt""",
+                                        "/tmp/whatweb.txt",
                                     )
                                 if "wpscan" in rf:
                                     removeColor(
                                         self,
                                         rf,
-                                        f"""{c.getPath("proxy","proxyWeb")}/wpscanblah.txt""",
+                                        "/tmp/wpscanblah.txt",
                                     )
                                 if "sslscan" in rf:
                                     removeColor(
                                         self,
                                         rf,
-                                        f"""{c.getPath("proxy","proxyWebSSL")}/sslscan.txt""",
+                                        "/tmp/sslscan.txt",
                                     )
                                 if "dnsenum" in rf:
                                     removeColor(
                                         self,
                                         rf,
-                                        f"""{c.getPath("proxy","proxyDns")}/dnsenum.log""",
+                                        "/tmp/dnsenum.log",
                                     )
                                 if "drupal" in rf:
                                     removeColor(
                                         self,
                                         rf,
-                                        f"""{c.getPath("proxy","proxyDns")}/drupal.log""",
+                                        "/tmp/drupal.log",
                                     )
                                 if "oracle" in rf:
                                     removeColor(
                                         self,
                                         rf,
-                                        f"""{c.getPath("proxy","proxyOracle")}/oracle-blah.log""",
+                                        "/tmp/oracle-blah.log",
                                     )
                                 if "oracle" in rf:
                                     removeColor(
                                         self,
                                         rf,
-                                        f"""{c.getPath("proxy","proxyOracle")}/oracl-eblah.txt""",
+                                        "/tmp/oracleblah.txt",
                                     )
                                 if "nikto" in rf:
                                     check_nikto_lines = (
@@ -188,5 +188,5 @@ class Clean:
                                         removeColor(
                                             self,
                                             rf,
-                                            f"""{c.getPath("vuln","vulnDir")}/doesntmatter.log""",
+                                            "/tmp/doesntmatter.log",
                                         )
