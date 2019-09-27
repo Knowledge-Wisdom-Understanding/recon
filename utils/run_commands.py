@@ -49,7 +49,7 @@ class RunCommands:
         """Pool all commands to run from each service class and run them 2 at a time.,"""
         if len(commands) != 0:
             try:
-                color = Fore.GREEN
+                green = Fore.GREEN
                 reset = Fore.RESET
                 with Pool(2, self.worker_init) as p:
                     max_ = len(commands)
@@ -57,7 +57,7 @@ class RunCommands:
                         for i, returncode in enumerate(
                             p.imap_unordered(partial(call, shell=True), commands)
                         ):
-                            pbar.write(f"{color}{commands[i]}{reset}")
+                            pbar.write(f"[{green}+{reset}] {green}{commands[i]}{reset}")
                             pbar.set_description_str(desc=f"{commands[i].split()[:1]}")
                             pbar.update()
                             if returncode != 0:
