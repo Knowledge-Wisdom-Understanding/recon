@@ -127,7 +127,6 @@ class Search:
                         product_cmd2 = c.getCmd("vuln", "searchsploit", strang=lowercase_product, name="all-services")
                         product_cmd3 = f"""echo "{cmd_info} {fw}" >> {c.getPath("vuln","all_vulns")}"""
                         product_cmd4 = f"""searchsploit "{fw}" >> {c.getPath("vuln","all_vulns")}"""
-                        http_cmd2 = c.getCmd("vuln", "searchsploit", strang=fw, name=f"all-services")
                         print(cmd_info, product_cmd2)
                         call(product_cmd, shell=True)
                         call(product_cmd2, shell=True)
