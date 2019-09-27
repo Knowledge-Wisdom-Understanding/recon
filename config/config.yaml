@@ -169,7 +169,7 @@ commands:
     "smbmapNullR": "smbmap -u null -p '' -H $target -R | tee -a $reportDir/smb/smb-scan-$target.log"
     "enum4linux": "enum4linux -av $target | tee -a $reportDir/smb/smb-scan-$target.log"
   smtp:
-    "smtpUserEnum": "smtp-user-enum -M VRFY -U /usr/share/metasploit-framework/djata/wordlists/unix_users.txt -t $target -p $p 2>&1 | tee $reportDir/smtp/smtp-user-enum-$p.log"
+    "smtpUserEnum": "smtp-user-enum -M VRFY -U /usr/share/metasploit-framework/data/wordlists/unix_users.txt -t $target -p $p 2>&1 | tee $reportDir/smtp/smtp-user-enum-$p.log"
   snmp:
     "snmpwalk": "snmpwalk -c public -v2c $target | tee $reportDir/snmp/snmpwalk.log"
     "snmpCheck": "snmp-check -c public -v 1 -d $target | tee $reportDir/snmp/snmpcheck.log"
