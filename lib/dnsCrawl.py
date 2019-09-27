@@ -159,5 +159,5 @@ class sourceCommentChecker:
                     except FileNotFoundError as fnf:
                         print(fnf)
             if os.stat(f"""{c.getPath("web", "sourceComments")}""").st_size != 0:
-                print(f"{cmd_info}{fg.li_red} Found Comments in the Source!{fg.rs} {fg.li_blue}{link}{fg.rs}")
+                print(f"{cmd_info}{fg.li_red} Found Comments in the Source!")
                 print(f"""{cmd_info} Writing Comments to {c.getPath("web","sourceComments")}""")
