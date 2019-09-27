@@ -158,7 +158,7 @@ class EnumWebSSL:
                 whatweb_hostnames = []
                 dir_list = [
                     d
-                    for d in glob.iglob(c.getPath("webSSL", "reportGlobWebSSL"), recursive=True)
+                    for d in glob.iglob(c.getPath("report", "reportGlob"), recursive=True)
                     if os.path.isdir(d)
                 ]
                 for d in dir_list:
@@ -168,14 +168,13 @@ class EnumWebSSL:
                         if os.path.isfile(fname)
                     ]
                     for rf in reportFile_list:
-                        if "nmap" not in rf:
-                            if "whatweb" in rf:
-                                if ssl_port in rf:
-                                    whatweb_files.append(rf)
-                                if len(hostnames) != 0:
-                                    for host in hostnames:
-                                        if host in rf:
-                                            whatweb_hostnames.append(rf)
+                        if "whatweb" in rf:
+                            if str(ssl_port) in rf:
+                                whatweb_files.append(rf)
+                            if len(hostnames) != 0:
+                                for host in hostnames:
+                                    if host in rf:
+                                        whatweb_hostnames.append(host)
                 if len(whatweb_files) != 0:
                     for i in whatweb_files:
                         cms_strings = [
@@ -186,77 +185,19 @@ class EnumWebSSL:
                             "Drupal",
                             "Joomla",
                         ]
-                        with open(i, "r") as wwf:
-                            for word in wwf:
-                                fword = (
-                                    word.replace("[", " ")
-                                    .replace("]", " ")
-                                    .replace(",", " ")
-                                )
-                                for cms in cms_strings:
-                                    if cms in fword:
-                                        if len(whatweb_hostnames) == 0:
-                                            if "WordPress" in cms:
-                                                cms_commands.append(c.getCmd("webSSL", "wpscanSSLTarget", sslPort=ssl_port))
-                                                manual_brute_force_script = f"""
-#!/bin/bash
-
-if [[ -n $(grep -i "User(s) Identified" {c.getPath("webSSL", "wpscanSSL", sslPort=ssl_port)}) ]]; then
-    grep -w -A 100 "User(s)" {c.getPath("webSSL", "wpscanSSL", sslPort=ssl_port)} | grep -w "[+]" | cut -d " " -f 2 | head -n -7 >{c.getPath("webSSL", "wpUsers")}
-    {c.getCmd("webSSL", "cewlSSLTarget", sslPort=ssl_port)}
-    sleep 10
-    echo "Adding John Rules to Cewl Wordlist!"
-    {c.getCmd("webSSL", "johnCewl")}
-    sleep 3
-    # brute force again with wpscan
-    {c.getCmd("webSSL", "wpscanCewlBruteTarget", sslPort=ssl_port)}
-    sleep 1
-    if grep -i "No Valid Passwords Found" {c.getPath("webSSL", "wpscanCewlBruteReport")}; then
-        if [ -s {c.getPath("webSSL", "cewlJohnList")} ]; then
-            {c.getCmd("webSSL", "wpscanJohnCewlBruteTarget", sslPort=ssl_port)}
-        else
-            echo "John wordlist is empty :("
-        fi
-        sleep 1
-        if grep -i "No Valid Passwords Found" {c.getPath("webSSL", "wordpressJohnCewlBrute")}; then
-            {c.getCmd("webSSL", "wpscanFastTrackHost", sslPort=ssl_port)}
-        fi
-    fi
-fi
-                                            """
-                                            try:
-                                                with open(c.getPath("webSSL", "wordpressBruteBashScript"), "w") as wpb:
-                                                    print("Creating wordpress Brute Force Script...")
-                                                    wpb.write(manual_brute_force_script)
-                                                call(f"""chmod +x {c.getPath("webSSL", "wordpressBruteBashScript")}""", shell=True)
-                                            except FileNotFoundError as fnf_error:
-                                                print(fnf_error)
-                                                continue
-                                            if "Drupal" in cms:
-                                                if not os.path.exists(c.getPath("vuln", "vulnDir")):
-                                                    os.makedirs(c.getPath("vuln", "vulnDir"))
-                                                cms_commands.append(c.getCmd("vuln", "searchsploit", strang=str(cms), name="Drupal"))
-                                                cms_commands.append(c.getCmd("webSSL", "droopescanSSLHost", sslPort=ssl_port))
-                                            if "Joomla" in cms:
-                                                if not os.path.exists(c.getPath("vuln", "vulnDir")):
-                                                    os.makedirs(c.getPath("vuln", "vulnDir"))
-                                                cms_commands.append(c.getCmd("vuln", "searchsploit", strang=str(cms), name="Joomla"))
-                                                cms_commands.append(c.getCmd("webSSL", "joomscanTarget", sslPort=ssl_port))
-                                            if "Magento" in cms:
-                                                if not os.path.exists(c.getPath("vuln", "vulnDir")):
-                                                    os.makedirs(c.getPath("vuln", "vulnDir"))
-                                                cms_commands.append(c.getCmd("vuln", "searchsploit", strang=str(cms), name="Magento"))
-                                                cms_commands.append(c.getCmd("webSSL", "magescanTarget", sslPort=ssl_port))
-                                            if "WebDAV" in cms:
-                                                if not os.path.exists(c.getPath("vuln", "vulnDir")):
-                                                    os.makedirs(c.getPath("vuln", "vulnDir"))
-                                                cms_commands.append(c.getCmd("vuln", "searchsploit", strang=str(cms), name="WebDAV"))
-                                                cms_commands.append(c.getCmd("webSSL", "davtestTarget"))
-                                                cms_commands.append(c.getCmd("webSSL", "nmapWebDav", sslPot=ssl_port))
-                                        else:
-                                            for hn in hostnames:
-                                                for whatweb_hn in whatweb_hostnames:
-                                                    if hn in whatweb_hn:
+                        try:
+                            with open(i, "r") as wwf:
+                                for word in wwf:
+                                    fword = (
+                                        word.replace("[", " ")
+                                        .replace("]", " ")
+                                        .replace(",", " ")
+                                    )
+                                    for cms in cms_strings:
+                                        if cms in fword:
+                                            if len(whatweb_hostnames) != 0:
+                                                for hn in whatweb_hostnames:
+                                                    if hn in i:
                                                         if "WordPress" in cms:
                                                             if not os.path.exists(c.getPath("vuln", "vulnDir")):
                                                                 os.makedirs(c.getPath("vuln", "vulnDir"))
@@ -282,6 +223,67 @@ fi
                                                                 os.makedirs(c.getPath("vuln", "vulnDir"))
                                                             cms_commands.append(c.getCmd("vuln", "searchsploit", strang=str(cms), name="WebDAV"))
                                                             cms_commands.append(c.getCmd("webSSL", "davtestHost", host=hn))
+                                            else:
+                                                if "WordPress" in cms:
+                                                    cms_commands.append(c.getCmd("webSSL", "wpscanSSLTarget", sslPort=ssl_port))
+                                                    manual_brute_force_script = f"""
+    #!/bin/bash
+
+    if [[ -n $(grep -i "User(s) Identified" {c.getPath("webSSL", "wpscanSSL", sslPort=ssl_port)}) ]]; then
+        grep -w -A 100 "User(s)" {c.getPath("webSSL", "wpscanSSL", sslPort=ssl_port)} | grep -w "[+]" | cut -d " " -f 2 | head -n -7 >{c.getPath("webSSL", "wpUsers")}
+        {c.getCmd("webSSL", "cewlSSLTarget", sslPort=ssl_port)}
+        sleep 10
+        echo "Adding John Rules to Cewl Wordlist!"
+        {c.getCmd("webSSL", "johnCewl")}
+        sleep 3
+        # brute force again with wpscan
+        {c.getCmd("webSSL", "wpscanCewlBruteTarget", sslPort=ssl_port)}
+        sleep 1
+        if grep -i "No Valid Passwords Found" {c.getPath("webSSL", "wpscanCewlBruteReport")}; then
+            if [ -s {c.getPath("webSSL", "cewlJohnList")} ]; then
+                {c.getCmd("webSSL", "wpscanJohnCewlBruteTarget", sslPort=ssl_port)}
+            else
+                echo "John wordlist is empty :("
+            fi
+            sleep 1
+            if grep -i "No Valid Passwords Found" {c.getPath("webSSL", "wordpressJohnCewlBrute")}; then
+                {c.getCmd("webSSL", "wpscanFastTrackHost", sslPort=ssl_port)}
+            fi
+        fi
+    fi
+                                                """
+                                                    try:
+                                                        with open(c.getPath("webSSL", "wordpressBruteBashScript"), "w") as wpb:
+                                                            print("Creating wordpress Brute Force Script...")
+                                                            wpb.write(manual_brute_force_script)
+                                                        call(f"""chmod +x {c.getPath("webSSL", "wordpressBruteBashScript")}""", shell=True)
+                                                    except FileNotFoundError as fnf_error:
+                                                        print(fnf_error)
+                                                        continue
+                                                if "Drupal" in cms:
+                                                    if not os.path.exists(c.getPath("vuln", "vulnDir")):
+                                                        os.makedirs(c.getPath("vuln", "vulnDir"))
+                                                    cms_commands.append(c.getCmd("vuln", "searchsploit", strang=str(cms), name="Drupal"))
+                                                    cms_commands.append(c.getCmd("webSSL", "droopescanSSLHost", sslPort=ssl_port))
+                                                if "Joomla" in cms:
+                                                    if not os.path.exists(c.getPath("vuln", "vulnDir")):
+                                                        os.makedirs(c.getPath("vuln", "vulnDir"))
+                                                    cms_commands.append(c.getCmd("vuln", "searchsploit", strang=str(cms), name="Joomla"))
+                                                    cms_commands.append(c.getCmd("webSSL", "joomscanTarget", sslPort=ssl_port))
+                                                if "Magento" in cms:
+                                                    if not os.path.exists(c.getPath("vuln", "vulnDir")):
+                                                        os.makedirs(c.getPath("vuln", "vulnDir"))
+                                                    cms_commands.append(c.getCmd("vuln", "searchsploit", strang=str(cms), name="Magento"))
+                                                    cms_commands.append(c.getCmd("webSSL", "magescanTarget", sslPort=ssl_port))
+                                                if "WebDAV" in cms:
+                                                    if not os.path.exists(c.getPath("vuln", "vulnDir")):
+                                                        os.makedirs(c.getPath("vuln", "vulnDir"))
+                                                    cms_commands.append(c.getCmd("vuln", "searchsploit", strang=str(cms), name="WebDAV"))
+                                                    cms_commands.append(c.getCmd("webSSL", "davtestTarget"))
+                                                    cms_commands.append(c.getCmd("webSSL", "nmapWebDav", sslPot=ssl_port))
+                        except FileNotFoundError as fnf:
+                            print(fnf)
+                            continue
 
             sorted_commands = sorted(set(cms_commands))
             commands_to_run = []
