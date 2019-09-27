@@ -84,8 +84,8 @@ class DomainFinder:
         else:
             if not os.path.exists(c.getPath("webSSL", "webSSLDir")):
                 os.makedirs(c.getPath("webSSL", "webSSLDir"))
-            if not os.path.exists(c.getPath("webSSL", "aquatoneDir")):
-                os.makedirs(c.getPath("webSSL", "aquatoneDir"))
+            if not os.path.exists(c.getPath("web", "aquatoneDir")):
+                os.makedirs(c.getPath("web", "aquatoneDir"))
             for sslport in ssl_ports:
                 sslscanCMD = c.getCmd("webSSL", "sslscan", sslport=sslport)
                 print(cmd_info, sslscanCMD)
