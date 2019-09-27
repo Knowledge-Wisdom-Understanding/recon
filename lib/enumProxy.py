@@ -36,7 +36,7 @@ class CheckProxy:
         else:
             c = config_parser.CommandParser(f"{os.getcwd()}/config/config.yaml", self.target)
             duplicate_cmds = []
-            add_line_cmd = f"""sed -e "\$ahttp {self.target} {proxyPorts[0]}" -i /etc/proxychains.conf"""
+            add_line_cmd = rf"""sed -e "\$ahttp {self.target} {proxyPorts[0]}" -i /etc/proxychains.conf"""
             comment_out_line_cmd = (
                 f"""sed -e '/socks5/ s/^#*/#/' -i  /etc/proxychains.conf"""
             )
@@ -50,7 +50,7 @@ class CheckProxy:
                         sorted_tor_matches = sorted(set(tor_match), reverse=True)
                         if "socks5" in sorted_tor_matches:
                             duplicate_cmds.append(comment_out_line_cmd)
-                if not parsed_lines.startswith("#"):
+                if (parsed_lines.startswith("#") or not parsed_lines.startswith('#')):
                     matches = re.findall(f"http {self.target}", parsed_lines)
                     sorted_matches = sorted(set(matches), reverse=True)
                     if f"http {self.target}" not in sorted_matches:
