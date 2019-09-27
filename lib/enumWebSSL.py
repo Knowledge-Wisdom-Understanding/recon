@@ -31,9 +31,6 @@ class EnumWebSSL:
         if len(ssl_ports) == 0:
             pass
         else:
-            green = fg.li_green
-            reset = fg.rs
-            cmd_info = "[" + green + "+" + reset + "]"
             c = config_parser.CommandParser(f"{os.getcwd()}/config/config.yaml", self.target)
             if not os.path.exists(c.getPath("webSSL", "webSSLDir")):
                 os.makedirs(c.getPath("webSSL", "webSSLDir"))
@@ -43,36 +40,22 @@ class EnumWebSSL:
             commands = []
             if len(hostnames) == 0:
                 for sslport in ssl_ports:
-                    commands.append(f"""echo {cmd_info}{green} '{c.getCmd("webSSL", "whatwebSSLTarget", port=sslport)}' {reset}""")
                     commands.append(c.getCmd("webSSL", "whatwebSSLTarget", port=sslport))
-                    commands.append(f"""echo {cmd_info}{green} '{c.getCmd("webSSL","eyewitnessSSLTarget", port=sslport)}' {reset}""")
                     commands.append(c.getCmd("webSSL", "eyewitnessSSLTarget", port=sslport))
-                    commands.append(f"""echo {cmd_info}{green} '{c.getCmd("webSSL","wafw00fSSLTarget", port=sslport)}' {reset}""")
                     commands.append(c.getCmd("webSSL", "wafw00fSSLTarget", port=sslport))
-                    commands.append(f"""echo {cmd_info}{green} '{c.getCmd("webSSL","curlRobotsSSLTarget", port=sslport)}' {reset}""")
                     commands.append(c.getCmd("webSSL", "curlRobotsSSLTarget", port=sslport))
-                    commands.append(f"""echo {cmd_info}{green} '{c.getCmd("webSSL","dirsearchSSLTargetBig", port=sslport)}' {reset}""")
                     commands.append(c.getCmd("webSSL", "dirsearchSSLTargetBig", port=sslport))
-                    commands.append(f"""echo {cmd_info}{green} '{c.getCmd("webSSL","dirsearchSSLTargetDict", port=sslport)}' {reset}""")
                     commands.append(c.getCmd("webSSL", "dirsearchSSLTargetDict", port=sslport))
-                    commands.append(f"""echo {cmd_info}{green} '{c.getCmd("webSSL","niktoSSLTarget", port=sslport)}' {reset}""")
                     commands.append(c.getCmd("webSSL", "niktoSSLTarget", port=sslport))
             else:
                 for sslport in ssl_ports:
                     for host in hostnames:
-                        commands.append(f"""echo {cmd_info}{green} '{c.getCmd("webSSL","whatwebSSLHost",host=host, port=sslport)}' {reset}""")
                         commands.append(c.getCmd("webSSL", "whatwebSSLHost", host=host, port=sslport))
-                        commands.append(f"""echo {cmd_info}{green} '{c.getCmd("webSSL","eyewitnessHost",host=host, port=sslport)}' {reset}""")
                         commands.append(c.getCmd("webSSL", "eyewitnessHost", host=host, port=sslport))
-                        commands.append(f"""echo {cmd_info}{green} '{c.getCmd("webSSL","wafw00fHost",host=host, port=sslport)}' {reset}""")
                         commands.append(c.getCmd("webSSL", "wafw00fHost", host=host, port=sslport))
-                        commands.append(f"""echo {cmd_info}{green} '{c.getCmd("webSSL","curlRobotsHost",host=host, port=sslport)}' {reset}""")
                         commands.append(c.getCmd("webSSL", "curlRobotsHost", host=host, port=sslport))
-                        commands.append(f"""echo {cmd_info}{green} '{c.getCmd("webSSL","dirsearchSSLHostDict",host=host, port=sslport)}' {reset}""")
                         commands.append(c.getCmd("webSSL", "dirsearchSSLHostDict", host=host, port=sslport))
-                        commands.append(f"""echo {cmd_info}{green} '{c.getCmd("webSSL","dirsearchSSLHostBig",host=host, port=sslport)}' {reset}""")
                         commands.append(c.getCmd("webSSL", "dirsearchSSLHostBig", host=host, port=sslport))
-                        commands.append(f"""echo {cmd_info}{green} '{c.getCmd("webSSL","niktoHost",host=host, port=sslport)}' {reset}""")
                         commands.append(c.getCmd("webSSL", "niktoHost", host=host, port=sslport))
 
             self.processes = tuple(commands)
@@ -93,9 +76,6 @@ class EnumWebSSL:
             pass
         else:
             commands = []
-            green = fg.li_green
-            reset = fg.rs
-            cmd_info = "[" + green + "+" + reset + "]"
             c = config_parser.CommandParser(f"{os.getcwd()}/config/config.yaml", self.target)
             if not os.path.exists(c.getPath("webSSL", "webSSLDir")):
                 os.makedirs(c.getPath("webSSL", "webSSLDir"))
@@ -104,44 +84,26 @@ class EnumWebSSL:
             print(fg.li_cyan + "Enumerating HTTPS/SSL Ports, Running the following commands:" + fg.rs)
             if len(hostnames) == 0:
                 for sslport in ssl_ports:
-                    commands.append(f"""echo {cmd_info}{green} '{c.getCmd("webSSL","whatwebSSLTarget",port=sslport)}' {reset}""")
                     commands.append(c.getCmd("webSSL", "whatwebSSLTarget", port=sslport))
-                    commands.append(f"""echo {cmd_info}{green} '{c.getCmd("webSSL","eyewitnessSSLTarget",port=sslport)}' {reset}""")
                     commands.append(c.getCmd("webSSL", "eyewitnessSSLTarget", port=sslport))
-                    commands.append(f"""echo {cmd_info}{green} '{c.getCmd("webSSL","wafw00fSSLTarget",port=sslport)}' {reset}""")
                     commands.append(c.getCmd("webSSL", "wafw00fSSLTarget", port=sslport))
-                    commands.append(f"""echo {cmd_info}{green} '{c.getCmd("webSSL","curlRobotsSSLTarget",port=sslport)}' {reset}""")
                     commands.append(c.getCmd("webSSL", "curlRobotsSSLTarget", port=sslport))
-                    commands.append(f"""echo {cmd_info}{green} '{c.getCmd("webSSL","dirsearchSSLTargetDListMed",port=sslport)}' {reset}""")
                     commands.append(c.getCmd("webSSL", "dirsearchSSLTargetDListMed", port=sslport))
-                    commands.append(f"""echo {cmd_info}{green} '{c.getCmd("webSSL","dirsearchSSLTargetRaftLargeFiles",port=sslport)}' {reset}""")
                     commands.append(c.getCmd("webSSL", "dirsearchSSLTargetRaftLargeFiles", port=sslport))
-                    commands.append(f"""echo {cmd_info}{green} '{c.getCmd("webSSL","dirsearchSSLTargetRaftLargeDirs",port=sslport)}' {reset}""")
                     commands.append(c.getCmd("webSSL", "dirsearchSSLTargetRaftLargeDirs", port=sslport))
-                    commands.append(f"""echo {cmd_info}{green} '{c.getCmd("webSSL","dirsearchSSLTargetForeign",port=sslport)}' {reset}""")
                     commands.append(c.getCmd("webSSL", "dirsearchSSLTargetForeign", port=sslport))
-                    commands.append(f"""echo {cmd_info}{green} '{c.getCmd("webSSL","niktoSSLHost",port=sslport)}' {reset}""")
                     commands.append(c.getCmd("webSSL", "niktoSSLHost", port=sslport))
             else:
                 for sslport in ssl_ports:
                     for hostname in hostnames:
-                        commands.append(f"""echo {cmd_info}{green} '{c.getCmd("webSSL","whatwebSSLHost",host=hostname, port=sslport)}' {reset}""")
                         commands.append(c.getCmd("webSSL", "whatwebSSLHost", host=hostname, port=sslport))
-                        commands.append(f"""echo {cmd_info}{green} '{c.getCmd("webSSL","eyewitnessHost",host=hostname, port=sslport)}' {reset}""")
                         commands.append(c.getCmd("webSSL", "eyewitnessHost", host=hostname, port=sslport))
-                        commands.append(f"""echo {cmd_info}{green} '{c.getCmd("webSSL","wafw00fHost",host=hostname, port=sslport)}' {reset}""")
                         commands.append(c.getCmd("webSSL", "wafw00fHost", host=hostname, port=sslport))
-                        commands.append(f"""echo {cmd_info}{green} '{c.getCmd("webSSL","curlRobotsHost",host=hostname, port=sslport)}' {reset}""")
                         commands.append(c.getCmd("webSSL", "curlRobotsHost", host=hostname, port=sslport))
-                        commands.append(f"""echo {cmd_info}{green} '{c.getCmd("webSSL","dirsearchSSLHostDListMed",host=hostname, port=sslport)}' {reset}""")
                         commands.append(c.getCmd("webSSL", "dirsearchSSLHostDListMed", host=hostname, port=sslport))
-                        commands.append(f"""echo {cmd_info}{green} '{c.getCmd("webSSL","dirsearchSSLHostRaftLargeFiles",host=hostname, port=sslport)}' {reset}""")
                         commands.append(c.getCmd("webSSL", "dirsearchSSLHostRaftLargeFiles", host=hostname, port=sslport))
-                        commands.append(f"""echo {cmd_info}{green} '{c.getCmd("webSSL","dirsearchSSLHostRaftLargeDirs",host=hostname, port=sslport)}' {reset}""")
                         commands.append(c.getCmd("webSSL", "dirsearchSSLHostRaftLargeDirs", host=hostname, port=sslport))
-                        commands.append(f"""echo {cmd_info}{green} '{c.getCmd("webSSL","dirsearchSSLHostForeign",host=hostname, port=sslport)}' {reset}""")
                         commands.append(c.getCmd("webSSL", "dirsearchSSLHostForeign", host=hostname, port=sslport))
-                        commands.append(f"""echo {cmd_info}{green} '{c.getCmd("webSSL","niktoSSLHost",host=hostname, port=sslport)}' {reset}""")
                         commands.append(c.getCmd("webSSL", "niktoSSLHost", host=hostname, port=sslport))
 
             self.processes = tuple(commands)
@@ -158,9 +120,6 @@ class EnumWebSSL:
         if len(proxy_ssl_ports) == 0:
             pass
         else:
-            green = fg.li_green
-            reset = fg.rs
-            cmd_info = "[" + green + "+" + reset + "]"
             c = config_parser.CommandParser(f"{os.getcwd()}/config/config.yaml", self.target)
             if not os.path.exists(c.getPath("proxy", "proxyDir")):
                 os.makedirs(c.getPath("proxy", "proxyDir"))
@@ -170,13 +129,9 @@ class EnumWebSSL:
             for proxy in proxy_ports:
                 print(f"""{fg.li_cyan} Enumerating HTTPS Ports Through {proxy}, Running the following commands: {fg.rs}""")
                 for proxy_ssl_port in proxy_ssl_ports:
-                    proxy_commands.append(f"""echo {cmd_info}{green} '{c.getCmd("proxySSL", "whatwebSSLProxy", proxy=proxy, proxySSLPort=proxy_ssl_port)}' {reset}""")
                     proxy_commands.append(c.getCmd("proxySSL", "whatwebSSLProxy", proxy=proxy, proxySSLPort=proxy_ssl_port))
-                    proxy_commands.append(f"""echo {cmd_info}{green} '{c.getCmd("proxySSL", "dirsearchProxySSLDict", proxySSLport=proxy_ports, proxy=proxy_ssl_port)}' {reset}""")
                     proxy_commands.append(c.getCmd("proxySSL", "dirsearchProxySSLDict", proxySslPort=proxy_ports, proxy=proxy_ssl_port))
-                    proxy_commands.append(f"""echo {cmd_info}{green} '{c.getCmd("proxySSL", "dirsearchProxySSLBig", proxySSLPort=proxy_ports, proxy=proxy_ssl_port)}' {reset}""")
                     proxy_commands.append(c.getCmd("proxySSL", "dirsearchProxySSLBig", proxySSLPort=proxy_ports, proxy=proxy_ssl_port))
-                    proxy_commands.append(f"""echo {cmd_info}{green} '{c.getCmd("proxySSL", "niktoProxySSL", proxySSLPort=proxy, proxy=proxy_ssl_port)}' {reset}""")
                     proxy_commands.append(c.getCmd("proxySSL", "niktoProxySSL", proxySSLPort=proxy, proxy=proxy_ssl_port))
 
             self.proxy_processes = tuple(proxy_commands)
@@ -278,15 +233,23 @@ fi
                                                 print(fnf_error)
                                                 continue
                                             if "Drupal" in cms:
+                                                if not os.path.exists(c.getPath("vuln", "vulnDir")):
+                                                    os.makedirs(c.getPath("vuln", "vulnDir"))
                                                 cms_commands.append(c.getCmd("vuln", "searchsploit", strang=str(cms), name="Drupal"))
                                                 cms_commands.append(c.getCmd("webSSL", "droopescanSSLHost", sslPort=ssl_port))
                                             if "Joomla" in cms:
+                                                if not os.path.exists(c.getPath("vuln", "vulnDir")):
+                                                    os.makedirs(c.getPath("vuln", "vulnDir"))
                                                 cms_commands.append(c.getCmd("vuln", "searchsploit", strang=str(cms), name="Joomla"))
                                                 cms_commands.append(c.getCmd("webSSL", "joomscanTarget", sslPort=ssl_port))
                                             if "Magento" in cms:
+                                                if not os.path.exists(c.getPath("vuln", "vulnDir")):
+                                                    os.makedirs(c.getPath("vuln", "vulnDir"))
                                                 cms_commands.append(c.getCmd("vuln", "searchsploit", strang=str(cms), name="Magento"))
                                                 cms_commands.append(c.getCmd("webSSL", "magescanTarget", sslPort=ssl_port))
                                             if "WebDAV" in cms:
+                                                if not os.path.exists(c.getPath("vuln", "vulnDir")):
+                                                    os.makedirs(c.getPath("vuln", "vulnDir"))
                                                 cms_commands.append(c.getCmd("vuln", "searchsploit", strang=str(cms), name="WebDAV"))
                                                 cms_commands.append(c.getCmd("webSSL", "davtestTarget"))
                                                 cms_commands.append(c.getCmd("webSSL", "nmapWebDav", sslPot=ssl_port))
@@ -295,18 +258,28 @@ fi
                                                 for whatweb_hn in whatweb_hostnames:
                                                     if hn in whatweb_hn:
                                                         if "WordPress" in cms:
+                                                            if not os.path.exists(c.getPath("vuln", "vulnDir")):
+                                                                os.makedirs(c.getPath("vuln", "vulnDir"))
                                                             cms_commands.append(c.getCmd("vuln", "searchsploit", strang=str(cms), name="WordPress"))
                                                             cms_commands.append(c.getCmd("webSSL", "wpscanSSLHost", host=hn, sslPort=ssl_port))
                                                         if "Drupal" in cms:
+                                                            if not os.path.exists(c.getPath("vuln", "vulnDir")):
+                                                                os.makedirs(c.getPath("vuln", "vulnDir"))
                                                             cms_commands.append(c.getCmd("vuln", "searchsploit", strang=str(cms), name="Drupal"))
                                                             cms_commands.append(c.getCmd("webSSL", "droopescanSSLHost", host=hn, sslPort=ssl_port))
                                                         if "Joomla" in cms:
+                                                            if not os.path.exists(c.getPath("vuln", "vulnDir")):
+                                                                os.makedirs(c.getPath("vuln", "vulnDir"))
                                                             cms_commands.append(c.getCmd("vuln", "searchsploit", strang=str(cms), name="Joomla"))
                                                             cms_commands.append(c.getCmd("webSSL", "joomscanHost", host=hn, sslPort=ssl_port))
                                                         if "Magento" in cms:
+                                                            if not os.path.exists(c.getPath("vuln", "vulnDir")):
+                                                                os.makedirs(c.getPath("vuln", "vulnDir"))
                                                             cms_commands.append(c.getCmd("vuln", "searchsploit", strang=str(cms), name="Magento"))
                                                             cms_commands.append(c.getCmd("webSSL", "magescanHost", host=hn, sslPort=ssl_port))
                                                         if "WebDAV" in cms:
+                                                            if not os.path.exists(c.getPath("vuln", "vulnDir")):
+                                                                os.makedirs(c.getPath("vuln", "vulnDir"))
                                                             cms_commands.append(c.getCmd("vuln", "searchsploit", strang=str(cms), name="WebDAV"))
                                                             cms_commands.append(c.getCmd("webSSL", "davtestHost", host=hn))
 

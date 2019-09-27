@@ -36,17 +36,12 @@ class LdapEnum:
         if len(ldap_ports) == 0:
             pass
         else:
-            green = fg.li_green
-            reset = fg.rs
-            cmd_info = "[" + green + "+" + reset + "]"
             c = config_parser.CommandParser(f"{os.getcwd()}/config/config.yaml", self.target)
             if not os.path.exists(c.getPath("ldap", "ldapDir")):
                 os.makedirs(c.getPath("ldap", "ldapDir"))
             print(fg.cyan + "Enumerating LDAP: Lightweight Directory Access Protocol, Running the following commands:" + fg.rs)
             string_ldap_ports = ",".join(map(str, ldap_ports))
             commands = []
-            commands.append(f"""echo {cmd_info}{green} '{c.getCmd("ldap", "nmapLdap", ldapPorts=string_ldap_ports)}' {reset}""")
             commands.append(c.getCmd("ldap", "nmapLdap", ldapPorts=string_ldap_ports))
-            commands.append(f"""echo {cmd_info}{green} '{c.getCmd("ldap", "enum4linuxLdap")}' {reset}""")
             commands.append(c.getCmd("ldap", "enum4linuxLdap"))
             self.processes = tuple(commands)

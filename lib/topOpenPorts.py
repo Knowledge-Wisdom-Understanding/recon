@@ -39,9 +39,6 @@ class TopOpenPorts:
     def topUdpAllTcp(self):
         """topUdpAllTcp will run a full nmap tcp port scan, a top udp ports scan, and a nmap vulners script scan on found open
         ports from the initial nmap scan."""
-        green = fg.li_green
-        reset = fg.rs
-        cmd_info = "[" + green + "+" + reset + "]"
         c = config_parser.CommandParser(f"{os.getcwd()}/config/config.yaml", self.target)
         np = nmapParser.NmapParserFunk(self.target)
         np.openPorts()
@@ -49,8 +46,6 @@ class TopOpenPorts:
         topUDP = hpl.topUDP
         topUdpPortsString = ",".join(map(str, topUDP))
         commands = []
-        commands.append(f"""echo {cmd_info}{green} '{c.getCmd("nmap", "nmapFullTcpScan")}' {reset}""")
         commands.append(c.getCmd("nmap", "nmapFullTcpScan"))
-        commands.append(f"""echo {cmd_info}{green} '{c.getCmd("nmap", "nmapTopUdpScan", topUdpPorts=topUdpPortsString)}' {reset}""")
         commands.append(c.getCmd("nmap", "nmapTopUdpScan", topUdpPorts=topUdpPortsString))
         self.processes = tuple(commands)

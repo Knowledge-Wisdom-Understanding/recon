@@ -4,6 +4,7 @@ from subprocess import call
 from tqdm import tqdm
 from multiprocessing import Pool
 from functools import partial
+from colorama import Fore
 from sty import fg, rs
 from lib import topOpenPorts
 from lib import nmapOpenPorts
@@ -18,6 +19,7 @@ from lib import ldapEnum
 from lib import oracleEnum
 from lib import searchsploits
 from lib import enumProxyCMS
+from lib import dnsCrawl
 from utils import remove_color
 from utils import peaceout_banner
 from utils import helper_lists
@@ -47,32 +49,16 @@ class RunCommands:
         """Pool all commands to run from each service class and run them 2 at a time.,"""
         if len(commands) != 0:
             try:
+                color = Fore.GREEN
+                reset = Fore.RESET
                 with Pool(2, self.worker_init) as p:
                     max_ = len(commands)
                     with tqdm(total=max_) as pbar:
                         for i, returncode in enumerate(
                             p.imap_unordered(partial(call, shell=True), commands)
                         ):
-                            pbar.update()
-                            if returncode != 0:
-                                print(f"{i} command failed: {returncode}")
-            except KeyboardInterrupt:
-                p.close()
-                p.join()
-
-    def infoMpRun(self, commands):
-        """Pool all commmands to run from certain services and print the commands before running the Pool commands."""
-        cmd_info = "[" + fg.green + "+" + fg.rs + "]"
-        if len(commands) != 0:
-            for command in commands:
-                print(cmd_info, command)
-            try:
-                with Pool(2, self.worker_init) as p:
-                    max_ = len(commands)
-                    with tqdm(total=max_) as pbar:
-                        for i, returncode in enumerate(
-                            p.imap_unordered(partial(call, shell=True), commands)
-                        ):
+                            pbar.write(f"{color}{commands[i]}{reset}")
+                            pbar.set_description_str(desc=f"{commands[i].split()[:1]}")
                             pbar.update()
                             if returncode != 0:
                                 print(f"{i} command failed: {returncode}")
@@ -130,7 +116,7 @@ class RunCommands:
         nmapRemaing = nmapOpenPorts.NmapOpenPorts(self.target)
         nmapRemaing.Scan()
         remaining_enum_cmds = nmapRemaing.processes
-        self.infoMpRun(remaining_enum_cmds)
+        self.mpRun(remaining_enum_cmds)
 
     def getOpenPorts(self):
         """Helper function to call the lib/NmapParserFunk Class."""
@@ -165,14 +151,14 @@ class RunCommands:
         cm = enumWeb.EnumWeb(self.target)
         cm.CMS()
         cms_commands = cm.cms_processes
-        self.infoMpRun(cms_commands)
+        self.mpRun(cms_commands)
 
     def cmsEnumSSL(self):
         """Helper funciton to call the CMS enumeration HTTPS logic."""
         cms = enumWebSSL.EnumWebSSL(self.target)
         cms.sslEnumCMS()
         cms_ssl_commands = cms.cms_processes
-        self.infoMpRun(cms_ssl_commands)
+        self.mpRun(cms_ssl_commands)
 
     def proxyEnum(self):
         """Helper funciton to call The Check Proxy and Enumerate Proxy Class's / Functions."""
@@ -182,14 +168,14 @@ class RunCommands:
         pr.openProxyPorts()
         pscan.Enum()
         proxy_commands = pscan.all_processes
-        self.infoMpRun(proxy_commands)
+        self.mpRun(proxy_commands)
 
     def proxyEnumCMS(self):
         """Helper funciton to call The Check Proxy and Enumerate Proxy CMS Class"""
         pcms = enumProxyCMS.EnumProxyCMS(self.target)
         pcms.proxyCMS()
         proxy_cms_commands = pcms.cms_processes
-        self.infoMpRun(proxy_cms_commands)
+        self.mpRun(proxy_cms_commands)
 
     def enumLdap(self):
         """Helper Function to Call Ldap Enumeration."""
@@ -233,3 +219,7 @@ class RunCommands:
         nocolor = remove_color.Clean(self.target)
         nocolor.listfiles()
         nocolor.listFilesProxy()
+
+    def checkSource(self):
+        sc = dnsCrawl.sourceCommentChecker(self.target)
+        sc.extract_source_comments()

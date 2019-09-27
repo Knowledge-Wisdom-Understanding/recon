@@ -7026,6 +7026,7 @@ yonetim
 yonetim.html
 yonetim.php
 yum.log
+zabbix
 zabbix/
 zebra.conf
 zehir.php

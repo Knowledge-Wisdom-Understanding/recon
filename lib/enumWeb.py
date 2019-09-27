@@ -25,9 +25,6 @@ class EnumWeb:
     def Scan(self):
         """Enumerate Web Server ports based on nmaps output. This function will run the following tools;
         WhatWeb, WafW00f, Dirsearch, EyeWitness, Nikto, and curl robots.txt"""
-        green = fg.li_green
-        reset = fg.rs
-        cmd_info = "[" + green + "+" + reset + "]"
         np = nmapParser.NmapParserFunk(self.target)
         np.openPorts()
         http_ports = np.http_ports
@@ -46,8 +43,6 @@ class EnumWeb:
             dc = dnsCrawl.checkSource(self.target)
             dc.getLinks()
             htb_source_domains = dc.htb_source_domains
-            sc = dnsCrawl.sourceCommentChecker(self.target)
-            sc.extract_source_comments()
             commands = []
             another_array_of_hostnames = []
             if len(htb_source_domains) != 0:
@@ -63,38 +58,24 @@ class EnumWeb:
                         if not os.path.exists(c.getPath("web", "eyewitnessDirHost", host=hostname, port=port)):
                             os.makedirs(c.getPath("web", "eyewitnessDirHost", host=hostname, port=port))
 
-                        commands.append(f"""echo {cmd_info}{green} '{c.getCmd("web","whatwebHttpHost",host=hostname, port=port)}' {reset}""")
                         commands.append(c.getCmd("web", "whatwebHttpHost", host=hostname, port=port))
-                        commands.append(f"""echo {cmd_info}{green} '{c.getCmd("web","eyewitnessHost",host=hostname, port=port)}' {reset}""")
                         commands.append(c.getCmd("web", "eyewitnessHost", host=hostname, port=port))
-                        commands.append(f"""echo {cmd_info}{green} '{c.getCmd("web","wafw00fHost",host=hostname, port=port)}' {reset}""")
                         commands.append(c.getCmd("web", "wafw00fHost", host=hostname, port=port))
-                        commands.append(f"""echo {cmd_info}{green} '{c.getCmd("web","curlRobotsHost",host=hostname, port=port)}' {reset}""")
                         commands.append(c.getCmd("web", "curlRobotsHost", host=hostname, port=port))
-                        commands.append(f"""echo {cmd_info}{green} '{c.getCmd("web","dirsearchHttpHostDict",host=hostname, port=port)}' {reset}""")
                         commands.append(c.getCmd("web", "dirsearchHttpHostDict", host=hostname, port=port))
-                        commands.append(f"""echo {cmd_info}{green} '{c.getCmd("web","dirsearchHttpHostBig",host=hostname, port=port)}' {reset}""")
                         commands.append(c.getCmd("web", "dirsearchHttpHostBig", host=hostname, port=port))
-                        commands.append(f"""echo {cmd_info}{green} '{c.getCmd("web","niktoHost",host=hostname, port=port)}' {reset}""")
                         commands.append(c.getCmd("web", "niktoHost", host=hostname, port=port))
             else:
                 for port in http_ports:
                     if not os.path.exists(c.getPath("web", "eyewitnessDirTarget", port=port)):
                         os.makedirs(c.getPath("web", "eyewitnessDirTarget", port=port))
 
-                    commands.append(f"""echo {cmd_info}{green} '{c.getCmd("web", "whatwebHttpTarget", port=port)}' {reset}""")
                     commands.append(c.getCmd("web", "whatwebHttpTarget", port=port))
-                    commands.append(f"""echo {cmd_info}{green} '{c.getCmd("web", "eyewitnessTarget", port=port)}' {reset}""")
                     commands.append(c.getCmd("web", "eyewitnessTarget", port=port))
-                    commands.append(f"""echo {cmd_info}{green} '{c.getCmd("web", "wafw00fTarget", port=port)}' {reset}""")
                     commands.append(c.getCmd("web", "wafw00fTarget", port=port))
-                    commands.append(f"""echo {cmd_info}{green} '{c.getCmd("web", "curlRobotsTarget", port=port)}' {reset}""")
                     commands.append(c.getCmd("web", "curlRobotsTarget", port=port))
-                    commands.append(f"""echo {cmd_info}{green} '{c.getCmd("web", "dirsearchHttpTargetBig", port=port)}' {reset}""")
                     commands.append(c.getCmd("web", "dirsearchHttpTargetBig", port=port))
-                    commands.append(f"""echo {cmd_info}{green} '{c.getCmd("web", "dirsearchHttpTargetDict", port=port)}' {reset}""")
                     commands.append(c.getCmd("web", "dirsearchHttpTargetDict", port=port))
-                    commands.append(f"""echo {cmd_info}{green} '{c.getCmd("web", "niktoTarget", port=port)}' {reset}""")
                     commands.append(c.getCmd("web", "niktoTarget", port=port))
 
             # sorted_cmds = sorted(set(commands), reverse=True)
@@ -116,9 +97,7 @@ class EnumWeb:
         if len(http_ports) == 0:
             pass
         else:
-            green = fg.li_green
             reset = fg.rs
-            cmd_info = "[" + green + "+" + reset + "]"
             print(f"""{fg.li_cyan}Enumerating HTTP Ports, Running the following commands: {reset}""")
             c = config_parser.CommandParser(f"{os.getcwd()}/config/config.yaml", self.target)
             commands = []
@@ -133,23 +112,14 @@ class EnumWeb:
                         if not os.path.exists(c.getPath("web", "eyewitnessDirHost", host=hostname, port=port)):
                             os.makedirs(c.getPath("web", "eyewitnessDirHost", host=hostname, port=port))
 
-                        commands.append(f"""echo {cmd_info}{green} '{c.getCmd("web","whatwebHttpHost",host=hostname, port=port)}' {reset}""")
                         commands.append(c.getCmd("web", "whatwebHttpHost", host=hostname, port=port))
-                        commands.append(f"""echo {cmd_info}{green} '{c.getCmd("web","eyewitnessHost",host=hostname, port=port)}' {reset}""")
                         commands.append(c.getCmd("web", "eyewitnessHost", host=hostname, port=port))
-                        commands.append(f"""echo {cmd_info}{green} '{c.getCmd("web","wafw00fHost",host=hostname, port=port)}' {reset}""")
                         commands.append(c.getCmd("web", "wafw00fHost", host=hostname, port=port))
-                        commands.append(f"""echo {cmd_info}{green} '{c.getCmd("web","curlRobotsHost",host=hostname, port=port)}' {reset}""")
                         commands.append(c.getCmd("web", "curlRobotsHost", host=hostname, port=port))
-                        commands.append(f"""echo {cmd_info}{green} '{c.getCmd("web","dirsearchHttpHostDListMed",host=hostname, port=port)}' {reset}""")
                         commands.append(c.getCmd("web", "dirsearchHttpHostDListMed", host=hostname, port=port))
-                        commands.append(f"""echo {cmd_info}{green} '{c.getCmd("web","dirsearchHttpHostRaftLargeFiles",host=hostname, port=port)}' {reset}""")
                         commands.append(c.getCmd("web", "dirsearchHttpHostRaftLargeFiles", host=hostname, port=port))
-                        commands.append(f"""echo {cmd_info}{green} '{c.getCmd("web","dirsearchHttpHostRaftLargeDirs",host=hostname, port=port)}' {reset}""")
                         commands.append(c.getCmd("web", "dirsearchHttpHostRaftLargeDirs", host=hostname, port=port))
-                        commands.append(f"""echo {cmd_info}{green} '{c.getCmd("web","dirsearchHttpHostForeign",host=hostname, port=port)}' {reset}""")
                         commands.append(c.getCmd("web", "dirsearchHttpHostForeign", host=hostname, port=port))
-                        commands.append(f"""echo {cmd_info}{green} '{c.getCmd("web","niktoHost",host=hostname, port=port)}' {reset}""")
                         commands.append(c.getCmd("web", "niktoHost", host=hostname, port=port))
 
             else:
@@ -157,23 +127,14 @@ class EnumWeb:
                     if not os.path.exists(c.getPath("web", "eyewitnessDirTarget", port=port)):
                         os.makedirs(c.getPath("web", "eyewitnessDirTarget", port=port))
 
-                    commands.append(f"""echo {cmd_info}{green} '{c.getCmd("web","whatwebHttpTarget",port=port)}' {reset}""")
                     commands.append(c.getCmd("web", "whatwebHttpTarget", port=port))
-                    commands.append(f"""echo {cmd_info}{green} '{c.getCmd("web","eyewitnessTarget",port=port)}' {reset}""")
                     commands.append(c.getCmd("web", "eyewitnessTarget", port=port))
-                    commands.append(f"""echo {cmd_info}{green} '{c.getCmd("web","wafw00fTarget",port=port)}' {reset}""")
                     commands.append(c.getCmd("web", "wafw00fTarget", port=port))
-                    commands.append(f"""echo {cmd_info}{green} '{c.getCmd("web","curlRobotsTarget",port=port)}' {reset}""")
                     commands.append(c.getCmd("web", "curlRobotsTarget", port=port))
-                    commands.append(f"""echo {cmd_info}{green} '{c.getCmd("web","dirsearchHttpTargetDListMed",port=port)}' {reset}""")
                     commands.append(c.getCmd("web", "dirsearchHttpTargetDListMed", port=port))
-                    commands.append(f"""echo {cmd_info}{green} '{c.getCmd("web","dirsearchHttpTargetRaftLargeFiles",port=port)}' {reset}""")
                     commands.append(c.getCmd("web", "dirsearchHttpTargetRaftLargeFiles", port=port))
-                    commands.append(f"""echo {cmd_info}{green} '{c.getCmd("web","dirsearchHttpTargetRaftLargeDirs",port=port)}' {reset}""")
                     commands.append(c.getCmd("web", "dirsearchHttpTargetRaftLargeDirs", port=port))
-                    commands.append(f"""echo {cmd_info}{green} '{c.getCmd("web","dirsearchHttpTargetForeign",port=port)}' {reset}""")
                     commands.append(c.getCmd("web", "dirsearchHttpTargetForeign", port=port))
-                    commands.append(f"""echo {cmd_info}{green} '{c.getCmd("web","niktoHost",port=port)}' {reset}""")
                     commands.append(c.getCmd("web", "niktoHost", port=port))
 
             self.processes = tuple(commands)
@@ -268,21 +229,31 @@ class EnumWeb:
                                                     print(fnf_error)
 
                                             if "Drupal" in cms:
+                                                if not os.path.exists(c.getPath("vuln", "vulnDir")):
+                                                    os.makedirs(c.getPath("vuln", "vulnDir"))
                                                 cms_commands.append(c.getCmd("vuln", "searchsploit", strang=str(cms), name="Drupal"))
                                                 cms_commands.append(c.getCmd("web", "droopescan", httpPort=http_port))
                                             if "Joomla" in cms:
+                                                if not os.path.exists(c.getPath("vuln", "vulnDir")):
+                                                    os.makedirs(c.getPath("vuln", "vulnDir"))
                                                 cms_commands.append(c.getCmd("vuln", "searchsploit", strang=str(cms), name="Joomla"))
                                                 cms_commands.append(c.getCmd("web", "joomscan", httpPort=http_port))
                                             if "Magento" in cms:
+                                                if not os.path.exists(c.getPath("vuln", "vulnDir")):
+                                                    os.makedirs(c.getPath("vuln", "vulnDir"))
                                                 cms_commands.append(c.getCmd("vuln", "searchsploit", strang=str(cms), name="Magento"))
                                                 cms_commands.append(c.getCmd("web", "magescan", httpPort=http_port))
                                             if "WebDAV" in cms or ("Microsoft-IIS 6.0" in cms):
+                                                if not os.path.exists(c.getPath("vuln", "vulnDir")):
+                                                    os.makedirs(c.getPath("vuln", "vulnDir"))
                                                 cms_commands.append(c.getCmd("vuln", "searchsploit", strang=str(cms), name="WebDAV"))
                                                 webdav_cmd = c.getCmd("web", "davtest")
                                                 webdav_cmd2 = c.getCmd("web", "webDavNmap", httpPort=http_port)
                                                 cms_commands.append(webdav_cmd)
                                                 cms_commands.append(webdav_cmd2)
                                             if "tomcat" in cms:
+                                                if not os.path.exists(c.getPath("vuln", "vulnDir")):
+                                                    os.makedirs(c.getPath("vuln", "vulnDir"))
                                                 cms_commands.append(c.getCmd("vuln", "searchsploit", strang=str(cms), name="tomcat"))
                                                 cms_commands.append(c.getCmd("web", "tomcatHydra", httpPort=http_port))
 
@@ -305,9 +276,6 @@ class EnumWeb:
         if len(proxy_http_ports) == 0:
             pass
         else:
-            green = fg.li_green
-            reset = fg.rs
-            cmd_info = "[" + green + "+" + reset + "]"
             c = config_parser.CommandParser(f"{os.getcwd()}/config/config.yaml", self.target)
             if not os.path.exists(c.getPath("proxy", "proxyDir")):
                 os.makedirs(c.getPath("proxy", "proxyDir"))
@@ -322,13 +290,9 @@ class EnumWeb:
                 proxy_commands.append(c.getCmd("proxy", "whatwebProxyServer", proxy=proxy[0]))
                 if len(proxy_http_ports) != 0:
                     for proxy_http_port in proxy_http_ports:
-                        proxy_commands.append(f"""echo {cmd_info}{green} '{c.getCmd("proxy", "whatwebProxyHttpPorts", proxy=proxy[0], httpProxy=proxy_http_port)}' {reset}""")
                         proxy_commands.append(c.getCmd("proxy", "whatwebProxyHttpPorts", proxy=proxy[0], httpProxy=proxy_http_port))
-                        proxy_commands.append(f"""echo {cmd_info}{green} '{c.getCmd("proxy", "dirsearchHttpProxyPortsDict", proxy=proxy[0], httpProxy=proxy_http_port)}' {reset}""")
                         proxy_commands.append(c.getCmd("proxy", "dirsearchHttpProxyPortsDict", proxy=proxy[0], httpProxy=proxy_http_port))
-                        proxy_commands.append(f"""echo {cmd_info}{green} '{c.getCmd("proxy", "dirsearchHttpProxyPortsBig", proxy=proxy[0], httpProxy=proxy_http_port)}' {reset}""")
                         proxy_commands.append(c.getCmd("proxy", "dirsearchHttpProxyPortsBig", proxy=proxy[0], httpProxy=proxy_http_port))
-                        proxy_commands.append(f"""echo {cmd_info}{green} '{c.getCmd("proxy", "niktoProxyHttpPort", proxy=proxy[0], httpProxy=proxy_http_port)}' {reset}""")
                         proxy_commands.append(c.getCmd("proxy", "niktoProxyHttpPort", proxy=proxy[0], httpProxy=proxy_http_port))
 
             self.proxy_processes = proxy_commands

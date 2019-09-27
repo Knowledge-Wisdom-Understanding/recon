@@ -212,6 +212,7 @@ def main():
         rc.sortFoundProxyUrls()
         rc.proxyEnumCMS()
         rc.aquatone()
+        rc.checkSource()
         rc.enumSMB()
         rc.enumLdap()
         rc.removeColor()
@@ -250,6 +251,7 @@ def main():
                     rc.sortFoundProxyUrls()
                     rc.proxyEnumCMS()
                     rc.aquatone()
+                    rc.checkSource()
                     rc.enumSMB()
                     rc.enumLdap()
                     rc.removeColor()
@@ -285,6 +287,7 @@ def main():
             rc.cmsEnumSSL()
             rc.removeColor()
             rc.aquatone()
+            rc.checkSource()
             rc.peace()
             check_timer()
         else:
@@ -297,6 +300,7 @@ def main():
             rc.cmsEnumSSL()
             rc.removeColor()
             rc.aquatone()
+            rc.checkSource()
             rc.peace()
             check_timer()
 

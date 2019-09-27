@@ -40,26 +40,16 @@ class OracleEnum:
             pass
         else:
             c = config_parser.CommandParser(f"{os.getcwd()}/config/config.yaml", self.target)
-            green = fg.li_green
-            reset = fg.rs
-            cmd_info = "[" + green + "+" + reset + "]"
             if not os.path.exists(c.getPath("oracle", "oracleDir")):
                 os.makedirs(c.getPath("oracle", "oracleDir"))
             print(fg.cyan + "Enumerating ORACLE, Running the following commands:" + fg.rs)
             # string_oracle_ports = ",".join(map(str, oracle_tns_ports))
             commands = []
-            commands.append(f"""echo {cmd_info}{green} '{c.getCmd("oracle", "nmapOracle")}' {reset}""")
             commands.append(c.getCmd("oracle", "nmapOracle"))
-            commands.append(f"""echo {cmd_info}{green} '{c.getCmd("oracle", "tnscmd10g", mode="ping")}' {reset}""")
             commands.append(c.getCmd("oracle", "tnscmd10g", mode="ping"))
-            commands.append(f"""echo {cmd_info}{green} '{c.getCmd("oracle", "tnscmd10g", mode="version")}' {reset}""")
             commands.append(c.getCmd("oracle", "tnscmd10g", mode="version"))
-            commands.append(f"""echo {cmd_info}{green} '{c.getCmd("oracle", "oscanner")}' {reset}""")
             commands.append(c.getCmd("oracle", "oscanner"))
-            commands.append(f"""echo {cmd_info}{green} '{c.getCmd("oracle", "odatTNS", mode="ping")}' {reset}""")
             commands.append(c.getCmd("oracle", "odatTNS", mode="ping"))
-            commands.append(f"""echo {cmd_info}{green} '{c.getCmd("oracle", "odatTNS", mode="version")}' {reset}""")
             commands.append(c.getCmd("oracle", "odatTNS", mode="version"))
-            commands.append(f"""echo {cmd_info} {green} {c.getCmd("oracle", "odatTNS", mode="status")}' {reset}""")
             commands.append(c.getCmd("oracle", "odatTNS", mode="status"))
             self.processes = tuple(commands)

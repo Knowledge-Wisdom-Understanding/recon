@@ -151,12 +151,13 @@ class sourceCommentChecker:
                 comments = soup.find_all(string=lambda text: isinstance(text, Comment))
                 comments_arr = [c.extract() for c in comments]
                 if len(comments_arr) != 0:
-                    print(f"{cmd_info}{fg.li_red} Found Comments in the Source!{fg.rs} {fg.li_blue}{link}{fg.rs}")
                     try:
                         with open(c.getPath("web", "sourceComments"), "a+") as com:
-                            for c in comments_arr:
-                                com_str = c.rstrip("\n")
+                            for cm in comments_arr:
+                                com_str = cm.rstrip("\n")
                                 com.write(f"{com_str}\n")
                     except FileNotFoundError as fnf:
                         print(fnf)
-            print(f"""{cmd_info} Writing Comments to {c.getPath("web","sourceComments")}""")
+            if os.stat(f"""{c.getPath("web", "sourceComments")}""").st_size != 0:
+                print(f"{cmd_info}{fg.li_red} Found Comments in the Source!{fg.rs} {fg.li_blue}{link}{fg.rs}")
+                print(f"""{cmd_info} Writing Comments to {c.getPath("web","sourceComments")}""")
