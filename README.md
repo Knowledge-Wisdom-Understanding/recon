@@ -1,15 +1,15 @@
-# AUTO-RECON
+# O.G. AUTO-RECON
 
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/fa8f5aab4e434f848e5b7f27bb9eb816)](https://app.codacy.com/app/Knowledge-Wisdom-Understanding/recon?utm_source=github.com&utm_medium=referral&utm_content=Knowledge-Wisdom-Understanding/recon&utm_campaign=Badge_Grade_Dashboard)
 [![HitCount](http://hits.dwyl.io/Knowledge-Wisdom-Understanding/https://githubcom/Knowledge-Wisdom-Understanding/recon.svg)](http://hits.dwyl.io/Knowledge-Wisdom-Understanding/https://githubcom/Knowledge-Wisdom-Understanding/recon)
 
-## Features!
+## Features
 
 - This tool is intended for CTF's and can be fairly noisy. (Not the most stealth conscious tool...)
 - All tools in this project are compliant with the OSCP exam rules.
-- If Virtual Host Routing is detected, _Auto-Recon_ will add the host names to your /etc/hosts file and continue to enumerate the newly discovered host names.
+- If Virtual Host Routing is detected, _recon.py_ will add the host names to your /etc/hosts file and continue to enumerate the newly discovered host names.
 - DNS enumeration is nerfed to ignore .com .co .eu .uk domains etc... since this tool was designed for CTF's like for instance, "hack the box". It will try to find most .htb domains.
-- This project use's various tools and chains them together as needed to enumerate a target based off nmap results.
+- This project use's various stand-alone & custom tools to enumerate a target based off nmap results.
 
 ### INSTALLATION
 
