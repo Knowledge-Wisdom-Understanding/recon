@@ -42,6 +42,8 @@ EXAMPLES = """
 
 """
 
+V = 3.1
+
 
 def banner():
     """Print the AutoRecon Banner."""
@@ -50,14 +52,14 @@ def banner():
         valid_colors = ("red", "green", "yellow", "blue", "magenta", "cyan")
         return random.choice(valid_colors)
 
-    autoRecon = r"""
+    autoRecon = rf"""
        _____________          ____    ________________
-      /___/___      \        /  / |  /___/__          \                   _____
+      /___/___      \        /  / |  /___/__          \      Mr.P-Millz   _____
           /  /   _   \______/__/  |______|__|_____ *   \_________________/__/  |___
        __/__/   /_\   \ |  |  \   __\/  _ \|  |       __/ __ \_/ ___\/  _ \|       |
       |   |     ___    \|  |  /|  | (  |_| )  |    |   \  ___/\  \__(  |_| )   |   |
       |___|____/\__\____|____/_|__|\_\____/|__|____|_  /\___  |\___  \____/|___|  /
-      gtihub.com/Knowledge-Wisdom-Understanding  \___\/  \__\/  \__\_/ v3.1 \___\/
+      gtihub.com/Knowledge-Wisdom-Understanding  \___\/  \__\/  \__\_/ v{V} \___\/
 
 """
 
@@ -89,9 +91,6 @@ def signal_handler(sig, frame):
     sys.exit(0)
 
 
-VERSION = 3.1
-
-
 def main():
     """Call All the Functionlity from all lib files to automate the enumeration process."""
     banner()
@@ -107,7 +106,7 @@ def main():
         "--version",
         action="version",
         help="Show Current Version",
-        version=f"Version {VERSION}",
+        version=f"Version {V}",
     )
     parser.add_argument("-f", "--file", help="File of IPv4 Targets to Scan")
     parser.add_argument(
