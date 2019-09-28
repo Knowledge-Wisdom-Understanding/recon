@@ -70,6 +70,8 @@ class Search:
             if not os.path.exists(c.getPath("vuln", "vulnDir")):
                 os.makedirs(c.getPath("vuln", "vulnDir"))
             if len(http_title) > 1:
+                if not os.path.exists(c.getPath("vuln", "vulnDir")):
+                    os.makedirs(c.getPath("vuln", "vulnDir"))
                 for title in http_title:
                     string_title = " ".join(map(str, title))
                     lowercase_title = str(string_title).lower()
@@ -91,6 +93,8 @@ class Search:
                         call(http_cmd2, shell=True)
 
             else:
+                if not os.path.exists(c.getPath("vuln", "vulnDir")):
+                    os.makedirs(c.getPath("vuln", "vulnDir"))
                 string_title = " ".join(map(str, http_title))
                 lowercase_title = str(string_title).lower()
                 if lowercase_title.find("redirect") != -1:
@@ -110,6 +114,8 @@ class Search:
                     call(http_cmd, shell=True)
                     call(http_cmd2, shell=True)
         if len(products) != 0:
+            if not os.path.exists(c.getPath("vuln", "vulnDir")):
+                os.makedirs(c.getPath("vuln", "vulnDir"))
             for p in products:
                 lowercase_product = str(p).lower()
                 fw = lowercase_product.split(" ", 1)[0]

@@ -428,10 +428,11 @@ class NmapParserFunk:
                             self.proxy_ssl_ports.append(service[0])
                     if "http" in service[1]:
                         if "ssl" not in service[2]:
-                            if "http-proxy" not in service[1]:
-                                if service[0] not in ignored_windows_http_ports:
-                                    if service[0] not in self.proxy_http_ports:
-                                        self.proxy_http_ports.append(service[0])
+                            if "ssl" not in service[1]:
+                                if "http-proxy" not in service[1]:
+                                    if service[0] not in ignored_windows_http_ports:
+                                        if service[0] not in self.proxy_http_ports:
+                                            self.proxy_http_ports.append(service[0])
                     if "netbios-ssn" in service[1]:
                         if service[0] not in self.proxy_smb_ports:
                             self.proxy_smb_ports.append(service[0])

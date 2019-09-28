@@ -271,7 +271,7 @@ class DirsearchURLS:
 
             if len(dirsearch_files) != 0:
                 all_dirsearch_files_on_one_line = " ".join(map(str, dirsearch_files))
-                url_list_cmd = f"""cat {all_dirsearch_files_on_one_line} | grep -Ev '400|403' | awk '{awkprint}' | sort -u > {c.getPath("web", "aquatoneDirPUrls")}"""
+                url_list_cmd = f"""cat {all_dirsearch_files_on_one_line} | grep -Ev '400|403' | awk '{awkprint}' | sort -u > {c.getPath("proxy", "aquatoneDirProxyUrls")}"""
                 call(url_list_cmd, shell=True)
 
 

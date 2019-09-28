@@ -284,18 +284,18 @@ class EnumWeb:
             proxy_commands = []
             for proxy in proxy_ports:
                 print(f"""{fg.li_cyan} Enumerating HTTP Ports Through Port: {proxy}, Running the following commands: {fg.rs}""")
-                if not os.path.exists(c.getPath("proxy", "eyewitnessDirPT", proxy=proxy[0])):
-                    os.makedirs(c.getPath("proxy", "eyewitnessDirPT", proxy=proxy[0]))
-                proxy_commands.append(c.getCmd("proxy", "eyewitnessProxyServer", proxy=proxy[0]))
-                proxy_commands.append(c.getCmd("proxy", "whatwebProxyServer", proxy=proxy[0]))
+                if not os.path.exists(c.getPath("proxy", "eyewitnessDirPT", proxy=proxy)):
+                    os.makedirs(c.getPath("proxy", "eyewitnessDirPT", proxy=proxy))
+                proxy_commands.append(c.getCmd("proxy", "eyewitnessProxyServer", proxy=proxy))
+                proxy_commands.append(c.getCmd("proxy", "whatwebProxyServer", proxy=proxy))
                 if len(proxy_http_ports) != 0:
                     for proxy_http_port in proxy_http_ports:
-                        proxy_commands.append(c.getCmd("proxy", "whatwebProxyHttpPorts", proxy=proxy[0], httpProxy=proxy_http_port))
-                        proxy_commands.append(c.getCmd("proxy", "dirsearchHttpProxyPortsDict", proxy=proxy[0], httpProxy=proxy_http_port))
-                        proxy_commands.append(c.getCmd("proxy", "dirsearchHttpProxyPortsBig", proxy=proxy[0], httpProxy=proxy_http_port))
-                        proxy_commands.append(c.getCmd("proxy", "niktoProxyHttpPort", proxy=proxy[0], httpProxy=proxy_http_port))
+                        proxy_commands.append(c.getCmd("proxy", "whatwebProxyHttpPorts", proxy=proxy, httpProxy=proxy_http_port))
+                        proxy_commands.append(c.getCmd("proxy", "dirsearchHttpProxyPortsDict", proxy=proxy, httpProxy=proxy_http_port))
+                        proxy_commands.append(c.getCmd("proxy", "dirsearchHttpProxyPortsBig", proxy=proxy, httpProxy=proxy_http_port))
+                        proxy_commands.append(c.getCmd("proxy", "niktoProxyHttpPort", proxy=proxy, httpProxy=proxy_http_port))
 
-            self.proxy_processes = proxy_commands
+            self.proxy_processes = tuple(proxy_commands)
 
     def getLinks(self):
         """This feature isn't full implemented yet and is just here to keep the other functions company ;)"""
