@@ -26,7 +26,7 @@ class checkSource:
     def getLinks(self):
         """Grab all links from web server homepage i.e. http://IP:PORT/ and look for .htb domain names.
         If a .htb domain is found, add the hostname to the /etc/hosts file and then proceed to fuzz the domain
-        for subdomains using wfuzz. If a valid subdomain is found, add the subdomain to the /etc/hosts file as 
+        for subdomains using wfuzz. If a valid subdomain is found, add the subdomain to the /etc/hosts file as
         well using python_hosts library merge_names parameter."""
         np = nmapParser.NmapParserFunk(self.target)
         np.openPorts()
@@ -66,7 +66,7 @@ class checkSource:
 
                         tk5 = c.getPath("wordlists", "top5Ksubs")
                         print(f"""{cmd_info} wfuzz -z file,{tk5} -u {source_domain_name[0]}:{hp} -H 'Host: FUZZ.{source_domain_name[0]}:{hp}'""")
-                        print(f"{fg.li_yellow}Wfuzz's STDOUT is Hidden to prevent filling up Terminal. Desired Response Codes are unpredictable during initial fuzz session. Output is unfiltered.{fg.rs} STDOUT will be written to {fg.li_magenta}{wfuzzReport}{fg.rs}")
+                        print(f"{fg.li_yellow}Wfuzz's STDOUT is Hidden to prevent filling up Terminal. Desired Response Codes are unpredictable during initial fuzz session. Only 404 is filtered.{fg.rs} STDOUT will be written to {fg.li_magenta}{wfuzzReport}{fg.rs}")
                         str_domain = f"""{source_domain_name[0]}:{hp}"""
                         fuzz_domain = f"""FUZZ.{source_domain_name[0]}:{hp}"""
                         for r in wfuzz.fuzz(
