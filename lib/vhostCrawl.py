@@ -25,9 +25,9 @@ class checkSource:
 
     def getLinks(self):
         """Grab all links from web server homepage i.e. http://IP:PORT/ and look for .htb domain names.
-        If a .htb domain is found, add the hostname to the /etc/hosts file and then proceed to fuzz the domain
-        for subdomains using wfuzz. If a valid subdomain is found, add the subdomain to the /etc/hosts file as
-        well using python_hosts library merge_names parameter."""
+        If a .htb domain is found, add the hostname to the /etc/hosts file and then proceed to fuzz the hostname
+        for virtual hostname routing using wfuzz. If a valid sub-hostname is found, add the domain to the /etc/hosts file as
+        well using python_hosts library merge_names parameter.(Thanks for adding this feature! @jonhadfield)"""
         np = nmapParser.NmapParserFunk(self.target)
         np.openPorts()
         http_ports = np.http_ports
