@@ -18,175 +18,81 @@ class Clean:
 
     def listfiles(self):
         """
-        The Second Parameter for removeColor doesn't matter what the filename is
-        as long as it's the correct path to where the files are that your
-        removing ansi color codes from. The Remove color function removes ansi color
-        codes from any matching files and essentially keeps the same name for the file
-        by moving it to the temporary newfilename param and then moving it back to the
-        filename param.
-        This Class also creates the urls.txt file for aquatone from all the discovered links found from dirsearch.
+        This function will list all files in report output folder and remove ansi color codes from the file
+        using sed.
         """
 
-        def removeColor(self, filename, newfilename):
-            sedCMD = f'sed "s,\x1B\[[0-9;]*[a-zA-Z],,g" {filename} > {newfilename} && rm {filename} && mv {newfilename} {filename}'
+        def removeColor(self, filename):
+            sedCMD = rf'sed "s,\x1B\[[0-9;]*[a-zA-Z],,g" -i {filename}'
             return call(sedCMD, shell=True)
 
         c = config_parser.CommandParser(f"{os.getcwd()}/config/config.yaml", self.target)
-        dir_list = [
-            d
-            for d in glob.iglob(c.getPath("report", "reportGlob"), recursive=True)
-            if os.path.isdir(d)
-        ]
+        dir_list = [d for d in glob.iglob(c.getPath("report", "reportGlob"), recursive=True) if os.path.isdir(d)]
         for d in dir_list:
-            reportFile_list = [
-                fname
-                for fname in glob.iglob(f"{d}/*", recursive=True)
-                if os.path.isfile(fname)
-            ]
+            reportFile_list = [fname for fname in glob.iglob(f"{d}/*", recursive=True) if os.path.isfile(fname)]
             for rf in reportFile_list:
                 if "nmap" not in rf:
                     if "aquatone" not in rf:
                         if "eyewitness" not in rf:
                             if "wafw00f" in rf:
-                                removeColor(
-                                    self, rf, "/tmp/wafw00f.log"
-                                )
+                                removeColor(self, rf)
                             if "whatweb" in rf:
-                                removeColor(
-                                    self, rf, "/tmp/whatweb.log"
-                                )
+                                removeColor(self, rf)
                             if "sslscan" in rf:
-                                removeColor(
-                                    self,
-                                    rf,
-                                    "/tmp/sslscan.log",
-                                )
+                                removeColor(self, rf)
                             if "dnsenum" in rf:
-                                removeColor(
-                                    self, rf, "/tmp/dnsenum.log"
-                                )
+                                removeColor(self, rf)
                             if "drupal" in rf:
-                                removeColor(
-                                    self, rf, "/tmp/drupal.log"
-                                )
+                                removeColor(self, rf)
                             if "oracle" in rf:
-                                removeColor(
-                                    self,
-                                    rf,
-                                    "/tmp/oracle-blah.log",
-                                )
-                                removeColor(
-                                    self,
-                                    rf,
-                                    "/tmp/oracle-blah.log",
-                                )
+                                removeColor(self, rf)
+                                removeColor(self, rf)
                             if "wpscan" in rf:
-                                removeColor(
-                                    self,
-                                    rf,
-                                    "/tmp/wpscanblah.log",
-                                )
+                                removeColor(self, rf)
                             if "vulns" in rf:
                                 if fnmatch(rf, "*.log"):
-                                    removeColor(
-                                        self,
-                                        rf,
-                                        "/tmp/doesntmatter.log",
-                                    )
+                                    removeColor(self, rf)
 
     def listFilesProxy(self):
         """
-        The Second Parameter for removeColor doesn't matter what the filename is
-        as long as it's the correct path to where the files are that your
-        removing ansi color codes from. The Remove color function removes ansi color
-        codes from any matching files and essentially keeps the same name for the file
-        by moving it to the temporary newfilename param and then moving it back to the
-        filename param.
-        This Class also creates the urls.txt file for aquatone from all the discovered links found from dirsearch.
+        This function will list all files in report output folder and remove ansi color codes from the file
+        using sed. It will also display niktos output if the latter was ran.
         """
 
-        def removeColor(self, filename, newfilename):
-            sedCMD = f'sed "s,\x1B\[[0-9;]*[a-zA-Z],,g" {filename} > {newfilename} && rm {filename} && mv {newfilename} {filename}'
+        def removeColor(self, filename):
+            sedCMD = rf'sed "s,\x1B\[[0-9;]*[a-zA-Z],,g" -i {filename}'
             return call(sedCMD, shell=True)
 
         c = config_parser.CommandParser(f"{os.getcwd()}/config/config.yaml", self.target)
         if os.path.exists(c.getPath("proxy", "proxyDir")):
-            dir_list = [
-                d
-                for d in glob.iglob(c.getPath("proxy", "proxyGlob"), recursive=True)
-                if os.path.isdir(d)
-            ]
+            dir_list = [d for d in glob.iglob(c.getPath("proxy", "proxyGlob"), recursive=True) if os.path.isdir(d)]
             for d in dir_list:
-                reportFile_list = [
-                    fname
-                    for fname in glob.iglob(f"{d}/*", recursive=True)
-                    if os.path.isfile(fname)
-                ]
+                reportFile_list = [fname for fname in glob.iglob(f"{d}/*", recursive=True) if os.path.isfile(fname)]
                 for rf in reportFile_list:
                     if "nmap" not in rf:
                         if "aquatone" not in rf:
                             if "eyewitness" not in rf:
                                 if "wafw00f" in rf:
-                                    removeColor(
-                                        self,
-                                        rf,
-                                        "/tmp/wafw00f.log",
-                                    )
+                                    removeColor(self, rf)
                                 if "whatweb" in rf:
-                                    removeColor(
-                                        self,
-                                        rf,
-                                        "/tmp/whatweb.log",
-                                    )
+                                    removeColor(self, rf)
                                 if "wpscan" in rf:
-                                    removeColor(
-                                        self,
-                                        rf,
-                                        "/tmp/wpscanblah.log",
-                                    )
+                                    removeColor(self, rf)
                                 if "sslscan" in rf:
-                                    removeColor(
-                                        self,
-                                        rf,
-                                        "/tmp/sslscan.log",
-                                    )
+                                    removeColor(self, rf)
                                 if "dnsenum" in rf:
-                                    removeColor(
-                                        self,
-                                        rf,
-                                        "/tmp/dnsenum.log",
-                                    )
+                                    removeColor(self, rf)
                                 if "drupal" in rf:
-                                    removeColor(
-                                        self,
-                                        rf,
-                                        "/tmp/drupal.log",
-                                    )
+                                    removeColor(self, rf)
                                 if "oracle" in rf:
-                                    removeColor(
-                                        self,
-                                        rf,
-                                        "/tmp/oracle-blah.log",
-                                    )
+                                    removeColor(self, rf)
                                 if "oracle" in rf:
-                                    removeColor(
-                                        self,
-                                        rf,
-                                        "/tmp/oracleblah.log",
-                                    )
+                                    removeColor(self, rf)
                                 if "nikto" in rf:
-                                    check_nikto_lines = (
-                                        f"""wc -l {rf} | cut -d ' ' -f 1"""
-                                    )
-                                    num_lines_nikto = check_output(
-                                        check_nikto_lines, stderr=STDOUT, shell=True
-                                    ).rstrip()
-                                    if int(num_lines_nikto) < 50:
+                                    check_nikto_lines = (f"""wc -l {rf} | cut -d ' ' -f 1""")
+                                    num_lines_nikto = check_output(check_nikto_lines, stderr=STDOUT, shell=True).rstrip()
+                                    if int(num_lines_nikto) < 80:
                                         call(f"cat {rf}", shell=True)
                                 if "vulns" in rf:
                                     if fnmatch(rf, "*.log"):
-                                        removeColor(
-                                            self,
-                                            rf,
-                                            "/tmp/doesntmatter.log",
-                                        )
+                                        removeColor(self, rf)
