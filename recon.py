@@ -57,7 +57,7 @@ def banner():
        __/__/   /_\   \ |  |  \   __\/  _ \|  |       __/ __ \_/ ___\/  _ \|       |
       |   |     ___    \|  |  /|  | (  |_| )  |    |   \  ___/\  \__(  |_| )   |   |
       |___|____/\__\____|____/_|__|\_\____/|__|____|_  /\___  |\___  \____/|___|  /
-      gtihub.com/Knowledge-Wisdom-Understanding  \___\/  \__\/  \__\_/      \___\/
+      gtihub.com/Knowledge-Wisdom-Understanding  \___\/  \__\/  \__\_/ v3.1 \___\/
 
 """
 
@@ -89,7 +89,7 @@ def signal_handler(sig, frame):
     sys.exit(0)
 
 
-VERSION = 3.0
+VERSION = 3.1
 
 
 def main():

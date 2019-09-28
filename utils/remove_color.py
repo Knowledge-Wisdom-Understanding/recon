@@ -49,17 +49,17 @@ class Clean:
                         if "eyewitness" not in rf:
                             if "wafw00f" in rf:
                                 removeColor(
-                                    self, rf, "/tmp/wafw00f.txt"
+                                    self, rf, "/tmp/wafw00f.log"
                                 )
                             if "whatweb" in rf:
                                 removeColor(
-                                    self, rf, "/tmp/whatweb.txt"
+                                    self, rf, "/tmp/whatweb.log"
                                 )
                             if "sslscan" in rf:
                                 removeColor(
                                     self,
                                     rf,
-                                    "/tmp/sslscan.txt",
+                                    "/tmp/sslscan.log",
                                 )
                             if "dnsenum" in rf:
                                 removeColor(
@@ -78,7 +78,7 @@ class Clean:
                                 removeColor(
                                     self,
                                     rf,
-                                    "/tmp/oracle-blah.txt",
+                                    "/tmp/oracle-blah.log",
                                 )
                             if "wpscan" in rf:
                                 removeColor(
@@ -130,25 +130,25 @@ class Clean:
                                     removeColor(
                                         self,
                                         rf,
-                                        "/tmp/wafw00f.txt",
+                                        "/tmp/wafw00f.log",
                                     )
                                 if "whatweb" in rf:
                                     removeColor(
                                         self,
                                         rf,
-                                        "/tmp/whatweb.txt",
+                                        "/tmp/whatweb.log",
                                     )
                                 if "wpscan" in rf:
                                     removeColor(
                                         self,
                                         rf,
-                                        "/tmp/wpscanblah.txt",
+                                        "/tmp/wpscanblah.log",
                                     )
                                 if "sslscan" in rf:
                                     removeColor(
                                         self,
                                         rf,
-                                        "/tmp/sslscan.txt",
+                                        "/tmp/sslscan.log",
                                     )
                                 if "dnsenum" in rf:
                                     removeColor(
@@ -172,7 +172,7 @@ class Clean:
                                     removeColor(
                                         self,
                                         rf,
-                                        "/tmp/oracleblah.txt",
+                                        "/tmp/oracleblah.log",
                                     )
                                 if "nikto" in rf:
                                     check_nikto_lines = (

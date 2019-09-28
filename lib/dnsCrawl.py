@@ -5,10 +5,13 @@ from sty import fg, bg, ef, rs
 from subprocess import PIPE, Popen, check_output, STDOUT
 from lib import nmapParser
 from bs4 import BeautifulSoup, Comment
-import requests
 import re
 from python_hosts.hosts import Hosts, HostsEntry
 from utils import config_parser
+import requests
+from urllib3.exceptions import InsecureRequestWarning
+import warnings
+import contextlib
 
 
 class checkSource:
@@ -129,10 +132,42 @@ class sourceCommentChecker:
     def __init__(self, target):
         self.target = target
 
+    @contextlib.contextmanager
+    def no_ssl_verification(self):
+        old_merge_environment_settings = requests.Session.merge_environment_settings
+        opened_adapters = set()
+
+        def merge_environment_settings(self, url, proxies, stream, verify, cert):
+            # Verification happens only once per connection so we need to close
+            # all the opened adapters once we're done. Otherwise, the effects of
+            # verify=False persist beyond the end of this context manager.
+            opened_adapters.add(self.get_adapter(url))
+
+            settings = old_merge_environment_settings(self, url, proxies, stream, verify, cert)
+            settings['verify'] = False
+
+            return settings
+
+        requests.Session.merge_environment_settings = merge_environment_settings
+
+        try:
+            with warnings.catch_warnings():
+                warnings.simplefilter('ignore', InsecureRequestWarning)
+                yield
+        finally:
+            requests.Session.merge_environment_settings = old_merge_environment_settings
+
+            for adapter in opened_adapters:
+                try:
+                    adapter.close()
+                except:
+                    pass
+
     def extract_source_comments(self):
         """Search home page for comments in the HTML source code. If any comments are found, Write them to a file in the report/web directory."""
 
-        cmd_info = "[" + fg.li_green + "+" + fg.rs + "]"
+        cmd_info = "[" + fg.li_magenta + "*" + fg.rs + "]"
+        cmd_info_orange = "[" + fg.li_green + "!" + fg.rs + "]"
         c = config_parser.CommandParser(f"{os.getcwd()}/config/config.yaml", self.target)
         if os.path.exists(c.getPath("web", "aquatoneDirUrls")):
             url_list = []
@@ -144,22 +179,47 @@ class sourceCommentChecker:
             except FileNotFoundError as fnf_error:
                 print(fnf_error)
                 pass
+            print(f"{cmd_info}{fg.li_yellow} Checking for comments in the source from found URL's...{fg.rs}")
             for link in url_list:
-                if "https://" not in link:
+                if "https://" in link:
+                    if not os.path.exists(c.getPath("webSSL", "webSSLDir")):
+                        os.makedirs(c.getPath("webSSL", "webSSLDir"))
+                    with self.no_ssl_verification():
+                        page = requests.get(link)
+                        data = page.text
+                        soup = BeautifulSoup(data, "html.parser")
+                        comments = soup.find_all(string=lambda text: isinstance(text, Comment))
+                        comments_arr = [c.extract() for c in comments]
+                        if len(comments_arr) != 0:
+                            print(f"    {cmd_info_orange}{fg.li_red} Found Comments in the Source!{fg.rs} URL: {fg.li_blue}{link}{fg.rs}")
+                            try:
+                                with open(c.getPath("webSSL", "sourceComments"), "a+") as com:
+                                    com.write(f"[+] URL: {link}\n")
+                                    for cm in comments_arr:
+                                        com_str = cm.rstrip("\n")
+                                        com.write(f"{com_str}\n")
+                            except FileNotFoundError as fnf:
+                                print(fnf)
+                else:
+                    if not os.path.exists(c.getPath("web", "webDir")):
+                        os.makedirs(c.getPath("web", "webDir"))
                     page = requests.get(link)
                     data = page.text
                     soup = BeautifulSoup(data, "html.parser")
                     comments = soup.find_all(string=lambda text: isinstance(text, Comment))
                     comments_arr = [c.extract() for c in comments]
                     if len(comments_arr) != 0:
+                        print(f"    {cmd_info_orange}{fg.li_red} Found Comments in the Source!{fg.rs} URL: {fg.li_blue}{link}{fg.rs}")
                         try:
                             with open(c.getPath("web", "sourceComments"), "a+") as com:
+                                com.write(f"[+] URL: {link}\n")
                                 for cm in comments_arr:
                                     com_str = cm.rstrip("\n")
                                     com.write(f"{com_str}\n")
                         except FileNotFoundError as fnf:
                             print(fnf)
 
-                if os.path.exists(f"""{c.getPath("web", "sourceComments")}"""):
-                    print(f"{cmd_info}{fg.li_red} Found Comments in the Source!")
-                    print(f"""{cmd_info} Writing Comments to {c.getPath("web","sourceComments")}""")
+            if os.path.exists(f"""{c.getPath("web", "sourceComments")}"""):
+                print(f"""{cmd_info} Writing Comments to {c.getPath("web","sourceComments")}""")
+            if os.path.exists(f"""{c.getPath("webSSL", "sourceComments")}"""):
+                print(f"""{cmd_info} Writing Comments to {c.getPath("webSSL","sourceComments")}""")
