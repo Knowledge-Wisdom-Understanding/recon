@@ -85,9 +85,8 @@ class EnumWeb:
     def ScanWebOption(self):
         """Enumerate Web Server ports based on nmaps output. This function will run the following tools;
         WhatWeb, WafW00f, Dirsearch, EyeWitness, Nikto, and curl robots.txt
-        This is almost identical to the normal web scan except, it uses much larger wordlists
-         and doesn't run EyeWitnesss Since that tool is run on the intended default
-        Original Scan option."""
+        This is almost identical to the normal web scan except it uses much larger wordlists
+        """
         np = nmapParser.NmapParserFunk(self.target)
         np.openPorts()
         http_ports = np.http_ports
@@ -142,7 +141,7 @@ class EnumWeb:
     def CMS(self):
         """If a valid CMS is found from initial Web Enumeration, more specifically, WhatWebs results, Then proceed to
         Enumerate the CMS further using Wpscan, Magescan, Nmap, Droopescan, Joomscan, and davtest, hydra, and will
-        create a brute force bash script using Cewl, which will then be used by WpScan to try and brute force
+        create a brute force bash script using Cewl, which can then be used by WpScan to try and brute force
         Users and passwords."""
         np = nmapParser.NmapParserFunk(self.target)
         np.openPorts()

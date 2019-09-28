@@ -37,8 +37,7 @@ class TopOpenPorts:
         call(nmap_command, shell=True)
 
     def topUdpAllTcp(self):
-        """topUdpAllTcp will run a full nmap tcp port scan, a top udp ports scan, and a nmap vulners script scan on found open
-        ports from the initial nmap scan."""
+        """topUdpAllTcp will run a full nmap tcp port scan and a top udp ports scan"""
         c = config_parser.CommandParser(f"{os.getcwd()}/config/config.yaml", self.target)
         np = nmapParser.NmapParserFunk(self.target)
         np.openPorts()
