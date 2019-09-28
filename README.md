@@ -103,3 +103,7 @@ python3 recon.py -t 10.10.10.10 -b ssh -p 2222
 
 This program is intended to be used in kali linux.
 If you notice a bug or have a feature request. Please create an issue or submit a pull request. Thanks!
+
+## Disclaimer
+
+**Usage of recon.py for testing or exploiting websites without prior mutual consistency can be considered as an illegal activity. This tool is intended for CTF machines only. It is the final user's responsibility to obey all applicable local, state and federal laws. Authors assume no liability and are not responsible for any misuse or damage caused by this program.**
