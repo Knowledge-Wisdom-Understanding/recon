@@ -8,7 +8,7 @@ from subprocess import call
 import glob
 from bs4 import BeautifulSoup  # SoupStrainer
 import requests
-from lib import dnsCrawl
+from lib import vhostCrawl
 from utils import config_parser
 
 
@@ -40,7 +40,7 @@ class EnumWeb:
                 os.makedirs(c.getPath("web", "webDir"))
             if not os.path.exists(c.getPath("web", "aquatoneDir")):
                 os.makedirs(c.getPath("web", "aquatoneDir"))
-            dc = dnsCrawl.checkSource(self.target)
+            dc = vhostCrawl.checkSource(self.target)
             dc.getLinks()
             htb_source_domains = dc.htb_source_domains
             commands = []

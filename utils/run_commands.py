@@ -19,7 +19,7 @@ from lib import ldapEnum
 from lib import oracleEnum
 from lib import searchsploits
 from lib import enumProxyCMS
-from lib import dnsCrawl
+from lib import vhostCrawl
 from utils import remove_color
 from utils import peaceout_banner
 from utils import helper_lists
@@ -221,5 +221,5 @@ class RunCommands:
         nocolor.listFilesProxy()
 
     def checkSource(self):
-        sc = dnsCrawl.sourceCommentChecker(self.target)
+        sc = vhostCrawl.sourceCommentChecker(self.target)
         sc.extract_source_comments()
