@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 
 from subprocess import PIPE, Popen
+import sys
+import os
+from utils import run_commands
 
 
 class digParse:
@@ -16,6 +19,8 @@ class digParse:
         self.subdomains = []
 
     def cmdline(self, command):
+        rc = run_commands.RunCommands(self.target)
+        rc.loginator(command)
         process = Popen(args=command, stdout=PIPE, shell=True)
         return process.communicate()[0]
 

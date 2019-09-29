@@ -128,8 +128,9 @@ commands:
     "svwar": "svwar -D -m INVITE $target 2>&1 | tee $reportDir/sip/svwar.log"
   dns:
     "dnsenum": "dnsenum --dnsserver $target --enum -f /usr/share/seclists/Discovery/DNS/subdomains-top1million-5000.txt -r $hosts | tee $reportDir/dns/dnsenum-$target.log"
-    "dnsDig": "dig -x $target @$target | tee $reportDir/dns/dig-$target.log"
+    "dnsDig": "dig -x $target @$target | tee $reportDir/dns/dig-x-$target.log"
     "dnsDigAxfr": "dig axfr @$target $alldns | tee $reportDir/dns/dig-axfr-$target.log"
+    "vhost": "gobuster vhost -u http://$hosts -w /usr/share/seclists/Discovery/DNS/subdomains-top1million-20000.txt -t 100 -o $reportDir/dns/gobuster-vhost-top20k.log"
   ftp:
     "nmapFtp": "nmap -vv -sV -Pn -p $ftpPorts --script=ftp-anon.nse,ftp-bounce.nse,ftp-libopie.nse,ftp-proftpd-backdoor.nse,ftp-vsftpd-backdoor.nse,ftp-vuln-cve2010-4221.nse,ftp-syst.nse -oA $nmapReportDir/ftp $target"
   kerberos:
@@ -255,6 +256,9 @@ paths:
     "reportGlob": "$reportDir/*"
     "nmapDir": "$nmapReportDir"
     "reportDir": "$reportDir"
+    "log": "$reportDir/commands_info.log"
+    "stdoutLog": "$reportDir/all_output.log"
+    "customDNS": "$reportDir/dns/$name.log"
   nmap:
     "nmap_top_ports_xml": "$nmapReportDir/top-ports-$target.xml"
     "top_ports": "$nmapReportDir/top-ports-$target"

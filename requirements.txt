@@ -8,4 +8,3 @@ python_libnmap==0.7.0
 beautifulsoup4==4.8.0
 termcolor==1.1.0
 PyYAML==5.1.2
-colorama==0.4.1

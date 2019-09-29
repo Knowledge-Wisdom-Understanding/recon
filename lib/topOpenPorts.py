@@ -6,6 +6,7 @@ from sty import fg, bg, ef, rs
 from lib import nmapParser
 from utils import helper_lists
 from utils import config_parser
+from utils import run_commands
 
 
 class TopOpenPorts:
@@ -22,6 +23,7 @@ class TopOpenPorts:
         and the script-timeout is set to 5 minutes as sometimes https scripts can get stuck and
         output 100's of lines of unnecessary output which will slow the scan time down. 5 minutes is a good timeout
         setting."""
+        rc = run_commands.RunCommands(self.target)
         c = config_parser.CommandParser(f"{os.getcwd()}/config/config.yaml", self.target)
         if not os.path.exists(c.getPath("report", "reportDir")):
             os.makedirs(c.getPath("report", "reportDir"))
@@ -34,6 +36,7 @@ class TopOpenPorts:
         nmap_command = c.getCmd("nmap", "nmapTopTcpPorts", topTcpPorts=topTcpPortsString)
         cmd_info = "[" + fg.li_green + "+" + fg.rs + "]"
         print(f"""{cmd_info} {fg.li_green}{nmap_command}{fg.rs}""")
+        rc.loginator(nmap_command)
         call(nmap_command, shell=True)
 
     def topUdpAllTcp(self):

@@ -185,6 +185,35 @@ class sourceCommentChecker:
                     if not os.path.exists(c.getPath("webSSL", "webSSLDir")):
                         os.makedirs(c.getPath("webSSL", "webSSLDir"))
                     with self.no_ssl_verification():
+                        try:
+                            page = requests.get(link)
+                            data = page.text
+                            soup = BeautifulSoup(data, "html.parser")
+                            comments = soup.find_all(string=lambda text: isinstance(text, Comment))
+                            comments_arr = [c.extract() for c in comments]
+                            if len(comments_arr) != 0:
+                                print(f"    {cmd_info_orange}{fg.li_red} Found Comments in the Source!{fg.rs} URL: {fg.li_blue}{link}{fg.rs}")
+                                try:
+                                    with open(c.getPath("webSSL", "sourceComments"), "a+") as com:
+                                        com.write(f"[+] URL: {link}\n")
+                                        for cm in comments_arr:
+                                            com_str = cm.rstrip("\n")
+                                            com.write(f"{com_str}\n")
+                                except FileNotFoundError as fnf:
+                                    print(fnf)
+                        except requests.exceptions.ConnectionError as ce_error:
+                            print("Connection Error: ", ce_error)
+                            break
+                        except requests.exceptions.Timeout as t_error:
+                            print("Connection Timeout Error: ", t_error)
+                            break
+                        except requests.exceptions.RequestException as re:
+                            print("Some Ambiguous Exception:", re)
+                            break
+                else:
+                    if not os.path.exists(c.getPath("web", "webDir")):
+                        os.makedirs(c.getPath("web", "webDir"))
+                    try:
                         page = requests.get(link)
                         data = page.text
                         soup = BeautifulSoup(data, "html.parser")
@@ -193,31 +222,22 @@ class sourceCommentChecker:
                         if len(comments_arr) != 0:
                             print(f"    {cmd_info_orange}{fg.li_red} Found Comments in the Source!{fg.rs} URL: {fg.li_blue}{link}{fg.rs}")
                             try:
-                                with open(c.getPath("webSSL", "sourceComments"), "a+") as com:
+                                with open(c.getPath("web", "sourceComments"), "a+") as com:
                                     com.write(f"[+] URL: {link}\n")
                                     for cm in comments_arr:
                                         com_str = cm.rstrip("\n")
                                         com.write(f"{com_str}\n")
                             except FileNotFoundError as fnf:
                                 print(fnf)
-                else:
-                    if not os.path.exists(c.getPath("web", "webDir")):
-                        os.makedirs(c.getPath("web", "webDir"))
-                    page = requests.get(link)
-                    data = page.text
-                    soup = BeautifulSoup(data, "html.parser")
-                    comments = soup.find_all(string=lambda text: isinstance(text, Comment))
-                    comments_arr = [c.extract() for c in comments]
-                    if len(comments_arr) != 0:
-                        print(f"    {cmd_info_orange}{fg.li_red} Found Comments in the Source!{fg.rs} URL: {fg.li_blue}{link}{fg.rs}")
-                        try:
-                            with open(c.getPath("web", "sourceComments"), "a+") as com:
-                                com.write(f"[+] URL: {link}\n")
-                                for cm in comments_arr:
-                                    com_str = cm.rstrip("\n")
-                                    com.write(f"{com_str}\n")
-                        except FileNotFoundError as fnf:
-                            print(fnf)
+                    except requests.exceptions.ConnectionError as ce_error:
+                        print("Connection Error: ", ce_error)
+                        break
+                    except requests.exceptions.Timeout as t_error:
+                        print("Connection Timeout Error: ", t_error)
+                        break
+                    except requests.exceptions.RequestException as re:
+                        print("Some Ambiguous Exception:", re)
+                        break
 
             if os.path.exists(f"""{c.getPath("web", "sourceComments")}"""):
                 print(f"""{cmd_info} Writing Comments to {c.getPath("web","sourceComments")}""")

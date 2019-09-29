@@ -32,11 +32,6 @@ class DnsEnum:
         redirect_hostname = dn.redirect_hostname
         fqdn_hostname = dn.fqdn_hostname
         c = config_parser.CommandParser(f"{os.getcwd()}/config/config.yaml", self.target)
-        if not os.path.exists(c.getPath("dns", "dnsDir")):
-            os.makedirs(c.getPath("dns", "dnsDir"))
-        if not os.path.exists(c.getPath("web", "aquatoneDir")):
-            os.makedirs(c.getPath("web", "aquatoneDir"))
-
         commands = []
         if len(redirect_hostname) != 0:
             for d in redirect_hostname:
@@ -45,8 +40,19 @@ class DnsEnum:
             for d in fqdn_hostname:
                 self.hostnames.append(d)
         if len(self.hostnames) != 0 and (len(dnsPorts) != 0):
+            if not os.path.exists(c.getPath("dns", "dnsDir")):
+                os.makedirs(c.getPath("dns", "dnsDir"))
+            if not os.path.exists(c.getPath("web", "aquatoneDir")):
+                os.makedirs(c.getPath("web", "aquatoneDir"))
+
             string_hosts = " ".join(map(str, self.hostnames))
-            commands.append(c.getCmd("dns", "dnsenum", hosts=string_hosts))
+            basename = []
+            for host in self.hostnames:
+                basename.append(".".join(host.split('.')[-2:]))
+            unique_hosts = sorted(set(basename))
+            for host in unique_hosts:
+                commands.append(c.getCmd("dns", "dnsenum", hosts=host))
+                commands.append(c.getCmd("dns", "vhost", hosts=host))
 
         self.processes = tuple(commands)
 

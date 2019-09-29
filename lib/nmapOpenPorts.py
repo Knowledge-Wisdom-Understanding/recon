@@ -112,5 +112,4 @@ class NmapOpenPorts:
         cmds_to_run = []
         for i in set_sorted_cmds:
             cmds_to_run.append(i)
-        mpCmds = tuple(cmds_to_run)
-        self.processes = mpCmds
+        self.processes = tuple(cmds_to_run)
