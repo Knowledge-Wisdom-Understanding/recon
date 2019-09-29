@@ -10,6 +10,8 @@
 ## Output-Report-Structure
 
 - The directory tree will look something along the lines of this, depending on which services are running.
+
+```tree
   .
   ├── aquatone
   │   ├── aquatone
@@ -97,3 +99,4 @@
   └── wordlists
   ├── all.txt
   └── cewl-1-list.txt
+```
