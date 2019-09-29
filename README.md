@@ -13,7 +13,7 @@
 - If Virtual Host Routing is detected, _recon.py_ will add the host names to your /etc/hosts file and continue to enumerate the newly discovered host names.
 - DNS enumeration is nerfed to ignore .com .co .eu .uk domains etc... since this tool was designed for CTF's like for instance, "hack the box". It will try to find most .htb domains if dns server's are detected..
 - This project use's various stand-alone & custom tools to enumerate a target based off nmap results.
-- All Commands and output are logged to a Report folder using the naming context, "IP-ADDRESS-Report/" which will look something like, 10.10.10.10-Report/ with a directory structure similar to [this reports output](../blob/master/docs/overview.md)
+- All Commands and output are logged to a Report folder using the naming context, "IP-ADDRESS-Report/" which will look something like, 10.10.10.10-Report/ with a directory structure similar to [this reports output](../master/docs/overview.md)
 
 ### INSTALLATION
 
