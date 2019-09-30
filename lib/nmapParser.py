@@ -252,7 +252,6 @@ class NmapParserFunk:
             print("ToDo: Create Alternative Scanning Technique to bypass PortSpoof.")
             print("Exiting for now. Continue Your enumeration Manually, Check if http or https are open")
             print("by manually trying to view these ports in the web browser. etc. etc.")
-            print("Also try using netcat to connect to common services, ie. 21,22,23,25,80,143,139,135,445,443,8080, etc.etc.")
             exit()
 
     def allOpenPorts(self):
