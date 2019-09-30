@@ -84,6 +84,7 @@ commands:
     "davtestTarget": "davtest -move -sendbd auto -url https://$target/ | tee $reportDir/webSSL/davtestscan-$target.log"
     "davtestHost": "davtest -move -sendbd auto -url https://$host/ | tee $reportDir/webSSL/davtestscan-$host.log"
     "nmapWebDav": "nmap -Pn -v -sV -p $sslPort --script=http-iis-webdav-vuln.nse -oA $nmapReportDir/webdav $target"
+    "heartbleed": "python $pwd/scripts/heartbleed.py $target -p $port -n 100 -a $reportDir/webSSL/heartbleed.log -d"
   proxy:
     "aquatoneProxy": "cat $reportDir/aquatone/proxy-urls.txt | aquatone -ports $allWebProxyPorts -proxy http://$target:$proxyPorts -out $reportDir/aquatone/aquatone-proxy -screenshot-timeout 40000"
     "proxychainsNmapTopPorts": "proxychains nmap -vv -sT -Pn -sV -p $topTcpPorts -oA $nmapReportDir/proxychain-top-ports 127.0.0.1"
