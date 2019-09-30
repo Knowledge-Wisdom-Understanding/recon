@@ -85,16 +85,7 @@ def display_time(seconds, granularity=2):
     return ", ".join(result[:granularity])
 
 
-def signal_handler(sig, frame):
-    print(" ")
-    print(f"{purp}See you Space Cowboy...{reset}")
-    sys.exit(0)
-
-
-def main():
-    """Call All the Functionlity from all lib files to automate the enumeration process."""
-    banner()
-    startTimer = time.time()
+def argument_parser():
     parser = argparse.ArgumentParser(
         conflict_handler="resolve",
         description="An Information Gathering and Enumeration Framework",
@@ -117,7 +108,7 @@ def main():
     parser.add_argument(
         "-b",
         "--brute",
-        help="Experimental! - Brute Force ssh,smb,ftp, or http. -t, --target is REQUIRED. Must supply only one protocol at a time. Since there are already many stand-alone bruteforce tools out there, for ssh, first valid users will be enumerated before password brute is initiated, when no user or passwords are supplied as options.",
+        help="Experimental! - Brute Force ssh,smb,ftp, or http. -t, --target is REQUIRED. Must supply only one protocol at a time. There many stand-alone bruteforce tools out there, to automate the brute forcing process for ssh, first valid users will be enumerated before password brute is initiated, when no user or passwords are supplied as options.",
         choices=["ftp", "smb", "http", "ssh"],
         type=str.lower,
     )
@@ -141,6 +132,21 @@ def main():
     )
 
     args = parser.parse_args()
+    return args
+
+
+def signal_handler(sig, frame):
+    print(" ")
+    print(f"{purp}See you Space Cowboy...{reset}")
+    print(" ")
+    sys.exit(0)
+
+
+def main():
+    """Call All the Functionlity from all lib files to automate the enumeration process."""
+    banner()
+    args = argument_parser()
+    startTimer = time.time()
 
     target_time = []
 
@@ -385,10 +391,10 @@ def main():
     elif args.file and args.target:
         print(f"{bad_cmd} Cannot use -t {args.target} and -f {args.file} together")
         print(EXAMPLES)
-        parser.print_help(sys.stderr)
+        args.parser.print_help(sys.stderr)
     else:
         print(EXAMPLES)
-        parser.print_help(sys.stderr)
+        args.parser.print_help(sys.stderr)
 
     end = time.time()
     time_elapsed = end - startTimer
