@@ -40,7 +40,7 @@ class checkSource:
             for hp in http_ports:
                 url = f"""http://{self.target}:{hp}"""
                 wfuzzReport = c.getPath("web", "wfuzzReport", port=hp)
-                page = requests.get(url)
+                page = requests.get(url, verify=False)
                 data = page.text
                 soup = BeautifulSoup(data, "html.parser")
                 # links = []
@@ -210,6 +210,7 @@ class sourceCommentChecker:
                         except requests.exceptions.RequestException as re:
                             print("Some Ambiguous Exception:", re)
                             break
+
                 else:
                     if not os.path.exists(c.getPath("web", "webDir")):
                         os.makedirs(c.getPath("web", "webDir"))
