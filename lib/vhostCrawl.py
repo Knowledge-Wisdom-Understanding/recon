@@ -38,20 +38,29 @@ class checkSource:
             if not os.path.exists(c.getPath("web", "webDir")):
                 os.makedirs(c.getPath("web", "webDir"))
             for hp in http_ports:
-                url = f"""http://{self.target}:{hp}"""
-                wfuzzReport = c.getPath("web", "wfuzzReport", port=hp)
-                page = requests.get(url, verify=False)
-                data = page.text
-                soup = BeautifulSoup(data, "html.parser")
-                # links = []
-                htb = [".htb"]
-                source_domain_name = []
-                for link in soup.find_all(text=lambda x: ".htb" in x):
-                    matches = re.findall(r"(?:[a-zA-Z0-9](?:[a-zA-Z0-9\-]{,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{3}", link,)
-                    for x in matches:
-                        if any(s in x for s in htb):
-                            source_domain_name.append(x)
-                # print(source_domain_name)
+                try:
+                    url = f"""http://{self.target}:{hp}"""
+                    wfuzzReport = c.getPath("web", "wfuzzReport", port=hp)
+                    page = requests.get(url, verify=False)
+                    data = page.text
+                    soup = BeautifulSoup(data, "html.parser")
+                    # links = []
+                    htb = [".htb"]
+                    source_domain_name = []
+                    for link in soup.find_all(text=lambda x: ".htb" in x):
+                        matches = re.findall(r"(?:[a-zA-Z0-9](?:[a-zA-Z0-9\-]{,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{3}", link,)
+                        for x in matches:
+                            if any(s in x for s in htb):
+                                source_domain_name.append(x)
+                except requests.exceptions.ConnectionError as ce_error:
+                    print("Connection Error: ", ce_error)
+                    break
+                except requests.exceptions.Timeout as t_error:
+                    print("Connection Timeout Error: ", t_error)
+                    break
+                except requests.exceptions.RequestException as re:
+                    print("Some Ambiguous Exception:", re)
+                    break
                 if len(source_domain_name) != 0:
                     print(f"""{cmd_info_orange} {fg.li_magenta}Found{fg.rs} {fg.cyan}{source_domain_name}{fg.rs} in {fg.li_red}The Source!{fg.rs} http://{self.target}:{hp}""")
                     print(f"""{cmd_info} {fg.li_magenta}Adding{fg.rs} {fg.li_cyan} {source_domain_name}{fg.rs} to /etc/hosts file""")
