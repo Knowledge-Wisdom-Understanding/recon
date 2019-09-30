@@ -19,6 +19,7 @@ class DnsEnum:
         self.target = target
         self.processes = ""
         self.hostnames = []
+        self.heartbleed = False
 
     def Scan(self):
         """Enumerate DNS server if any hostnames are found from lib/domainFinder.py and if
@@ -126,6 +127,13 @@ class DnsEnum:
                                 for x in alname2:
                                     if x not in ignore:
                                         altDomainNames.append(x)
+                            if (
+                                line.rstrip("\n") == "TLS 1.2 vulnerable to heartbleed"
+                                or (line.rstrip("\n") == "TLS 1.1 vulnerable to heartbleed")
+                                or (line.rstrip("\n") == "TLS 1.0 vulnerable to heartbleed")
+                            ):
+                                self.heartbleed = True
+
                     both = []
                     for x in domainName:
                         both.append(x)
