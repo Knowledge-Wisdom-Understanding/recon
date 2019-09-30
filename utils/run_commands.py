@@ -34,7 +34,7 @@ class RunCommands:
 
     def __init__(self, target):
         self.target = target
-        # self.parent_id = os.getpid()
+        self.run_commands_parent_pid = os.getpid()
 
     def loginator(self, executed_command):
         c = config_parser.CommandParser(f"{os.getcwd()}/config/config.yaml", self.target)
@@ -49,14 +49,16 @@ class RunCommands:
     def mpRun(self, commands):
         """Pool all commands to run from each service class and run them 2 at a time.,"""
         if len(commands) != 0:
-            parent_id = os.getpid()
+            # parent_id = os.getpid()
 
             def worker_init():
                 def sig_int(signal_num, frame):
-                    parent = psutil.Process(parent_id)
+                    parent = psutil.Process(self.run_commands_parent_pid)
                     for child in parent.children():
                         if child.pid != os.getpid():
+                            print("Killing child process: ", child.pid)
                             child.kill()
+                    print("Killing Parent Process ID: ", parent.pid())
                     parent.kill()
                     psutil.Process(os.getpid()).kill()
                 signal.signal(signal.SIGINT, sig_int)
