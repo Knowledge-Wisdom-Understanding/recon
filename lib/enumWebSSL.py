@@ -4,9 +4,11 @@ import os
 from sty import fg, bg, ef, rs
 from lib import nmapParser
 from lib import dnsenum
+from utils import peaceout_banner
 import glob
 from utils import config_parser
 from subprocess import call
+from utils import run_commands
 
 
 class EnumWebSSL:
@@ -26,6 +28,7 @@ class EnumWebSSL:
         np.openPorts()
         df = dnsenum.DnsEnum(self.target)
         df.GetHostNames()
+        heartbleed = df.heartbleed
         hostnames = df.hostnames
         ssl_ports = np.ssl_ports
         if len(ssl_ports) == 0:
@@ -36,7 +39,14 @@ class EnumWebSSL:
                 os.makedirs(c.getPath("webSSL", "webSSLDir"))
             if not os.path.exists(c.getPath("web", "aquatoneDir")):
                 os.makedirs(c.getPath("web", "aquatoneDir"))
-            print(fg.li_cyan + "Enumerating HTTPS/SSL Ports, Running the following commands:" + fg.rs)
+            print(fg.li_cyan + "Enumerating HTTPS/SSL Ports" + fg.rs)
+            if heartbleed == True:
+                rc = run_commands.RunCommands(self.target)
+                be_mine = peaceout_banner.heartbleed(self.target)
+                be_mine.bleedOut()
+                for sslport in ssl_ports:
+                    rc.loginator(c.getCmd("webSSL", "heartbleed", port=sslport))
+                    call(c.getCmd("webSSL", "heartbleed", port=sslport), shell=True)
             commands = []
             if len(hostnames) == 0:
                 for sslport in ssl_ports:
