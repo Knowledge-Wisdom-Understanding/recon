@@ -1,5 +1,7 @@
 james
 guly
+kostas
+orestis
 atanas
 security
 alpha
