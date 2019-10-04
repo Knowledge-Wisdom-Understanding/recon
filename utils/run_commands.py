@@ -219,6 +219,8 @@ class RunCommands:
         """Helper Function to Call the Search Class which will attempt to run SearchSploit."""
         ss = searchsploits.Search(self.target)
         ss.Scan()
+        searchsploit_cmds = ss.processes
+        self.mpRun(searchsploit_cmds)
         ss.vulnCheck()
 
     def sortFoundUrls(self):
