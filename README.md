@@ -101,7 +101,7 @@ Same as above but for ssh on port 2222 etc...
 python3 recon.py -t 10.10.10.10 -b ssh -p 2222
 ```
 
-To ignore certain services from being scanned you can specify the -i , --ignore flag
+To ignore certain services from being scanned you can specify the -i , --ignore flag.  
 When specifying multiple services to ignore, services must be space delimited.
 
 ```shell
