@@ -46,7 +46,7 @@ class DnsEnum:
             if not os.path.exists(c.getPath("web", "aquatoneDir")):
                 os.makedirs(c.getPath("web", "aquatoneDir"))
 
-            string_hosts = " ".join(map(str, self.hostnames))
+            # string_hosts = " ".join(map(str, self.hostnames))
             basename = []
             for host in self.hostnames:
                 basename.append(".".join(host.split('.')[-2:]))
