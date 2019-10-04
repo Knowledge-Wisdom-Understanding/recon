@@ -42,7 +42,7 @@ EXAMPLES = """
 
 """
 
-V = 3.1
+V = 3.2
 
 
 def banner():
@@ -106,9 +106,18 @@ def argument_parser():
         help="Get open ports for IPv4 address, then only Enumerate Web & and Dns Services",
     )
     parser.add_argument(
+        "-i",
+        "--ignore",
+        nargs="+",
+        choices=["http", "httpcms", "ssl", "sslcms", "smb", "dns", "proxy", "proxycms", "fulltcp", "topports"],
+        help="Services to ignore during scan.",
+        type=str.lower,
+
+    )
+    parser.add_argument(
         "-b",
         "--brute",
-        help="Experimental! - Brute Force ssh,smb,ftp, or http. -t, --target is REQUIRED. Must supply only one protocol at a time. There many stand-alone bruteforce tools out there, to automate the brute forcing process for ssh, first valid users will be enumerated before password brute is initiated, when no user or passwords are supplied as options.",
+        help="Experimental! - Brute Force ssh,smb,ftp, or http. -t, --target is REQUIRED. Must supply only one protocol at a time. For ssh, first valid users will be enumerated before password brute is initiated, when no user or passwords are supplied as options.",
         choices=["ftp", "smb", "http", "ssh"],
         type=str.lower,
     )
@@ -194,6 +203,35 @@ def main():
         sb.SshMultipleUsersBruteCustom()
 
     rc = run_commands.RunCommands(args.target)
+    Func_Map = {
+        "topports": rc.scanTopTcpPorts,
+        "dns": rc.enumDNS,
+        "http": rc.enumHTTP,
+        "httpcms": rc.cmsEnumSSL,
+        "ssl": rc.enumHTTPS,
+        "sslcms": rc.cmsEnumSSL,
+        "sort_urls": rc.sortFoundUrls,
+        "sort_proxy_urls": rc.sortFoundProxyUrls,
+        "proxy": rc.proxyEnum,
+        "proxycms":  rc.proxyEnumCMS,
+        "aqua": rc.aquatone,
+        "source": rc.checkSource,
+        "smb": rc.enumSMB,
+        "ldap": rc.enumLdap,
+        "removecolor": rc.removeColor,
+        "oracle": rc.enumOracle,
+        "fulltcp": rc.fullTcpAndTopUdpScan,
+        "remaining": rc.enumRemainingServices,
+        "searchsploit": rc.searchSploits,
+        "peaceout": rc.peace
+    }
+    if args.ignore:
+        Funcs_to_run = [Func_Map.get(f) for f in Func_Map if f not in args.ignore]
+    else:
+        Funcs_to_run = [Func_Map.get(f) for f in Func_Map]
+
+    def Funky_Fresh(Funk):
+        return [f() for f in Funk]
 
     # This is the Full Scan option for a Single Target
     if (
@@ -207,27 +245,7 @@ def main():
     ):
         validateIP()
         reset_timer()
-        rc.scanTopTcpPorts()
-        rc.enumDNS()
-        rc.enumHTTP()
-        rc.cmsEnum()
-        rc.enumHTTPS()
-        rc.cmsEnumSSL()
-        rc.sortFoundUrls()
-        rc.proxyEnum()
-        rc.sortFoundProxyUrls()
-        rc.proxyEnumCMS()
-        rc.aquatone()
-        rc.checkSource()
-        rc.enumSMB()
-        rc.enumLdap()
-        rc.removeColor()
-        rc.enumOracle()
-        rc.fullTcpAndTopUdpScan()
-        rc.enumRemainingServices()
-        rc.searchSploits()
-        rc.removeColor()
-        rc.peace()
+        Funky_Fresh(Funcs_to_run)
         check_timer()
     # This is for the -f --file Option and will run all scans on all IP addresses
     # In the provided file. Should be 1 IPv4 address per line
@@ -246,27 +264,7 @@ def main():
                     args.target = ip.rstrip()
                     validateIP()
                     reset_timer()
-                    rc.scanTopTcpPorts()
-                    rc.enumDNS()
-                    rc.enumHTTP()
-                    rc.cmsEnum()
-                    rc.enumHTTPS()
-                    rc.cmsEnumSSL()
-                    rc.sortFoundUrls()
-                    rc.proxyEnum()
-                    rc.sortFoundProxyUrls()
-                    rc.proxyEnumCMS()
-                    rc.aquatone()
-                    rc.checkSource()
-                    rc.enumSMB()
-                    rc.enumLdap()
-                    rc.removeColor()
-                    rc.enumOracle()
-                    rc.fullTcpAndTopUdpScan()
-                    rc.enumRemainingServices()
-                    rc.searchSploits()
-                    rc.removeColor()
-                    rc.peace()
+                    Funky_Fresh(Funcs_to_run)
                     check_timer()
         except FileNotFoundError as fnf_error:
             print(fnf_error)
@@ -281,6 +279,7 @@ def main():
         and (args.USERS is None)
         and (args.PASSWORDS is None)
         and (args.file is None)
+        and (args.ignore is None)
     ):
         args.target = args.web
         validateIP()

@@ -30,13 +30,12 @@ python3 -m pip install -r requirements.txt
 
 ```text
        _____________          ____    ________________
-      /___/___      \        /  / |  /___/__          \     Mr.P-Millz    _____
+      /___/___      \        /  / |  /___/__          \      Mr.P-Millz   _____
       O.G./  /   _   \______/__/  |______|__|_____ *   \_________________/__/  |___
        __/__/   /_\   \ |  |  \   __\/  _ \|  |       __/ __ \_/ ___\/  _ \|       |
       |   |     ___    \|  |  /|  | (  |_| )  |    |   \  ___/\  \__(  |_| )   |   |
       |___|____/\__\____|____/_|__|\_\____/|__|____|_  /\___  |\___  \____/|___|  /
-      gtihub.com/Knowledge-Wisdom-Understanding  \___\/  \__\/  \__\_/ v3.1 \___\/
-
+      gtihub.com/Knowledge-Wisdom-Understanding  \___\/  \__\/  \__\_/ v3.2 \___\/
 
 
 usage: python3 recon.py -t 10.10.10.10
@@ -51,13 +50,14 @@ optional arguments:
   -f FILE, --file FILE  File of IPv4 Targets to Scan
   -w WEB, --web WEB     Get open ports for IPv4 address, then only Enumerate
                         Web & and Dns Services
+  -i, --ignore {http,httpcms,ssl,sslcms,smb,dns,proxy,proxycms,fulltcp,topports}
+                        Services to ignore during scan.
   -b {ftp,smb,http,ssh}, --brute {ftp,smb,http,ssh}
                         Experimental! - Brute Force ssh,smb,ftp, or http. -t,
                         --target is REQUIRED. Must supply only one protocol at
-                        a time. Since there are already many stand-alone
-                        bruteforce tools out there, for ssh, first valid users
-                        will be enumerated before password brute is initiated,
-                        when no user or passwords are supplied as options.
+                        a time. For ssh, first valid users will be enumerated
+                        before password brute is initiated, when no user or
+                        passwords are supplied as options.
   -p PORT, --port PORT  port for brute forcing argument. If no port specified,
                         default port will be used
   -u USER, --user USER  Single user name for brute forcing, for SSH, if no
@@ -68,6 +68,7 @@ optional arguments:
                         implimented
   -P PASSWORDS, --PASSWORDS PASSWORDS
                         List of passwords to try. Not required for SSH
+
 ```
 
 To scan a single target and enumerate based off of nmap results:
@@ -98,6 +99,15 @@ Same as above but for ssh on port 2222 etc...
 
 ```shell
 python3 recon.py -t 10.10.10.10 -b ssh -p 2222
+```
+
+To ignore certain services from being scanned you can specify the -i , --ignore flag
+When specifying multiple services to ignore, services must be space delimited.
+
+```shell
+python3 recon.py -t 10.10.10.10 -i http
+python3 recon.py -t 10.10.10.10 -i http ssl
+python3 recon.py --target 10.10.10.10 --ignore fulltcp http
 ```
 
 ## Demo
