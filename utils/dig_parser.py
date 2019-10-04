@@ -29,7 +29,7 @@ class digParse:
         dig_output = [
             i.strip() for i in self.cmdline(self.command).decode("utf-8").split("\n")
         ]
-        dig_filtered = [i.split() for i in dig_output if len(i) > 10]
+        dig_filtered = [i.split() for i in dig_output if len(i) >= 9]
         domains = [
             i[-1]
             for i in dig_filtered
@@ -54,7 +54,7 @@ class digParse:
         dig_output = [
             i.strip() for i in self.cmdline(self.command).decode("utf-8").split("\n")
         ]
-        dig_filtered = [i.split() for i in dig_output if len(i) > 10]
+        dig_filtered = [i.split() for i in dig_output if len(i) >= 9]
         domains = [
             i[0]
             for i in dig_filtered
