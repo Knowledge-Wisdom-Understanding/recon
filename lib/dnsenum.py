@@ -66,6 +66,7 @@ class DnsEnum:
         c = config_parser.CommandParser(f"{os.getcwd()}/config/config.yaml", self.target)
         ig = helper_lists.ignoreDomains()
         ignore = ig.ignore
+        allsortedhostnameslist = []
         dns = []
         try:
             with open(c.getPath("nmap", "nmap_top_ports_nmap"), "r") as nm:
@@ -99,7 +100,6 @@ class DnsEnum:
             for x in tmpdns2:
                 unsortedhostnames.append(x)
             allsortedhostnames = sorted(set(tmpdns2))
-            allsortedhostnameslist = []
             for x in allsortedhostnames:
                 allsortedhostnameslist.append(x)
         else:
