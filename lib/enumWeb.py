@@ -63,7 +63,7 @@ class EnumWeb:
                         commands.append(c.getCmd("web", "wafw00fHost", host=hostname, port=port))
                         commands.append(c.getCmd("web", "curlRobotsHost", host=hostname, port=port))
                         commands.append(c.getCmd("web", "dirsearchHttpHostDict", host=hostname, port=port))
-                        commands.append(c.getCmd("web", "dirsearchHttpHostBig", host=hostname, port=port))
+                        # commands.append(c.getCmd("web", "dirsearchHttpHostBig", host=hostname, port=port))
                         commands.append(c.getCmd("web", "niktoHost", host=hostname, port=port))
             else:
                 for port in http_ports:
@@ -75,7 +75,7 @@ class EnumWeb:
                     commands.append(c.getCmd("web", "wafw00fTarget", port=port))
                     commands.append(c.getCmd("web", "curlRobotsTarget", port=port))
                     commands.append(c.getCmd("web", "dirsearchHttpTargetBig", port=port))
-                    commands.append(c.getCmd("web", "dirsearchHttpTargetDict", port=port))
+                    # commands.append(c.getCmd("web", "dirsearchHttpTargetDict", port=port))
                     commands.append(c.getCmd("web", "niktoTarget", port=port))
 
             # sorted_cmds = sorted(set(commands), reverse=True)
@@ -112,14 +112,14 @@ class EnumWeb:
                             os.makedirs(c.getPath("web", "eyewitnessDirHost", host=hostname, port=port))
 
                         commands.append(c.getCmd("web", "whatwebHttpHost", host=hostname, port=port))
-                        commands.append(c.getCmd("web", "eyewitnessHost", host=hostname, port=port))
+                        # commands.append(c.getCmd("web", "eyewitnessHost", host=hostname, port=port))
                         commands.append(c.getCmd("web", "wafw00fHost", host=hostname, port=port))
                         commands.append(c.getCmd("web", "curlRobotsHost", host=hostname, port=port))
                         commands.append(c.getCmd("web", "dirsearchHttpHostDListMed", host=hostname, port=port))
                         commands.append(c.getCmd("web", "dirsearchHttpHostRaftLargeFiles", host=hostname, port=port))
                         commands.append(c.getCmd("web", "dirsearchHttpHostRaftLargeDirs", host=hostname, port=port))
                         commands.append(c.getCmd("web", "dirsearchHttpHostForeign", host=hostname, port=port))
-                        commands.append(c.getCmd("web", "niktoHost", host=hostname, port=port))
+                        # commands.append(c.getCmd("web", "niktoHost", host=hostname, port=port))
 
             else:
                 for port in http_ports:
@@ -127,14 +127,14 @@ class EnumWeb:
                         os.makedirs(c.getPath("web", "eyewitnessDirTarget", port=port))
 
                     commands.append(c.getCmd("web", "whatwebHttpTarget", port=port))
-                    commands.append(c.getCmd("web", "eyewitnessTarget", port=port))
+                    # commands.append(c.getCmd("web", "eyewitnessTarget", port=port))
                     commands.append(c.getCmd("web", "wafw00fTarget", port=port))
                     commands.append(c.getCmd("web", "curlRobotsTarget", port=port))
                     commands.append(c.getCmd("web", "dirsearchHttpTargetDListMed", port=port))
                     commands.append(c.getCmd("web", "dirsearchHttpTargetRaftLargeFiles", port=port))
                     commands.append(c.getCmd("web", "dirsearchHttpTargetRaftLargeDirs", port=port))
                     commands.append(c.getCmd("web", "dirsearchHttpTargetForeign", port=port))
-                    commands.append(c.getCmd("web", "niktoHost", port=port))
+                    # commands.append(c.getCmd("web", "niktoHost", port=port))
 
             self.processes = tuple(commands)
 

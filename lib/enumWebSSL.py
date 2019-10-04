@@ -54,7 +54,7 @@ class EnumWebSSL:
                     commands.append(c.getCmd("webSSL", "eyewitnessSSLTarget", port=sslport))
                     commands.append(c.getCmd("webSSL", "wafw00fSSLTarget", port=sslport))
                     commands.append(c.getCmd("webSSL", "curlRobotsSSLTarget", port=sslport))
-                    commands.append(c.getCmd("webSSL", "dirsearchSSLTargetBig", port=sslport))
+                    # commands.append(c.getCmd("webSSL", "dirsearchSSLTargetBig", port=sslport))
                     commands.append(c.getCmd("webSSL", "dirsearchSSLTargetDict", port=sslport))
                     commands.append(c.getCmd("webSSL", "niktoSSLTarget", port=sslport))
             else:
@@ -65,7 +65,7 @@ class EnumWebSSL:
                         commands.append(c.getCmd("webSSL", "wafw00fSSLHost", host=host, port=sslport))
                         commands.append(c.getCmd("webSSL", "curlRobotsSSLHost", host=host, port=sslport))
                         commands.append(c.getCmd("webSSL", "dirsearchSSLHostDict", host=host, port=sslport))
-                        commands.append(c.getCmd("webSSL", "dirsearchSSLHostBig", host=host, port=sslport))
+                        # commands.append(c.getCmd("webSSL", "dirsearchSSLHostBig", host=host, port=sslport))
                         commands.append(c.getCmd("webSSL", "niktoSSLHost", host=host, port=sslport))
 
             self.processes = tuple(commands)
@@ -95,26 +95,26 @@ class EnumWebSSL:
             if len(hostnames) == 0:
                 for sslport in ssl_ports:
                     commands.append(c.getCmd("webSSL", "whatwebSSLTarget", port=sslport))
-                    commands.append(c.getCmd("webSSL", "eyewitnessSSLTarget", port=sslport))
+                    # commands.append(c.getCmd("webSSL", "eyewitnessSSLTarget", port=sslport))
                     commands.append(c.getCmd("webSSL", "wafw00fSSLTarget", port=sslport))
                     commands.append(c.getCmd("webSSL", "curlRobotsSSLTarget", port=sslport))
                     commands.append(c.getCmd("webSSL", "dirsearchSSLTargetDListMed", port=sslport))
                     commands.append(c.getCmd("webSSL", "dirsearchSSLTargetRaftLargeFiles", port=sslport))
                     commands.append(c.getCmd("webSSL", "dirsearchSSLTargetRaftLargeDirs", port=sslport))
                     commands.append(c.getCmd("webSSL", "dirsearchSSLTargetForeign", port=sslport))
-                    commands.append(c.getCmd("webSSL", "niktoSSLHost", port=sslport))
+                    # commands.append(c.getCmd("webSSL", "niktoSSLHost", port=sslport))
             else:
                 for sslport in ssl_ports:
                     for hostname in hostnames:
                         commands.append(c.getCmd("webSSL", "whatwebSSLHost", host=hostname, port=sslport))
-                        commands.append(c.getCmd("webSSL", "eyewitnessSSLHost", host=hostname, port=sslport))
+                        # commands.append(c.getCmd("webSSL", "eyewitnessSSLHost", host=hostname, port=sslport))
                         commands.append(c.getCmd("webSSL", "wafw00fSSLHost", host=hostname, port=sslport))
                         commands.append(c.getCmd("webSSL", "curlRobotsSSLHost", host=hostname, port=sslport))
                         commands.append(c.getCmd("webSSL", "dirsearchSSLHostDListMed", host=hostname, port=sslport))
                         commands.append(c.getCmd("webSSL", "dirsearchSSLHostRaftLargeFiles", host=hostname, port=sslport))
                         commands.append(c.getCmd("webSSL", "dirsearchSSLHostRaftLargeDirs", host=hostname, port=sslport))
                         commands.append(c.getCmd("webSSL", "dirsearchSSLHostForeign", host=hostname, port=sslport))
-                        commands.append(c.getCmd("webSSL", "niktoSSLHost", host=hostname, port=sslport))
+                        # commands.append(c.getCmd("webSSL", "niktoSSLHost", host=hostname, port=sslport))
 
             self.processes = tuple(commands)
 
