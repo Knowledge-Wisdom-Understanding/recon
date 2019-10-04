@@ -192,8 +192,10 @@ class EnumWebSSL:
                             "Magento",
                             "tomcat",
                             "WebDAV",
+                            "Microsoft-IIS 6.0",
                             "Drupal",
                             "Joomla",
+                            "Webmin",
                         ]
                         try:
                             with open(i, "r") as wwf:
@@ -233,6 +235,10 @@ class EnumWebSSL:
                                                                 os.makedirs(c.getPath("vuln", "vulnDir"))
                                                             cms_commands.append(c.getCmd("vuln", "searchsploit", strang=str(cms), name="WebDAV"))
                                                             cms_commands.append(c.getCmd("webSSL", "davtestHost", host=hn))
+                                                        if "Webmin" in cms:
+                                                            if not os.path.exists(c.getPath("vuln", "vulnDir")):
+                                                                os.makedirs(c.getPath("vuln", "vulnDir"))
+                                                            cms_commands.append(c.getCmd("vuln", "searchsploit", strang=str(cms), name="Webmin"))
                                             else:
                                                 if "WordPress" in cms:
                                                     cms_commands.append(c.getCmd("webSSL", "wpscanSSLTarget", sslPort=ssl_port))
@@ -291,6 +297,10 @@ class EnumWebSSL:
                                                     cms_commands.append(c.getCmd("vuln", "searchsploit", strang=str(cms), name="WebDAV"))
                                                     cms_commands.append(c.getCmd("webSSL", "davtestTarget"))
                                                     cms_commands.append(c.getCmd("webSSL", "nmapWebDav", sslPot=ssl_port))
+                                                if "Webmin" in cms:
+                                                    if not os.path.exists(c.getPath("vuln", "vulnDir")):
+                                                        os.makedirs(c.getPath("vuln", "vulnDir"))
+                                                    cms_commands.append(c.getCmd("vuln", "searchsploit", strang=str(cms), name="Webmin"))
                         except FileNotFoundError as fnf:
                             print(fnf)
                             continue

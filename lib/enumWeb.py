@@ -179,6 +179,7 @@ class EnumWeb:
                             "Microsoft-IIS 6.0",
                             "Drupal",
                             "Joomla",
+                            "Webmin",
                         ]
                         try:
                             with open(i, "r") as wwf:
@@ -255,6 +256,10 @@ class EnumWeb:
                                                     os.makedirs(c.getPath("vuln", "vulnDir"))
                                                 cms_commands.append(c.getCmd("vuln", "searchsploit", strang=str(cms), name="tomcat"))
                                                 cms_commands.append(c.getCmd("web", "tomcatHydra", httpPort=http_port))
+                                            if "Webmin" in cms:
+                                                if not os.path.exists(c.getPath("vuln", "vulnDir")):
+                                                    os.makedirs(c.getPath("vuln", "vulnDir"))
+                                                cms_commands.append(c.getCmd("vuln", "searchsploit", strang=str(cms), name="Webmin"))
 
                         except FileNotFoundError as fnf_error:
                             print(fnf_error)
