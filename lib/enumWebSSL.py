@@ -54,7 +54,7 @@ class EnumWebSSL:
                     commands.append(c.getCmd("webSSL", "eyewitnessSSLTarget", port=sslport))
                     commands.append(c.getCmd("webSSL", "wafw00fSSLTarget", port=sslport))
                     commands.append(c.getCmd("webSSL", "curlRobotsSSLTarget", port=sslport))
-                    # commands.append(c.getCmd("webSSL", "dirsearchSSLTargetBig", port=sslport))
+                    commands.append(c.getCmd("webSSL", "dirsearchSSLTargetBig", port=sslport))
                     commands.append(c.getCmd("webSSL", "dirsearchSSLTargetDict", port=sslport))
                     commands.append(c.getCmd("webSSL", "niktoSSLTarget", port=sslport))
             else:
@@ -65,7 +65,7 @@ class EnumWebSSL:
                         commands.append(c.getCmd("webSSL", "wafw00fSSLHost", host=host, port=sslport))
                         commands.append(c.getCmd("webSSL", "curlRobotsSSLHost", host=host, port=sslport))
                         commands.append(c.getCmd("webSSL", "dirsearchSSLHostDict", host=host, port=sslport))
-                        # commands.append(c.getCmd("webSSL", "dirsearchSSLHostBig", host=host, port=sslport))
+                        commands.append(c.getCmd("webSSL", "dirsearchSSLHostBig", host=host, port=sslport))
                         commands.append(c.getCmd("webSSL", "niktoSSLHost", host=host, port=sslport))
 
             self.processes = tuple(commands)

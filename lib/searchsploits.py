@@ -81,7 +81,8 @@ class Search:
                         pass
                     else:
                         first_word = lowercase_title.split(" ", 1)[0]
-                        http_cmd = c.getCmd("vuln", "searchsploit", strang=lowercase_title, name="http-title")
+                        first_two_words = " ".join(lowercase_title.replace("[", "").replace("]", "").replace("\n", " ").replace("'", "").split(" ", 2)[0:2])
+                        http_cmd = c.getCmd("vuln", "searchsploit", strang=str(first_two_words), name="http-title")
                         http_cmd2 = c.getCmd("vuln", "searchsploit", strang=first_word, name=f"{first_word}")
                         commands_to_run.append(http_cmd)
                         commands_to_run.append(http_cmd2)
@@ -101,7 +102,8 @@ class Search:
                     pass
                 else:
                     first_word = lowercase_title.split(" ", 1)[0]
-                    http_cmd = c.getCmd("vuln", "searchsploit", strang=lowercase_title, name="http-title")
+                    first_two_words = " ".join(lowercase_title.replace("[", "").replace("]", "").replace("\n", " ").replace("'", "").split(" ", 2)[0:2])
+                    http_cmd = c.getCmd("vuln", "searchsploit", strang=str(first_two_words), name="http-title")
                     http_cmd2 = c.getCmd("vuln", "searchsploit", strang=first_word, name=f"{first_word}")
                     commands_to_run.append(http_cmd)
                     commands_to_run.append(http_cmd2)
@@ -125,6 +127,9 @@ class Search:
                         product_cmd4 = c.getCmd("vuln", "searchsploit", strang=str(fw), name="all-services")
                         commands_to_run.append(product_cmd2)
                         commands_to_run.append(product_cmd4)
+
+        sorted_cmds = sorted(set(commands_to_run))
+        commands_to_run = [i for i in sorted_cmds]
         self.processes = tuple(commands_to_run)
         if len(commands_to_run) != 0:
             print(f"[{fg.li_yellow}+{fg.rs}] {fg.li_cyan}SEARCHING FOR EXPLOITS {fg.rs}")

@@ -47,7 +47,7 @@ class Aquatone:
             check_lines = f"""wc -l {c.getPath("web","aquatoneDirUrls")} | cut -d ' ' -f 1"""
             num_urls = check_output(check_lines, stderr=STDOUT, shell=True).rstrip()
             # ToDo: open urls.txt and sort urls by occurance of response codes.
-            if int(num_urls) < 150:
+            if int(num_urls) < 150 and (int(num_urls) != 0):
                 aquatone_cmd = c.getCmd("web", "aquatone", allWebPorts=all_web_ports_comma_list)
                 print(cmd_info, aquatone_cmd)
                 call(aquatone_cmd, shell=True)
@@ -61,7 +61,7 @@ class Aquatone:
         if os.path.exists(c.getPath("proxy", "aquatoneDirProxyUrls")):
             check_lines = f"""wc -l {c.getPath("proxy","aquatoneDirProxyUrls")} | cut -d ' ' -f 1"""
             num_urls = check_output(check_lines, stderr=STDOUT, shell=True).rstrip()
-            if int(num_urls) < 150:
+            if int(num_urls) < 150 and (int(num_urls) != 0):
                 aquatone_cmd = c.getCmd("proxy", "aquatoneProxy", allWebProxyPorts=all_web_proxy_ports_comma_list, proxyPorts=proxy_ports[0])
                 print(cmd_info, aquatone_cmd)
                 call(aquatone_cmd, shell=True)
