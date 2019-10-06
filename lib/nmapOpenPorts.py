@@ -67,7 +67,8 @@ class NmapOpenPorts:
         if len(rpcPorts) != 0:
             if not os.path.exists(c.getPath("rpc", "rpcDir")):
                 os.makedirs(c.getPath("rpc", "rpcDir"))
-            unsorted_commands.append(c.getCmd("rpc", "enum4linuxRpc"))
+            if not os.path.exists(c.getPath("smb", "smbScan")):
+                unsorted_commands.append(c.getCmd("rpc", "enum4linuxRpc"))
             if which("impacket-rpcdump"):
                 unsorted_commands.append(c.getCmd("rpc", "rpcdump"))
         if len(cupsPorts) != 0:
