@@ -3,8 +3,8 @@
 import os
 from sty import fg, bg, ef, rs
 from lib import nmapParser
-from lib import brute
 from utils import config_parser
+#from lib import brute
 
 
 class Search:
