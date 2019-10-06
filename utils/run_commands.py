@@ -93,9 +93,9 @@ class RunCommands:
                     parent = psutil.Process(parent_id)
                     for child in parent.children():
                         if child.pid != os.getpid():
-                            print("Killing child process: ", child.pid)
+                            # print("Killing child process: ", child.pid)
                             child.kill()
-                    print("Killing Parent Process ID: ", parent.pid())
+                    # print("Killing Parent Process ID: ", parent.pid())
                     parent.kill()
                     psutil.Process(os.getpid()).kill()
                 signal.signal(signal.SIGINT, sig_int)
