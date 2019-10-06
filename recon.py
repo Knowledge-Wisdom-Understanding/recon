@@ -246,6 +246,7 @@ def main():
         validateIP()
         reset_timer()
         Funky_Fresh(Funcs_to_run)
+        rc.removeColor()
         check_timer()
     # This is for the -f --file Option and will run all scans on all IP addresses
     # In the provided file. Should be 1 IPv4 address per line
@@ -265,6 +266,7 @@ def main():
                     validateIP()
                     reset_timer()
                     Funky_Fresh(Funcs_to_run)
+                    rc.removeColor()
                     check_timer()
         except FileNotFoundError as fnf_error:
             print(fnf_error)
