@@ -31,7 +31,7 @@ class Search:
         smtp_product = np.smtp_product
         products = np.all_products
         http_title = np.http_script_title
-        ignore = ["apache", "mysql"]
+        ignore = ["apache", "mysql", "microsoft"]
         commands_to_run = []
         c = config_parser.CommandParser(f"{os.getcwd()}/config/config.yaml", self.target)
         ### FTP searchsploit product ###
