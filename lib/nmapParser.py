@@ -367,6 +367,9 @@ class NmapParserFunk:
                 if "asterisk" in service[1]:
                     if service[0] not in self.sip_ports:
                         self.sip_ports.append(service[0])
+                if "finger" in service[1]:
+                    if service[0] not in self.finger_ports:
+                        self.finger_ports.append(service[0])
                 if "vnc" in service[1]:
                     if service[0] not in self.vnc_ports:
                         self.vnc_ports.append(service[0])

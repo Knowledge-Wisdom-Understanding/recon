@@ -109,7 +109,7 @@ def argument_parser():
         "-i",
         "--ignore",
         nargs="+",
-        choices=["http", "httpcms", "ssl", "sslcms", "aqua", "smb", "dns", "proxy", "proxycms", "fulltcp", "topports", "remaining"],
+        choices=["http", "httpcms", "ssl", "sslcms", "aqua", "smb", "dns", "proxy", "proxycms", "fulltcp", "topports", "remaining", "searchsploit"],
         help="Services to ignore during scan.",
         type=str.lower,
 

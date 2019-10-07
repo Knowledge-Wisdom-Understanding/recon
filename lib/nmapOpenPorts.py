@@ -58,7 +58,7 @@ class NmapOpenPorts:
             if not os.path.exists(c.getPath("finger", "fingerDir")):
                 os.makedirs(c.getPath("finger", "fingerDir"))
             for p in fingerPorts:
-                unsorted_commands.append(c.getCmd("finger", "userEnum", p=p))
+                unsorted_commands.append(c.getCmd("finger", "fingerUserEnum", p=p))
         if len(smtpPorts) != 0:
             if not os.path.exists(c.getPath("smtp", "smtpDir")):
                 os.makedirs(c.getPath("smtp", "smtpDir"))

@@ -124,6 +124,7 @@ commands:
     "patator_ssh_cewl_auto": "patator ssh_login host=$target port=$port user=$user password=FILE0 0=$reportDir/wordlists/all.txt persistent=0 -l $reportDir/ssh/patatorBrute-$user -x free=user:code=0 -x ignore:mesg='Authentication failed.'"
     "patator_ssh_single_user_custom": "patator ssh_login host=$target port=$port user=$user password=FILE0 0=$wordlist persistent=0 -l $reportDir/ssh/patatorBrute-$user -x free=user:code=0 -x ignore:mesg='Authentication failed.'"
     "patator_ssh_multiple_users_custom": "patator ssh_login host=$target port=$port user=FILE0 0=$users password=FILE1 1=$wordlist persistent=0 -l $reportDir/ssh/patatorBrute-Multiple -x free=user:code=0 -x ignore:mesg='Authentication failed.'"
+    "nmapSSH": "nmap -v -sV --script=ssh-auth-methods.nse,ssh-hostkey.nse,ssh-publickey-acceptance.nse,ssh-run.nse,ssh2-enum-algos.nse,sshv1.nse --script-args=unsafe=1 -p $p -oA $nmapReportDir/ssh-$target $target"
   cassandra:
     "nmapCassandra": "nmap -Pn -sV -p $cassandraPorts --script='banner,(cassandra* or ssl*) and not (brute or broadcast or dos or external or fuzzer)' -oA $nmapReportDir/cassandra $target"
   cups:
@@ -154,7 +155,7 @@ commands:
     "showmount": "showmount -e $target 2>&1 | tee $reportDir/nfs/showmount.log"
   nmap:
     "nmapTopTcpPorts": "nmap -vv -Pn -sV -sC -p $topTcpPorts --script-timeout 5m -oA $nmapReportDir/top-ports-$target $target"
-    "nmapFullTcpScan": "nmap -vv -Pn -sC -sV -O -p- -T4 --script-timeout 2m -oA $nmapReportDir/full-tcp-scan-$target $target"
+    "nmapFullTcpScan": "nmap -vv -Pn -sC -sV -O -p- -T4 --script-timeout 2m --script-args=unsafe=1 -oA $nmapReportDir/full-tcp-scan-$target $target"
     "nmapTopUdpScan": "nmap -sUV -vv --reason -T4 --max-retries 3 --max-rtt-timeout 150ms -pU:$topUdpPorts -oA $nmapReportDir/top-udp-ports $target"
     "nmapVulners": "nmap -vv -sV -Pn --script nmap-vulners -p $openTcpPorts -oA $nmapReportDir/vulnscan-$target $target"
   ldap:
@@ -180,7 +181,7 @@ commands:
   smtp:
     "smtpUserEnum": "smtp-user-enum -M VRFY -U /usr/share/metasploit-framework/data/wordlists/unix_users.txt -t $target -p $p 2>&1 | tee $reportDir/smtp/smtp-user-enum-$p.log"
   finger:
-    "fingerUserEnum": "$pwd/scripts/finger-user-enum.pl -U /usr/share/seclists/Usernames/Names/names.txt -t $target -p $p | tee $reportDir/finger/finger-user-enum-$p.log"
+    "fingerUserEnum": "perl $pwd/scripts/finger-user-enum.pl -U /usr/share/seclists/Usernames/Names/names.txt -t $target -p $p -m 100 | tee $reportDir/finger/finger-user-enum-$p.log"
   snmp:
     "snmpwalk": "snmpwalk -c public -v2c $target | tee $reportDir/snmp/snmpwalk.log"
     "snmpCheck": "snmp-check -c public -v 1 -d $target | tee $reportDir/snmp/snmpcheck.log"
