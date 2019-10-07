@@ -3,6 +3,8 @@
 import os
 from libnmap.parser import NmapParser
 from utils import config_parser
+from xml.sax.handler import ContentHandler
+from xml.sax import make_parser
 
 
 class NmapParserFunk:
@@ -48,6 +50,7 @@ class NmapParserFunk:
         self.mongo_ports = []
         self.pop3_ports = []
         self.kerberos_ports = []
+        self.finger_ports = []
         ###### UDP PORTS ############
         self.snmp_ports = []
         self.sip_udp_ports = []
@@ -207,6 +210,9 @@ class NmapParserFunk:
                 if "mysql" in service[1]:
                     if service[0] not in self.mysql_ports:
                         self.mysql_ports.append(service[0])
+                if "finger" in service[1]:
+                    if service[0] not in self.finger_ports:
+                        self.finger_ports.append(service[0])
                 if "mongod" in service[1]:
                     if service[0] not in self.mongo_ports:
                         self.mongo_ports.append(service[0])
@@ -494,34 +500,45 @@ class NmapParserFunk:
         """The openUdpPorts function will parse all found ports from the UDP nmap xml file fed to
         the report variable. All ports will be appended to the lists in __init__ and will
         then be accessible from the NmapParserFunk Class."""
-        c = config_parser.CommandParser(f"{os.getcwd()}/config/config.yaml", self.target)
-        report = NmapParser.parse_fromfile(c.getPath("nmap", "nmap_top_udp_ports_xml"))
-        self.udp_nmap_services += report.hosts[0].services
-        self.udp_nmap_services = sorted(self.udp_nmap_services, key=lambda s: s.port)
-        for service in self.udp_nmap_services:
-            if "open" not in service.state:
-                continue
-            if "open|filtered" in service.state:
-                continue
-            self.udp_services.append(
-                (
-                    service.port,
-                    service.service,
-                    service.tunnel,
-                    service.cpelist,
-                    service.banner,
-                )
-            )
-            for service in self.udp_services:
-                if service[0] not in self.udp_ports:
-                    self.udp_ports.append(service[0])
-                if "snmp" in service[1]:
-                    if service[0] not in self.snmp_ports:
-                        self.snmp_ports.append(service[0])
-                if "sip" in service[1]:
-                    if service[0] not in self.sip_udp_ports:
-                        self.sip_udp_ports.append(service[0])
+        def parsefile(xmlfile):
+            parser = make_parser()
+            parser.setContentHandler(ContentHandler())
+            parser.parse(xmlfile)
 
-        # print("SNMP PORTS", self.snmp_ports)
-        # print("UDP SERVICES", self.udp_services)
-        # print("UDP OPEN PORTS", self.udp_ports)
+        c = config_parser.CommandParser(f"{os.getcwd()}/config/config.yaml", self.target)
+        if os.path.exists(c.getPath("nmap", "nmap_top_udp_ports_xml")):
+            try:
+                parsefile(c.getPath("nmap", "nmap_top_udp_ports_xml"))
+                report = NmapParser.parse_fromfile(c.getPath("nmap", "nmap_top_udp_ports_xml"))
+                self.udp_nmap_services += report.hosts[0].services
+                self.udp_nmap_services = sorted(self.udp_nmap_services, key=lambda s: s.port)
+                for service in self.udp_nmap_services:
+                    if "open" not in service.state:
+                        continue
+                    if "open|filtered" in service.state:
+                        continue
+                    self.udp_services.append(
+                        (
+                            service.port,
+                            service.service,
+                            service.tunnel,
+                            service.cpelist,
+                            service.banner,
+                        )
+                    )
+                    for service in self.udp_services:
+                        if service[0] not in self.udp_ports:
+                            self.udp_ports.append(service[0])
+                        if "snmp" in service[1]:
+                            if service[0] not in self.snmp_ports:
+                                self.snmp_ports.append(service[0])
+                        if "sip" in service[1]:
+                            if service[0] not in self.sip_udp_ports:
+                                self.sip_udp_ports.append(service[0])
+
+                # print("SNMP PORTS", self.snmp_ports)
+                # print("UDP SERVICES", self.udp_services)
+                # print("UDP OPEN PORTS", self.udp_ports)
+            except Exception as e:
+                print(f"""{c.getPath("nmap", "nmap_top_udp_ports_xml")} Cannot Parse UDP nmap xml file. {e}""")
+                return
