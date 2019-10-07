@@ -36,6 +36,7 @@ class NmapOpenPorts:
         mongoPorts = np.mongo_ports
         pop3Ports = np.pop3_ports
         kerberosPorts = np.kerberos_ports
+        fingerPorts = np.finger_ports
         tcpPorts = np.tcp_ports
         string_tcp_ports = ",".join(map(str, tcpPorts))
         unp = nmapParser.NmapParserFunk(self.target)
@@ -53,6 +54,11 @@ class NmapOpenPorts:
         if len(ftpPorts) != 0:
             string_ftp_ports = ",".join(map(str, ftpPorts))
             unsorted_commands.append(c.getCmd("ftp", "nmapFtp", ftpPorts=string_ftp_ports))
+        if len(fingerPorts) != 0:
+            if not os.path.exists(c.getPath("finger", "fingerDir")):
+                os.makedirs(c.getPath("finger", "fingerDir"))
+            for p in fingerPorts:
+                unsorted_commands.append(c.getCmd("finger", "userEnum", p=p))
         if len(smtpPorts) != 0:
             if not os.path.exists(c.getPath("smtp", "smtpDir")):
                 os.makedirs(c.getPath("smtp", "smtpDir"))

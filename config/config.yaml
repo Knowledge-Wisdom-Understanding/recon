@@ -179,6 +179,8 @@ commands:
     "enum4linux": "enum4linux -av $target | tee -a $reportDir/smb/smb-scan-$target.log"
   smtp:
     "smtpUserEnum": "smtp-user-enum -M VRFY -U /usr/share/metasploit-framework/data/wordlists/unix_users.txt -t $target -p $p 2>&1 | tee $reportDir/smtp/smtp-user-enum-$p.log"
+  finger:
+    "fingerUserEnum": "$pwd/scripts/finger-user-enum.pl -U /usr/share/seclists/Usernames/Names/names.txt -t $target -p $p | tee $reportDir/finger/finger-user-enum-$p.log"
   snmp:
     "snmpwalk": "snmpwalk -c public -v2c $target | tee $reportDir/snmp/snmpwalk.log"
     "snmpCheck": "snmp-check -c public -v 1 -d $target | tee $reportDir/snmp/snmpcheck.log"
@@ -353,6 +355,8 @@ paths:
   smtp:
     "smtpDir": "$reportDir/smtp"
     "smtp_user_enum": "$reportDir/smtp/smtp-user-enum-port"
+  finger:
+    "fingerDir": "$reportDir/finger"
   smb:
     "nmapSmb": "$nmapReportDir/smbvulns-$target"
     "smbDir": "$reportDir/smb"
