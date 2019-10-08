@@ -266,6 +266,8 @@ class EnumWebSSL:
 
 
 class EnumWebSSL2:
+    """Enumerate the web based on a custom url paths specified via the command line -w --web argument."""
+
     def __init__(self, web, target):
         self.web = web
         self.target = target

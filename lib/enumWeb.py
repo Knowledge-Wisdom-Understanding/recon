@@ -319,6 +319,8 @@ class EnumWeb:
 
 
 class EnumWeb2:
+    """Enumerate the web based on a custom url paths specified via the command line -w --web argument."""
+
     def __init__(self, web, target):
         self.web = web
         self.target = target
@@ -355,8 +357,8 @@ class EnumWeb2:
 
                         commands.append(c.getCmd("web", "whatwebHttpHost", host=hostname, port=port))
                         # commands.append(c.getCmd("web", "eyewitnessHost", host=hostname, port=port))
-                        commands.append(c.getCmd("web", "wafw00fHost", host=hostname, port=port))
-                        commands.append(c.getCmd("web", "curlRobotsHost", host=hostname, port=port))
+                        # commands.append(c.getCmd("web", "wafw00fHost", host=hostname, port=port))
+                        # commands.append(c.getCmd("web", "curlRobotsHost", host=hostname, port=port))
                         commands.append(c.getCmd("web", "dirsearchHttpHostDListMed", host=hostname, port=port, url=self.web))
                         commands.append(c.getCmd("web", "dirsearchHttpHostRaftLargeFiles", host=hostname, port=port, url=self.web))
                         commands.append(c.getCmd("web", "dirsearchHttpHostRaftLargeDirs", host=hostname, port=port, url=self.web))
@@ -370,8 +372,8 @@ class EnumWeb2:
 
                     commands.append(c.getCmd("web", "whatwebHttpTarget", port=port))
                     # commands.append(c.getCmd("web", "eyewitnessTarget", port=port))
-                    commands.append(c.getCmd("web", "wafw00fTarget", port=port))
-                    commands.append(c.getCmd("web", "curlRobotsTarget", port=port))
+                    # commands.append(c.getCmd("web", "wafw00fTarget", port=port))
+                    # commands.append(c.getCmd("web", "curlRobotsTarget", port=port))
                     commands.append(c.getCmd("web", "dirsearchHttpTargetDListMed", port=port, url=self.web))
                     commands.append(c.getCmd("web", "dirsearchHttpTargetRaftLargeFiles", port=port, url=self.web))
                     commands.append(c.getCmd("web", "dirsearchHttpTargetRaftLargeDirs", port=port, url=self.web))
@@ -382,6 +384,9 @@ class EnumWeb2:
 
 
 class PrecisionCrawl:
+    """This Class hasn't been completed yet, but will ultimately be used to crawl urls recursively or something
+    useful."""
+
     def __init__(self, target):
         self.target = target
 

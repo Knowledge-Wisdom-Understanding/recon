@@ -47,8 +47,8 @@ commands:
     "webDavNmapHost": "nmap -Pn -v -sV -p $httpPort --script=http-iis-webdav-vuln.nse -oA $reportDir/nmap/webdav $host"
     "tomcatHydraHost": "hydra -C /usr/share/seclists/Passwords/Default-Credentials/tomcat-betterdefaultpasslist.txt -s $httpPort $host http-get /manager/html"
     "wpscanHttpHost": "wpscan --no-update --url http://$host:$httpPort --wp-content-dir wp-content --enumerate vp,vt,cb,dbe,u,m --plugins-detection aggressive | tee $reportDir/web/wpscan-$http_port.log"
-    "parameth": "python /opt/parameth/parameth.py -u $url -x 404,500,401,502 -t 80 --params /opt/parameth/lists/all.txt --diff 95 --out $reportDir/web/fuzzer_$upath.log"
-    "paramethCookie": "python /opt/parameth/parameth.py -u $url -x 404,500,401,502 -c 'Cookie: $cookies' -t 80 --params /opt/parameth/lists/all.txt --diff 95 --out $reportDir/web/fuzzer_$upath.log"
+    "parameth": "python /opt/parameth/parameth.py -u $url -x 404,500,401,502 -t 40 --params /opt/parameth/lists/all.txt --diff 95 --out $reportDir/web/fuzzer-$upath.log"
+    "paramethCookie": "python /opt/parameth/parameth.py -u $url -x 404,500,401,502 -c 'Cookie: $cookies' -t 40 --params /opt/parameth/lists/all.txt --diff 95 --out $reportDir/web/fuzzer-$upath.log"
   webSSL:
     "whatwebSSLTarget": "whatweb -v -a 3 https://$target:$port | tee $reportDir/webSSL/whatweb-$target-$port.log"
     "whatwebSSLHost": "whatweb -v -a 3 https://$host:$port | tee $reportDir/webSSL/whatweb-$host-$port.log"

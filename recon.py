@@ -35,8 +35,11 @@ intervals = (
 
 EXAMPLES = """
     Ex. python3 recon.py -t 10.10.10.10
-    Ex. python3 recon.py -t 10.10.10.10 -w
+    Ex. python3 recon.py -t 10.10.10.10 -w secret
+    Ex. python3 recon.py -t 10.10.10.10 -w somedirectory
+    Ex. python3 recon.py -t 10.10.10.10 -w ' '
     Ex. python3 recon.py -f ips.txt
+    Ex. python3 recon.py -t 10.10.10.10 --FUZZ
     Ex. python3 recon.py -t 10.10.10.10 -b ssh
     Ex. python3 recon.py -t 10.10.10.10 -b ssh -p 2222
     Ex. python3 recon.py -t 10.10.10.10 -b ssh -u bob -P /usr/share/seclists/Passwords/darkc0de.txt
@@ -46,7 +49,7 @@ EXAMPLES = """
     Ex. python3 recon.py -t 10.10.10.10 --ignore aquatone
 """
 
-V = 3.2
+V = 3.3
 
 
 def banner():

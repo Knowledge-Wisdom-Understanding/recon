@@ -142,12 +142,12 @@ class RunCommands:
     #     web_enum_commands = eweb.processes
     #     self.mpRun(web_enum_commands)
 
-    def enumHTTPS2(self):
-        """Helper function to call the lib/enumWebSSL Large Wordlists Class."""
-        webssl = enumWebSSL.EnumWebSSL(self.target)
-        webssl.ScanWebOption()
-        web_ssl_enum_commands = webssl.processes
-        self.mpRun(web_ssl_enum_commands)
+    # def enumHTTPS2(self):
+    #     """Helper function to call the lib/enumWebSSL Large Wordlists Class."""
+    #     webssl = enumWebSSL.EnumWebSSL(self.target)
+    #     webssl.ScanWebOption()
+    #     web_ssl_enum_commands = webssl.processes
+    #     self.mpRun(web_ssl_enum_commands)
 
     def enumDNS(self):
         """Helper function to call the lib/DnsEnum Class."""
