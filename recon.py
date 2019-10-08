@@ -34,12 +34,15 @@ intervals = (
 
 EXAMPLES = """
     Ex. python3 recon.py -t 10.10.10.10
-    Ex. python3 recon.py -w 10.10.10.10
+    Ex. python3 recon.py -t 10.10.10.10 -w
     Ex. python3 recon.py -f ips.txt
     Ex. python3 recon.py -t 10.10.10.10 -b ssh
     Ex. python3 recon.py -t 10.10.10.10 -b ssh -p 2222
     Ex. python3 recon.py -t 10.10.10.10 -b ssh -u bob -P /usr/share/seclists/Passwords/darkc0de.txt
-
+    Ex. python3 recon.py -t 10.10.10.10 --ignore http httpcms ssl sslcms
+    Ex. python3 recon.py -t 10.10.10.10 --ignore ssl sslcms
+    Ex. python3 recon.py -t 10.10.10.10 --ignore fulltcp
+    Ex. python3 recon.py -t 10.10.10.10 --ignore aquatone
 """
 
 V = 3.2
@@ -103,13 +106,14 @@ def argument_parser():
     parser.add_argument(
         "-w",
         "--web",
-        help="Get open ports for IPv4 address, then only Enumerate Web & and Dns Services",
+        action="store_true",
+        help="Get open ports for IPv4 address, then only Enumerate Web & and Dns Services. -t,--target must be specified. -w, --web takes no arguments.",
     )
     parser.add_argument(
         "-i",
         "--ignore",
         nargs="+",
-        choices=["http", "httpcms", "ssl", "sslcms", "aqua", "smb", "dns", "proxy", "proxycms", "fulltcp", "topports", "remaining", "searchsploit"],
+        choices=["http", "httpcms", "ssl", "sslcms", "aqua", "smb", "dns", "ldap", "oracle", "source", "proxy", "proxycms", "fulltcp", "topports", "remaining", "searchsploit"],
         help="Services to ignore during scan.",
         type=str.lower,
 
@@ -203,7 +207,7 @@ def main():
         sb.SshMultipleUsersBruteCustom()
 
     rc = run_commands.RunCommands(args.target)
-    Func_Map = {
+    FUNK_MAP = {
         "topports": rc.scanTopTcpPorts,
         "dns": rc.enumDNS,
         "http": rc.enumHTTP,
@@ -214,7 +218,7 @@ def main():
         "sort_proxy_urls": rc.sortFoundProxyUrls,
         "proxy": rc.proxyEnum,
         "proxycms":  rc.proxyEnumCMS,
-        "aqua": rc.aquatone,
+        "aquatone": rc.aquatone,
         "source": rc.checkSource,
         "smb": rc.enumSMB,
         "ldap": rc.enumLdap,
@@ -226,9 +230,9 @@ def main():
         "peaceout": rc.peace
     }
     if args.ignore:
-        Funcs_to_run = [Func_Map.get(f) for f in Func_Map if f not in args.ignore]
+        Funcs_to_run = [FUNK_MAP.get(f) for f in FUNK_MAP if f not in args.ignore]
     else:
-        Funcs_to_run = [Func_Map.get(f) for f in Func_Map]
+        Funcs_to_run = [FUNK_MAP.get(f) for f in FUNK_MAP]
 
     def Funky_Fresh(Funk):
         return [f() for f in Funk]
@@ -242,6 +246,7 @@ def main():
         and (args.user is None)
         and (args.USERS is None)
         and (args.PASSWORDS is None)
+        and (args.web is None)
     ):
         validateIP()
         reset_timer()
@@ -258,6 +263,7 @@ def main():
         and (args.user is None)
         and (args.USERS is None)
         and (args.PASSWORDS is None)
+        and (args.web is None)
     ):
         try:
             with open(args.file, "r") as ips:
@@ -274,8 +280,8 @@ def main():
     # This is for the -w --web opton and will run all Web Enumeration on a single target
     # The -t --target argument is required.
     elif (
-        args.web
-        and (args.target is None)
+        args.target
+        and (args.web)
         and (args.port is None)
         and (args.user is None)
         and (args.USERS is None)
@@ -283,7 +289,6 @@ def main():
         and (args.file is None)
         and (args.ignore is None)
     ):
-        args.target = args.web
         validateIP()
         if os.path.exists(f"{args.target}-Report/nmap/top-ports-{args.target}.nmap"):
             reset_timer()
@@ -312,7 +317,7 @@ def main():
             check_timer()
 
     # This is the Brute forcing option and -t --target argument is required
-    elif args.target and (args.file is None) and args.brute:
+    elif args.target and (args.file is None) and (args.web is None) and args.brute:
         if "ssh" in args.brute:
             if args.port is None:
                 args.port = "22"
