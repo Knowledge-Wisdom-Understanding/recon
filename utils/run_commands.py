@@ -19,6 +19,7 @@ from lib import oracleEnum
 from lib import searchsploits
 from lib import enumProxyCMS
 from lib import vhostCrawl
+from lib import paramFuzz
 from utils import remove_color
 from utils import peaceout_banner
 from utils import helper_lists
@@ -134,12 +135,12 @@ class RunCommands:
         web_ssl_enum_commands = webssl.processes
         self.mpRun(web_ssl_enum_commands)
 
-    def enumHTTP2(self):
-        """Helper function to call the lib/enumWeb Large Wordlists Class."""
-        eweb = enumWeb.EnumWeb(self.target)
-        eweb.ScanWebOption()
-        web_enum_commands = eweb.processes
-        self.mpRun(web_enum_commands)
+    # def enumHTTP2(self):
+    #     """Helper function to call the lib/enumWeb Large Wordlists Class."""
+    #     eweb = enumWeb.EnumWeb2(self.target)
+    #     eweb.ScanWebOption()
+    #     web_enum_commands = eweb.processes
+    #     self.mpRun(web_enum_commands)
 
     def enumHTTPS2(self):
         """Helper function to call the lib/enumWebSSL Large Wordlists Class."""
@@ -279,3 +280,9 @@ class RunCommands:
     def checkSource(self):
         sc = vhostCrawl.sourceCommentChecker(self.target)
         sc.extract_source_comments()
+
+    def fuzzinator(self):
+        fz = paramFuzz.ParamFuzzer(self.target)
+        fz.fuzzMaster()
+        # fuzz_cmds = fz.processes
+        # self.mpRun(fuzz_cmds)

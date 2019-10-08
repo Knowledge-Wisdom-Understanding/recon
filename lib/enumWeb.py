@@ -4,12 +4,13 @@ import os
 from sty import fg, bg, ef, rs
 from lib import nmapParser
 from lib import domainFinder
-from subprocess import call
+from subprocess import call, check_output, STDOUT
 import glob
 from bs4 import BeautifulSoup  # SoupStrainer
 import requests
 from lib import vhostCrawl
 from utils import config_parser
+from utils import helper_lists
 
 
 class EnumWeb:
@@ -80,62 +81,6 @@ class EnumWeb:
 
             # sorted_cmds = sorted(set(commands), reverse=True)
             # commands_to_run = [i for i in sorted_cmds]
-            self.processes = tuple(commands)
-
-    def ScanWebOption(self):
-        """Enumerate Web Server ports based on nmaps output. This function will run the following tools;
-        WhatWeb, WafW00f, Dirsearch, EyeWitness, Nikto, and curl robots.txt
-        This is almost identical to the normal web scan except it uses much larger wordlists
-        """
-        np = nmapParser.NmapParserFunk(self.target)
-        np.openPorts()
-        http_ports = np.http_ports
-        dn = domainFinder.DomainFinder(self.target)
-        dn.getRedirect()
-        hostnames = dn.redirect_hostname
-        if len(http_ports) == 0:
-            pass
-        else:
-            reset = fg.rs
-            print(f"""{fg.li_cyan}Enumerating HTTP Ports, Running the following commands: {reset}""")
-            c = config_parser.CommandParser(f"{os.getcwd()}/config/config.yaml", self.target)
-            commands = []
-            if not os.path.exists(c.getPath("web", "webDir")):
-                os.makedirs(c.getPath("web", "webDir"))
-            if not os.path.exists(c.getPath("web", "aquatoneDir")):
-                os.makedirs(c.getPath("web", "aquatoneDir"))
-            if hostnames:
-                sorted_hostnames = sorted(set(hostnames))
-                for hostname in sorted_hostnames:
-                    for port in http_ports:
-                        if not os.path.exists(c.getPath("web", "eyewitnessDirHost", host=hostname, port=port)):
-                            os.makedirs(c.getPath("web", "eyewitnessDirHost", host=hostname, port=port))
-
-                        commands.append(c.getCmd("web", "whatwebHttpHost", host=hostname, port=port))
-                        # commands.append(c.getCmd("web", "eyewitnessHost", host=hostname, port=port))
-                        commands.append(c.getCmd("web", "wafw00fHost", host=hostname, port=port))
-                        commands.append(c.getCmd("web", "curlRobotsHost", host=hostname, port=port))
-                        commands.append(c.getCmd("web", "dirsearchHttpHostDListMed", host=hostname, port=port))
-                        commands.append(c.getCmd("web", "dirsearchHttpHostRaftLargeFiles", host=hostname, port=port))
-                        commands.append(c.getCmd("web", "dirsearchHttpHostRaftLargeDirs", host=hostname, port=port))
-                        commands.append(c.getCmd("web", "dirsearchHttpHostForeign", host=hostname, port=port))
-                        # commands.append(c.getCmd("web", "niktoHost", host=hostname, port=port))
-
-            else:
-                for port in http_ports:
-                    if not os.path.exists(c.getPath("web", "eyewitnessDirTarget", port=port)):
-                        os.makedirs(c.getPath("web", "eyewitnessDirTarget", port=port))
-
-                    commands.append(c.getCmd("web", "whatwebHttpTarget", port=port))
-                    # commands.append(c.getCmd("web", "eyewitnessTarget", port=port))
-                    commands.append(c.getCmd("web", "wafw00fTarget", port=port))
-                    commands.append(c.getCmd("web", "curlRobotsTarget", port=port))
-                    commands.append(c.getCmd("web", "dirsearchHttpTargetDListMed", port=port))
-                    commands.append(c.getCmd("web", "dirsearchHttpTargetRaftLargeFiles", port=port))
-                    commands.append(c.getCmd("web", "dirsearchHttpTargetRaftLargeDirs", port=port))
-                    commands.append(c.getCmd("web", "dirsearchHttpTargetForeign", port=port))
-                    # commands.append(c.getCmd("web", "niktoHost", port=port))
-
             self.processes = tuple(commands)
 
     def CMS(self):
@@ -371,3 +316,98 @@ class EnumWeb:
                         l.write(link)
             except FileNotFoundError as fnf_error:
                 print(fnf_error)
+
+
+class EnumWeb2:
+    def __init__(self, web, target):
+        self.web = web
+        self.target = target
+        self.processes = ""
+
+    def ScanWebOption(self):
+        """Enumerate Web Server ports based on nmaps output. This function will run the following tools;
+        WhatWeb, WafW00f, Dirsearch, EyeWitness, Nikto, and curl robots.txt
+        This is almost identical to the normal web scan except it uses much larger wordlists
+        """
+        np = nmapParser.NmapParserFunk(self.target)
+        np.openPorts()
+        http_ports = np.http_ports
+        dn = domainFinder.DomainFinder(self.target)
+        dn.getRedirect()
+        hostnames = dn.redirect_hostname
+        if len(http_ports) == 0:
+            pass
+        else:
+            reset = fg.rs
+            print(f"""{fg.li_cyan}Enumerating HTTP Ports, Running the following commands: {reset}""")
+            c = config_parser.CommandParser(f"{os.getcwd()}/config/config.yaml", self.target)
+            commands = []
+            if not os.path.exists(c.getPath("web", "webDir")):
+                os.makedirs(c.getPath("web", "webDir"))
+            if not os.path.exists(c.getPath("web", "aquatoneDir")):
+                os.makedirs(c.getPath("web", "aquatoneDir"))
+            if hostnames:
+                sorted_hostnames = sorted(set(hostnames))
+                for hostname in sorted_hostnames:
+                    for port in http_ports:
+                        if not os.path.exists(c.getPath("web", "eyewitnessDirHost", host=hostname, port=port)):
+                            os.makedirs(c.getPath("web", "eyewitnessDirHost", host=hostname, port=port))
+
+                        commands.append(c.getCmd("web", "whatwebHttpHost", host=hostname, port=port))
+                        # commands.append(c.getCmd("web", "eyewitnessHost", host=hostname, port=port))
+                        commands.append(c.getCmd("web", "wafw00fHost", host=hostname, port=port))
+                        commands.append(c.getCmd("web", "curlRobotsHost", host=hostname, port=port))
+                        commands.append(c.getCmd("web", "dirsearchHttpHostDListMed", host=hostname, port=port, url=self.web))
+                        commands.append(c.getCmd("web", "dirsearchHttpHostRaftLargeFiles", host=hostname, port=port, url=self.web))
+                        commands.append(c.getCmd("web", "dirsearchHttpHostRaftLargeDirs", host=hostname, port=port, url=self.web))
+                        commands.append(c.getCmd("web", "dirsearchHttpHostForeign", host=hostname, port=port, url=self.web))
+                        # commands.append(c.getCmd("web", "niktoHost", host=hostname, port=port))
+
+            else:
+                for port in http_ports:
+                    if not os.path.exists(c.getPath("web", "eyewitnessDirTarget", port=port)):
+                        os.makedirs(c.getPath("web", "eyewitnessDirTarget", port=port))
+
+                    commands.append(c.getCmd("web", "whatwebHttpTarget", port=port))
+                    # commands.append(c.getCmd("web", "eyewitnessTarget", port=port))
+                    commands.append(c.getCmd("web", "wafw00fTarget", port=port))
+                    commands.append(c.getCmd("web", "curlRobotsTarget", port=port))
+                    commands.append(c.getCmd("web", "dirsearchHttpTargetDListMed", port=port, url=self.web))
+                    commands.append(c.getCmd("web", "dirsearchHttpTargetRaftLargeFiles", port=port, url=self.web))
+                    commands.append(c.getCmd("web", "dirsearchHttpTargetRaftLargeDirs", port=port, url=self.web))
+                    commands.append(c.getCmd("web", "dirsearchHttpTargetForeign", port=port, url=self.web))
+                    # commands.append(c.getCmd("web", "niktoHost", port=port))
+
+            self.processes = tuple(commands)
+
+
+class PrecisionCrawl:
+    def __init__(self, target):
+        self.target = target
+
+    def snipe(self):
+        c = config_parser.CommandParser(f"{os.getcwd()}/config/config.yaml", self.target)
+        hl = helper_lists.ignoreURLS()
+        ignore_urls = hl.ignore_urls
+        php_urls = []
+        if os.path.exists(c.getPath("web", "aquatoneDirUrls")):
+            check_lines = f"""wc -l {c.getPath("web","aquatoneDirUrls")} | cut -d ' ' -f 1"""
+            num_urls = check_output(check_lines, stderr=STDOUT, shell=True).rstrip()
+            if int(num_urls) < 150 and (int(num_urls) != 0):
+                try:
+                    with open(c.getPath("web", "aquatoneDirUrls"), "r") as found_urls:
+                        for line in found_urls:
+                            url = line.rstrip()
+                            if (
+                                url.endswith("/")
+                                and (url not in ignore_urls)
+                                and ("index.php" not in url)
+                                and (url.endswith(".php/") is False)
+                            ):
+                                php_urls.append(url)
+                except FileNotFoundError as fnf_error:
+                    print(fnf_error)
+                    pass
+                if len(php_urls) != 0 and (len(php_urls) < 10):
+                    for i in php_urls:
+                        print(i)

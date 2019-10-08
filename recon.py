@@ -11,6 +11,7 @@ import random
 import os
 import socket
 from utils import run_commands
+from utils import run_web_commands
 
 bad_cmd = "[" + fg.li_red + "+" + fg.rs + "]"
 green = fg.li_green
@@ -95,6 +96,7 @@ def argument_parser():
         usage="python3 recon.py -t 10.10.10.10",
     )
     parser.add_argument("-t", "--target", help="Single IPv4 Target to Scan")
+    parser.add_argument("-F", "--FUZZ", help="auto fuzz found urls ending with .php for params", action="store_true")
     parser.add_argument(
         "-v",
         "--version",
@@ -106,8 +108,9 @@ def argument_parser():
     parser.add_argument(
         "-w",
         "--web",
-        action="store_true",
-        help="Get open ports for IPv4 address, then only Enumerate Web & and Dns Services. -t,--target must be specified. -w, --web takes no arguments.",
+        type=str,
+        help="Get open ports for IPv4 address, then only Enumerate Web & and Dns Services. -t,--target must be specified. -w, --web takes a URL as an argument. i.e. python3 recon.py -t 10.10.10.10 -w secret ",
+        nargs="?",
     )
     parser.add_argument(
         "-i",
@@ -206,6 +209,7 @@ def main():
         sb = brute.BruteMultipleUsersCustom(args.target, args.brute, args.port, args.USERS, args.PASSWORDS)
         sb.SshMultipleUsersBruteCustom()
 
+    rwc = run_web_commands.RunWebCommands(args.target, args.web)
     rc = run_commands.RunCommands(args.target)
     FUNK_MAP = {
         "topports": rc.scanTopTcpPorts,
@@ -246,6 +250,8 @@ def main():
         and (args.user is None)
         and (args.USERS is None)
         and (args.PASSWORDS is None)
+        and (not args.FUZZ)
+        and (not args.web)
     ):
         validateIP()
         reset_timer()
@@ -262,6 +268,8 @@ def main():
         and (args.user is None)
         and (args.USERS is None)
         and (args.PASSWORDS is None)
+        and (not args.FUZZ)
+        and (not args.web)
     ):
         try:
             with open(args.file, "r") as ips:
@@ -285,14 +293,15 @@ def main():
         and (args.USERS is None)
         and (args.PASSWORDS is None)
         and (args.file is None)
+        and (not args.FUZZ)
     ):
         validateIP()
         if os.path.exists(f"{args.target}-Report/nmap/top-ports-{args.target}.nmap"):
             reset_timer()
             rc.enumDNS()
-            rc.enumHTTP2()
+            rwc.enumHTTP2()
             rc.cmsEnum()
-            rc.enumHTTPS2()
+            rwc.enumHTTPS2()
             rc.cmsEnumSSL()
             rc.removeColor()
             rc.aquatone()
@@ -303,9 +312,9 @@ def main():
             reset_timer()
             rc.scanTopTcpPorts()
             rc.enumDNS()
-            rc.enumHTTP2()
+            rwc.enumHTTP2()
             rc.cmsEnum()
-            rc.enumHTTPS2()
+            rwc.enumHTTPS2()
             rc.cmsEnumSSL()
             rc.removeColor()
             rc.aquatone()
@@ -313,6 +322,22 @@ def main():
             rc.peace()
             check_timer()
 
+    elif (
+        args.target
+        and (args.FUZZ)
+        and (args.port is None)
+        and (args.user is None)
+        and (args.USERS is None)
+        and (args.PASSWORDS is None)
+        and (args.file is None)
+        and (not args.web)
+    ):
+        validateIP()
+        reset_timer()
+        rc.fuzzinator()
+        rc.removeColor()
+        rc.peace()
+        check_timer()
     # This is the Brute forcing option and -t --target argument is required
     elif args.target and (args.file is None) and args.brute:
         if "ssh" in args.brute:
