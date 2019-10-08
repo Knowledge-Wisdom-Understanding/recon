@@ -15,6 +15,12 @@ echo -e "${DOPE} Downloading dirsearch repository in /opt folder"
 cd /opt
 git clone https://github.com/maurosoria/dirsearch.git
 
+echo -e "${DOPE} Downloading parameth repository in /opt folder"
+cd /opt
+git clone https://github.com/maK-/parameth.git
+cd parameth
+python -m pip install -r requirements.txt
+
 echo -e "${DOPE} Installing magescan and dependencies"
 cd /opt
 git clone https://github.com/steverobbins/magescan magescan
@@ -31,7 +37,7 @@ apt install patator -y
 cd /opt
 git clone https://github.com/lanjelot/patator.git
 cd patator
-pip install -r requirements.txt
+python -m pip install -r requirements.txt
 python setup.py install
 
 echo -e "${DOPE} Installing EyeWitness"
@@ -54,7 +60,7 @@ echo -e "${DOPE} Installing Joomscan"
 apt install joomscan -y
 
 echo -e "${DOPE} Installing droopescan"
-pip install droopescan
+python -m pip install droopescan
 
 echo -e "${DOPE} Installing Nmap Vulners & Vulscan scripts"
 cd /usr/share/nmap/scripts/
