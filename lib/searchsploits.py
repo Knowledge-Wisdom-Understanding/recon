@@ -155,19 +155,20 @@ class Search:
         # If OpenSSH version is less than 7.7, Enumerate Users
         # If valid Unique User is found, Brute Force Passwords
         if len(ssh_product) == 1:
-            if ssh_version is not None and (len(ssh_version) >= 2):
+            if ssh_version is not None:
                 print(ssh_version)
                 string_ssh_version = " ".join(map(str, ssh_version))
-                lowercase_ssh_version = str(string_ssh_version).lower()
-                first_two_nums = lowercase_ssh_version[0:3]
-                int_first_two_nums = float(first_two_nums)
-                if ssh_product[0] == "OpenSSH":
-                    if int_first_two_nums < float(7.7):
-                        ssh_port = np.ssh_ports
-                        print(f"""{cmd_info} {blue}{ssh_product[0]} {ssh_version[0]}{reset} is {red}VULNERABLE to Username Enumeration{reset}""")
-                        print(f"""{green}Consider running:{reset}""")
-                        print(f"""{manual_cmd_info} {c.getCmd("ssh", "ssh_user_enum", port=ssh_port[0])}""")
-                        # sb = brute.Brute(self.target, "ssh", ssh_port)
-                        # sb.SshUsersBrute()
-                    else:
-                        print(f"""{cmd_info} {blue}{ssh_product[0]} {ssh_version[0]}{reset} is {red}NOT{reset} Vulnerable to Username Enumeration""")
+                if len(string_ssh_version) >= 2:
+                    lowercase_ssh_version = str(string_ssh_version).lower()
+                    first_two_nums = lowercase_ssh_version[0:3]
+                    int_first_two_nums = float(first_two_nums)
+                    if ssh_product[0] == "OpenSSH":
+                        if int_first_two_nums < float(7.7):
+                            ssh_port = np.ssh_ports
+                            print(f"""{cmd_info} {blue}{ssh_product[0]} {ssh_version[0]}{reset} is {red}VULNERABLE to Username Enumeration{reset}""")
+                            print(f"""{green}Consider running:{reset}""")
+                            print(f"""{manual_cmd_info} {c.getCmd("ssh", "ssh_user_enum", port=ssh_port[0])}""")
+                            # sb = brute.Brute(self.target, "ssh", ssh_port)
+                            # sb.SshUsersBrute()
+                        else:
+                            print(f"""{cmd_info} {blue}{ssh_product[0]} {ssh_version[0]}{reset} is {red}NOT{reset} Vulnerable to Username Enumeration""")
