@@ -113,7 +113,7 @@ def argument_parser():
         "-i",
         "--ignore",
         nargs="+",
-        choices=["http", "httpcms", "ssl", "sslcms", "aqua", "smb", "dns", "ldap", "oracle", "source", "proxy", "proxycms", "fulltcp", "topports", "remaining", "searchsploit"],
+        choices=["http", "httpcms", "ssl", "sslcms", "aquatone", "smb", "dns", "ldap", "oracle", "source", "proxy", "proxycms", "fulltcp", "topports", "remaining", "searchsploit"],
         help="Services to ignore during scan.",
         type=str.lower,
 
@@ -246,7 +246,6 @@ def main():
         and (args.user is None)
         and (args.USERS is None)
         and (args.PASSWORDS is None)
-        and (args.web is None)
     ):
         validateIP()
         reset_timer()
@@ -263,7 +262,6 @@ def main():
         and (args.user is None)
         and (args.USERS is None)
         and (args.PASSWORDS is None)
-        and (args.web is None)
     ):
         try:
             with open(args.file, "r") as ips:
@@ -287,7 +285,6 @@ def main():
         and (args.USERS is None)
         and (args.PASSWORDS is None)
         and (args.file is None)
-        and (args.ignore is None)
     ):
         validateIP()
         if os.path.exists(f"{args.target}-Report/nmap/top-ports-{args.target}.nmap"):
@@ -397,10 +394,8 @@ def main():
     elif args.file and args.target:
         print(f"{bad_cmd} Cannot use -t {args.target} and -f {args.file} together")
         print(EXAMPLES)
-        args.parser.print_help(sys.stderr)
     else:
         print(EXAMPLES)
-        args.parser.print_help(sys.stderr)
 
     end = time.time()
     time_elapsed = end - startTimer
