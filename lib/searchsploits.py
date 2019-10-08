@@ -156,7 +156,6 @@ class Search:
         # If valid Unique User is found, Brute Force Passwords
         if len(ssh_product) == 1:
             if ssh_version is not None:
-                print(ssh_version)
                 string_ssh_version = " ".join(map(str, ssh_version))
                 if len(string_ssh_version) >= 2:
                     lowercase_ssh_version = str(string_ssh_version).lower()
