@@ -29,6 +29,7 @@ python3 -m pip install -r requirements.txt
 ### Usage
 
 ```text
+
        _____________          ____    ________________
       /___/___      \        /  / |  /___/__          \      Mr.P-Millz   _____
       O.G./  /   _   \______/__/  |______|__|_____ *   \_________________/__/  |___
@@ -46,11 +47,15 @@ optional arguments:
   -h, --help            show this help message and exit
   -t TARGET, --target TARGET
                         Single IPv4 Target to Scan
+  -F, --FUZZ            auto fuzz found urls ending with .php for params
   -v, --version         Show Current Version
   -f FILE, --file FILE  File of IPv4 Targets to Scan
-  -w WEB, --web WEB     Get open ports for IPv4 address, then only Enumerate
-                        Web & and Dns Services
-  -i, --ignore {http,httpcms,ssl,sslcms,smb,dns,proxy,proxycms,fulltcp,topports}
+  -w [WEB], --web [WEB]
+                        Get open ports for IPv4 address, then only Enumerate
+                        Web & and Dns Services. -t,--target must be specified.
+                        -w, --web takes a URL as an argument. i.e. python3
+                        recon.py -t 10.10.10.10 -w secret
+  -i {http,httpcms,ssl,sslcms,aquatone,smb,dns,ldap,oracle,source,proxy,proxycms,fulltcp,topports,remaining,searchsploit} [{http,httpcms,ssl,sslcms,aquatone,smb,dns,ldap,oracle,source,proxy,proxycms,fulltcp,topports,remaining,searchsploit} ...], --ignore {http,httpcms,ssl,sslcms,aquatone,smb,dns,ldap,oracle,source,proxy,proxycms,fulltcp,topports,remaining,searchsploit} [{http,httpcms,ssl,sslcms,aquatone,smb,dns,ldap,oracle,source,proxy,proxycms,fulltcp,topports,remaining,searchsploit} ...]
                         Services to ignore during scan.
   -b {ftp,smb,http,ssh}, --brute {ftp,smb,http,ssh}
                         Experimental! - Brute Force ssh,smb,ftp, or http. -t,
@@ -79,14 +84,24 @@ python3 recon.py -t 10.10.10.10
 
 To Enumerate Web with larger wordlists
 
+- If you don't want to specify a directory , you can just enter ' ' as the argument for --web
+
 ```shell
-python3 recon.py -w 10.10.10.10
+python3 recon.py -t 10.10.10.10 -w secret
+python3 recon.py -t 10.10.10.10 -w somedirectory
+python3 recon.py -t 10.10.10.10 -w ' '
 ```
 
 To Scan + Enumerate all IPv4 addr's in ips.txt file
 
 ```shell
 python3 recon.py -f ips.txt
+```
+
+To Fuzz all found php urls for parameters, you can use the -F --FUZZ flag with no argument.
+
+```shell
+python3 recon.py -t 10.10.10.10 --FUZZ
 ```
 
 Brute force ssh users on default port 22 If unique valid users found, brute force passwords
@@ -99,10 +114,16 @@ Same as above but for ssh on port 2222 etc...
 
 ```shell
 python3 recon.py -t 10.10.10.10 -b ssh -p 2222
+python3 recon.py -t 10.10.10.10 -b ssh -p 2222 -u slickrick
 ```
 
 To ignore certain services from being scanned you can specify the -i , --ignore flag.  
-When specifying multiple services to ignore, services must be space delimited.
+When specifying multiple services to ignore, services MUST be space delimited.
+All the available ignore choices are:
+
+```text
+http,httpcms,ssl,sslcms,aquatone,smb,dns,ldap,oracle,source,proxy,proxycms,fulltcp,topports,remaining,searchsploit
+```
 
 ```shell
 python3 recon.py -t 10.10.10.10 -i http
