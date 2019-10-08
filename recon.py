@@ -314,7 +314,7 @@ def main():
             check_timer()
 
     # This is the Brute forcing option and -t --target argument is required
-    elif args.target and (args.file is None) and (args.web is None) and args.brute:
+    elif args.target and (args.file is None) and args.brute:
         if "ssh" in args.brute:
             if args.port is None:
                 args.port = "22"
