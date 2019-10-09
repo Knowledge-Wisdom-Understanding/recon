@@ -23,3 +23,9 @@ All changes to this project will be noted here.
 
 - FTP Anonymous File Downloader. If anonymous ftp access is detected, O.G. Auto-Recon will attempt to download all available files from the ftp server.
 - PHP Parameth parameter fuzzer option. For all found url's ending with the .php extension. Can be used with the --FUZZ option.
+
+## [v3.2] - 2019-10-07
+
+### Added_v3.2
+
+- Ignore certain service scannign modules with the -i --ignore option. Useful for cases where Firewalls or IDS/IPS systems are disrupting or timing out certain tools.
