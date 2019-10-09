@@ -20,6 +20,7 @@ from lib import searchsploits
 from lib import enumProxyCMS
 from lib import vhostCrawl
 from lib import paramFuzz
+from lib import ftp_anon
 from utils import remove_color
 from utils import peaceout_banner
 from utils import helper_lists
@@ -286,3 +287,7 @@ class RunCommands:
         fz.fuzzMaster()
         # fuzz_cmds = fz.processes
         # self.mpRun(fuzz_cmds)
+
+    def ftpAnonymous(self):
+        ft = ftp_anon.FtpCheck(self.target)
+        ft.anonymousLogin()
