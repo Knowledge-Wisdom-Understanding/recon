@@ -53,7 +53,7 @@ class DnsEnum:
             unique_hosts = sorted(set(basename))
             for host in unique_hosts:
                 commands.append(c.getCmd("dns", "dnsenum", hosts=host))
-                commands.append(c.getCmd("dns", "vhost", hosts=host))
+                # commands.append(c.getCmd("dns", "vhost", hosts=host))
 
         self.processes = tuple(commands)
 
