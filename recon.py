@@ -219,7 +219,7 @@ def main():
         "topports": rc.scanTopTcpPorts,
         "dns": rc.enumDNS,
         "http": rc.enumHTTP,
-        "httpcms": rc.cmsEnumSSL,
+        "httpcms": rc.cmsEnum,
         "ssl": rc.enumHTTPS,
         "sslcms": rc.cmsEnumSSL,
         "sort_urls": rc.sortFoundUrls,
