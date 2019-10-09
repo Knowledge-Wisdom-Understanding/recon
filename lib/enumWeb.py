@@ -299,23 +299,23 @@ class EnumWeb:
 
             self.proxy_processes = tuple(proxy_commands)
 
-    def getLinks(self):
-        """This feature isn't full implemented yet and is just here to keep the other functions company ;)"""
-        url = f"""http://{self.target}"""
-        c = config_parser.CommandParser(f"{os.getcwd()}/config/config.yaml", self.target)
-        page = requests.get(url)
-        data = page.text
-        soup = BeautifulSoup(data)
-        links = []
-        for link in soup.find_all("a"):
-            links.append(link.get("href"))
-        if len(links) != 0:
-            try:
-                with open(c.getPath("web", "weblinks"), "w") as l:
-                    for link in links:
-                        l.write(link)
-            except FileNotFoundError as fnf_error:
-                print(fnf_error)
+    # def getLinks(self):
+    #     """This feature isn't full implemented yet and is just here to keep the other functions company ;)"""
+    #     url = f"""http://{self.target}"""
+    #     c = config_parser.CommandParser(f"{os.getcwd()}/config/config.yaml", self.target)
+    #     page = requests.get(url)
+    #     data = page.text
+    #     soup = BeautifulSoup(data)
+    #     links = []
+    #     for link in soup.find_all("a"):
+    #         links.append(link.get("href"))
+    #     if len(links) != 0:
+    #         try:
+    #             with open(c.getPath("web", "weblinks"), "w") as l:
+    #                 for link in links:
+    #                     l.write(link)
+    #         except FileNotFoundError as fnf_error:
+    #             print(fnf_error)
 
 
 class EnumWeb2:
@@ -383,36 +383,36 @@ class EnumWeb2:
             self.processes = tuple(commands)
 
 
-class PrecisionCrawl:
-    """This Class hasn't been completed yet, but will ultimately be used to crawl urls recursively or something
-    useful."""
+# class PrecisionCrawl:
+#     """This Class hasn't been completed yet, but will ultimately be used to crawl urls recursively or something
+#     useful."""
 
-    def __init__(self, target):
-        self.target = target
+#     def __init__(self, target):
+#         self.target = target
 
-    def snipe(self):
-        c = config_parser.CommandParser(f"{os.getcwd()}/config/config.yaml", self.target)
-        hl = helper_lists.ignoreURLS()
-        ignore_urls = hl.ignore_urls
-        php_urls = []
-        if os.path.exists(c.getPath("web", "aquatoneDirUrls")):
-            check_lines = f"""wc -l {c.getPath("web","aquatoneDirUrls")} | cut -d ' ' -f 1"""
-            num_urls = check_output(check_lines, stderr=STDOUT, shell=True).rstrip()
-            if int(num_urls) < 150 and (int(num_urls) != 0):
-                try:
-                    with open(c.getPath("web", "aquatoneDirUrls"), "r") as found_urls:
-                        for line in found_urls:
-                            url = line.rstrip()
-                            if (
-                                url.endswith("/")
-                                and (url not in ignore_urls)
-                                and ("index.php" not in url)
-                                and (url.endswith(".php/") is False)
-                            ):
-                                php_urls.append(url)
-                except FileNotFoundError as fnf_error:
-                    print(fnf_error)
-                    pass
-                if len(php_urls) != 0 and (len(php_urls) < 10):
-                    for i in php_urls:
-                        print(i)
+#     def snipe(self):
+#         c = config_parser.CommandParser(f"{os.getcwd()}/config/config.yaml", self.target)
+#         hl = helper_lists.ignoreURLS()
+#         ignore_urls = hl.ignore_urls
+#         php_urls = []
+#         if os.path.exists(c.getPath("web", "aquatoneDirUrls")):
+#             check_lines = f"""wc -l {c.getPath("web","aquatoneDirUrls")} | cut -d ' ' -f 1"""
+#             num_urls = check_output(check_lines, stderr=STDOUT, shell=True).rstrip()
+#             if int(num_urls) < 150 and (int(num_urls) != 0):
+#                 try:
+#                     with open(c.getPath("web", "aquatoneDirUrls"), "r") as found_urls:
+#                         for line in found_urls:
+#                             url = line.rstrip()
+#                             if (
+#                                 url.endswith("/")
+#                                 and (url not in ignore_urls)
+#                                 and ("index.php" not in url)
+#                                 and (url.endswith(".php/") is False)
+#                             ):
+#                                 php_urls.append(url)
+#                 except FileNotFoundError as fnf_error:
+#                     print(fnf_error)
+#                     pass
+#                 if len(php_urls) != 0 and (len(php_urls) < 10):
+#                     for i in php_urls:
+#                         print(i)
