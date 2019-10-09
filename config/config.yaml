@@ -28,7 +28,7 @@ commands:
     "niktoTarget": "nikto -ask=no -host http://$target:$port >$reportDir/web/nikto-$target-$port.txt 2>&1 &"
     "niktoHost": "nikto -ask=no -host http://$host:$port >$reportDir/web/nikto-$host-$port.txt 2>&1 &"
     "aquatone": "cat $reportDir/aquatone/urls.txt | aquatone -ports $allWebPorts -out $reportDir/aquatone/aquatone -screenshot-timeout 40000"
-    "wpscanHttpTarget": "wpscan --no-update --url http://$target:$httpPort --wp-content-dir wp-content --enumerate vp,vt,cb,dbe,u,m --plugins-detection aggressive | tee $reportDir/web/wpscan-$http_port.log"
+    "wpscanHttpTarget": "wpscan --no-update --url http://$target:$httpPort --wp-content-dir wp-content --enumerate vp,vt,cb,dbe,u,m --plugins-detection aggressive | tee $reportDir/web/wpscan-$httpPort.log"
     "CewlWeb": "cewl http://$target:$httpPort -m 3 -w $reportDir/web/cewl-list.txt"
     "cewl2John": "john --rules --wordlist=$reportDir/web/cewl-list.txt --stdout >$reportDir/web/john-cool-list.txt"
     "wpscanCewlBrute": "wpscan --no-update --url http://$target:$httpPort/ --wp-content-dir wp-login.php -U $reportDir/web/wp-users.txt -P $reportDir/web/cewl-list.txt threads 50 | tee $reportDir/web/wordpress-cewl-brute.log"
@@ -46,7 +46,7 @@ commands:
     "davtestHost": "davtest -move -sendbd auto -url http://$host/ | tee $reportDir/web/davtestscan-$host.log"
     "webDavNmapHost": "nmap -Pn -v -sV -p $httpPort --script=http-iis-webdav-vuln.nse -oA $reportDir/nmap/webdav $host"
     "tomcatHydraHost": "hydra -C /usr/share/seclists/Passwords/Default-Credentials/tomcat-betterdefaultpasslist.txt -s $httpPort $host http-get /manager/html"
-    "wpscanHttpHost": "wpscan --no-update --url http://$host:$httpPort --wp-content-dir wp-content --enumerate vp,vt,cb,dbe,u,m --plugins-detection aggressive | tee $reportDir/web/wpscan-$http_port.log"
+    "wpscanHttpHost": "wpscan --no-update --url http://$host:$httpPort --wp-content-dir wp-content --enumerate vp,vt,cb,dbe,u,m --plugins-detection aggressive | tee $reportDir/web/wpscan-$httpPort.log"
     "parameth": "python /opt/parameth/parameth.py -u $url -x 404,500,401,502 -t 40 --params /opt/parameth/lists/all.txt --diff 95 --out $reportDir/web/fuzzer-$upath.log"
     "paramethCookie": "python /opt/parameth/parameth.py -u $url -x 404,500,401,502 -c 'Cookie: $cookies' -t 40 --params /opt/parameth/lists/all.txt --diff 95 --out $reportDir/web/fuzzer-$upath.log"
   webSSL:
@@ -229,6 +229,7 @@ paths:
     "wordpressJohnCewlBrute": "$reportDir/web/wordpress-john-cewl-brute.log"
     "johnCewlWordlist": "$reportDir/web/john-cool-list.txt"
     "wpscanBashBruteScript": "$reportDir/web/wpscanBrute.sh"
+    "vhostnames": "$reportDir/web/source_vhostnames.log"
   webSSL:
     "reportGlobWebSSL": "$reportDir/webSSL/*"
     "eyewitnessSSLDir": "$reportDir/webSSL/eyewitness"
