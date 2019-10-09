@@ -2,7 +2,7 @@
 
 ## Configuration
 
-You can change the syntax of enumeration commands in the [Configuration config.yaml](../tree/master/config/config.yaml) file.
+You can change the syntax of enumeration commands in the [Configuration config.yaml](../config/config.yaml) file.
 Just Make sure not to change the \$var variables as doing so will break functionality of
 O.G. Auto-Recon.
 
