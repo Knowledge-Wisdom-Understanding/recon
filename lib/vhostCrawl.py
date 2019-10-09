@@ -48,7 +48,7 @@ class checkSource:
                     htb = [".htb"]
                     source_domain_name = []
                     for link in soup.find_all(text=lambda x: ".htb" in x):
-                        matches = re.findall(r"(?:[a-zA-Z0-9](?:[a-zA-Z0-9\-]{,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{3}", link,)
+                        matches = re.findall(r"(?:[a-zA-Z0-9](?:[a-zA-Z0-9\-]{,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{3}", link)
                         for x in matches:
                             if any(s in x for s in htb):
                                 source_domain_name.append(x)
