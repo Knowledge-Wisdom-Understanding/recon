@@ -88,6 +88,7 @@ class EnumWeb:
         Enumerate the CMS further using Wpscan, Magescan, Nmap, Droopescan, Joomscan, and davtest, hydra, and will
         create a brute force bash script using Cewl, which can then be used by WpScan to try and brute force
         Users and passwords."""
+        c = config_parser.CommandParser(f"{os.getcwd()}/config/config.yaml", self.target)
         np = nmapParser.NmapParserFunk(self.target)
         np.openPorts()
         http_ports = np.http_ports
@@ -95,6 +96,11 @@ class EnumWeb:
         dn.getRedirect()
         hostnames = dn.redirect_hostname
         another_array_of_hostnames = []
+        if os.path.exists(c.getPath("web", "vhostnames")):
+            with open(c.getPath("web", "vhostnames"), "r") as vhfile:
+                lines = vhfile.readlines()
+                for vh in lines:
+                    another_array_of_hostnames.append(vh)
         if len(hostnames) != 0:
             for d in hostnames:
                 another_array_of_hostnames.append(d)
@@ -103,7 +109,6 @@ class EnumWeb:
         if len(http_ports) == 0:
             pass
         else:
-            c = config_parser.CommandParser(f"{os.getcwd()}/config/config.yaml", self.target)
             for http_port in http_ports:
                 whatweb_files = []
                 whatweb_hostnames = []
