@@ -121,7 +121,17 @@ def argument_parser():
         nargs="+",
         choices=["http", "httpcms", "ssl", "sslcms", "aquatone", "smb", "dns", "ldap", "oracle", "source",
                  "proxy", "proxycms", "fulltcp", "topports", "remaining", "searchsploit", "peaceout", "ftpAnonDL"],
-        help="Services to ignore during scan.",
+        help="Service modules to ignore during scan.",
+        type=str.lower,
+
+    )
+    parser.add_argument(
+        "-s",
+        "--service",
+        nargs="+",
+        choices=["http", "httpcms", "ssl", "sslcms", "aquatone", "smb", "dns", "ldap", "oracle", "source",
+                 "proxy", "proxycms", "fulltcp", "topports", "remaining", "searchsploit", "peaceout", "ftpAnonDL"],
+        help="Scan only specified service modules",
         type=str.lower,
 
     )
@@ -240,6 +250,8 @@ def main():
     }
     if args.ignore:
         Funcs_to_run = [FUNK_MAP.get(f) for f in FUNK_MAP if f not in args.ignore]
+    elif args.service:
+        Funcs_to_run = [FUNK_MAP.get(f) for f in FUNK_MAP if f in args.service]
     else:
         Funcs_to_run = [FUNK_MAP.get(f) for f in FUNK_MAP]
 
