@@ -111,8 +111,8 @@ class ParamFuzzer:
                             except requests.exceptions.Timeout as t_error:
                                 print("Connection Timeout Error: ", t_error)
                                 break
-                            except requests.exceptions.RequestException as re:
-                                print("Some Ambiguous Exception:", re)
+                            except requests.exceptions.RequestException as req_err:
+                                print("Some Ambiguous Exception:", req_err)
                                 break
                 if len(fuzz_cmds) != 0:
                     print(f"{fg.li_cyan}Fuzzing .php Params ! {fg.rs}")

@@ -58,8 +58,8 @@ class checkSource:
                 except requests.exceptions.Timeout as t_error:
                     print("Connection Timeout Error: ", t_error)
                     continue
-                except requests.exceptions.RequestException as re:
-                    print("Some Ambiguous Exception:", re)
+                except requests.exceptions.RequestException as req_err:
+                    print("Some Ambiguous Exception:", req_err)
                     continue
                 if len(source_domain_name) != 0:
                     print(f"""{cmd_info_orange} {fg.li_magenta}Found{fg.rs} {fg.cyan}{source_domain_name}{fg.rs} in {fg.li_red}The Source!{fg.rs} http://{self.target}:{hp}""")
@@ -216,8 +216,8 @@ class sourceCommentChecker:
                         except requests.exceptions.Timeout as t_error:
                             print("Connection Timeout Error: ", t_error)
                             break
-                        except requests.exceptions.RequestException as re:
-                            print("Some Ambiguous Exception:", re)
+                        except requests.exceptions.RequestException as req_err:
+                            print("Some Ambiguous Exception:", req_err)
                             break
 
                 else:
@@ -245,8 +245,8 @@ class sourceCommentChecker:
                     except requests.exceptions.Timeout as t_error:
                         print("Connection Timeout Error: ", t_error)
                         break
-                    except requests.exceptions.RequestException as re:
-                        print("Some Ambiguous Exception:", re)
+                    except requests.exceptions.RequestException as req_err:
+                        print("Some Ambiguous Exception:", req_err)
                         break
 
             if os.path.exists(f"""{c.getPath("web", "sourceComments")}"""):
