@@ -28,6 +28,9 @@ python3 -m pip install -r requirements.txt
 
 ### Usage
 
+If you run python3 recon.py with no arguments, a list of more examples will be displayed.
+see [Docs Usage](../master/docs/usage.md) for more information.
+
 ```text
 
        _____________          ____    ________________
