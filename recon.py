@@ -43,9 +43,9 @@ EXAMPLES = """
     Ex. python3 recon.py -t 10.10.10.10 -b ssh
     Ex. python3 recon.py -t 10.10.10.10 -b ssh -p 2222
     Ex. python3 recon.py -t 10.10.10.10 -b ssh -u bob -P /usr/share/seclists/Passwords/darkc0de.txt
-    Ex. python3 recon.py -t 10.10.10.10 --ignore http httpcms ssl sslcms
+    Ex. python3 recon.py -t 10.10.10.10 --ignore http httpcms ssl sslcms aquatone dns
     Ex. python3 recon.py -t 10.10.10.10 --ignore ssl sslcms
-    Ex. python3 recon.py -t 10.10.10.10 --ignore fulltcp
+    Ex. python3 recon.py -t 10.10.10.10 --ignore fulltcp topports
     Ex. python3 recon.py -t 10.10.10.10 --ignore aquatone
 """
 
@@ -119,7 +119,8 @@ def argument_parser():
         "-i",
         "--ignore",
         nargs="+",
-        choices=["http", "httpcms", "ssl", "sslcms", "aquatone", "smb", "dns", "ldap", "oracle", "source", "proxy", "proxycms", "fulltcp", "topports", "remaining", "searchsploit"],
+        choices=["http", "httpcms", "ssl", "sslcms", "aquatone", "smb", "dns", "ldap", "oracle", "source",
+                 "proxy", "proxycms", "fulltcp", "topports", "remaining", "searchsploit", "peaceout", "ftpAnonDL"],
         help="Services to ignore during scan.",
         type=str.lower,
 
@@ -232,6 +233,7 @@ def main():
         "removecolor": rc.removeColor,
         "oracle": rc.enumOracle,
         "fulltcp": rc.fullTcpAndTopUdpScan,
+        "ftpAnonDL": rc.ftpAnonymous,
         "remaining": rc.enumRemainingServices,
         "searchsploit": rc.searchSploits,
         "peaceout": rc.peace
