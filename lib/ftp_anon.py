@@ -26,7 +26,7 @@ class FtpCheck:
                     ftp.set_pasv(1)
                     print(ftp.dir())
                     print(ftp.nlst())
-                    print(f'\n[{fg.li_green}*{fg.rs}] ' + str(self.target) + ' FTP Anonymous Logon Succeeded!')
+                    print(f'\n[{fg.li_green}*{fg.rs}] ' + str(self.target) + f'{fg.white} FTP Anonymous Logon Succeeded!{fg.rs}')
                     self.ftpDownloadAll(port)
                 except Exception as e:
                     print(str(e))
