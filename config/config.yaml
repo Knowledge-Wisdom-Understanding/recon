@@ -386,3 +386,6 @@ paths:
     "oracleBrute": "$pwd/lib/oracle.sh"
   ftp:
     "nmap_ftp": "$nmapReportDir/ftp-enum"
+    "ftpDir": "$reportDir/ftp"
+    "anonDownloadPath": "$reportDir/ftp/RemoteDownloads"
+    "anonDownloadFile": "$reportDir/ftp/RemoteDownloads/$filename"
