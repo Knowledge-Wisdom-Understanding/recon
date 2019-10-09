@@ -62,22 +62,27 @@ class checkSource:
                     print("Some Ambiguous Exception:", req_err)
                     continue
                 if len(source_domain_name) != 0:
-                    print(f"""{cmd_info_orange} {fg.li_magenta}Found{fg.rs} {fg.cyan}{source_domain_name}{fg.rs} in {fg.li_red}The Source!{fg.rs} http://{self.target}:{hp}""")
-                    print(f"""{cmd_info} {fg.li_magenta}Adding{fg.rs} {fg.li_cyan} {source_domain_name}{fg.rs} to /etc/hosts file""")
+                    vhostnames = [i for i in sorted(set(source_domain_name))]
+                    vhost_log = open(c.getPath("web", "vhostnames"), "a+")
+                    for vh in vhostnames:
+                        vhost_log.write(vh)
+                    vhost_log.close()
+                    print(f"""{cmd_info_orange} {fg.li_magenta}Found{fg.rs} {fg.cyan}{vhostnames}{fg.rs} in {fg.li_red}The Source!{fg.rs} http://{self.target}:{hp}""")
+                    print(f"""{cmd_info} {fg.li_magenta}Adding{fg.rs} {fg.li_cyan} {vhostnames}{fg.rs} to /etc/hosts file""")
                     hosts = Hosts(path="/etc/hosts")
-                    new_entry = HostsEntry(entry_type="ipv4", address=self.target, names=source_domain_name)
+                    new_entry = HostsEntry(entry_type="ipv4", address=self.target, names=vhostnames)
                     hosts.add([new_entry], merge_names=True)
                     hosts.write()
-                    for d in source_domain_name:
+                    for d in vhostnames:
                         self.htb_source_domains.append(d)
                     try:
                         import wfuzz
 
                         tk5 = c.getPath("wordlists", "top5Ksubs")
-                        print(f"""{cmd_info} wfuzz -z file,{tk5} -u {source_domain_name[0]}:{hp} -H 'Host: FUZZ.{source_domain_name[0]}:{hp}'""")
+                        print(f"""{cmd_info} wfuzz -z file,{tk5} -u {vhostnames[0]}:{hp} -H 'Host: FUZZ.{vhostnames[0]}:{hp}'""")
                         print(f"{fg.li_yellow}Wfuzz's STDOUT is Hidden to prevent filling up Terminal. Desired Response Codes are unpredictable during initial fuzz session. Only 404 is filtered.{fg.rs} STDOUT will be written to {fg.li_magenta}{wfuzzReport}{fg.rs}")
-                        str_domain = f"""{source_domain_name[0]}:{hp}"""
-                        fuzz_domain = f"""FUZZ.{source_domain_name[0]}:{hp}"""
+                        str_domain = f"""{vhostnames[0]}:{hp}"""
+                        fuzz_domain = f"""FUZZ.{vhostnames[0]}:{hp}"""
                         for r in wfuzz.fuzz(
                             url=str_domain,
                             hc=[404],
@@ -119,7 +124,7 @@ class checkSource:
                             if get_domains is not None:
                                 subdomains.append(get_domains)
                                 sub_d = "{}.{}".format(
-                                    subdomains[0], source_domain_name[0]
+                                    subdomains[0], vhostnames[0]
                                 )
 
                                 print(f"""{cmd_info_orange}{fg.li_blue} Found Subdomain!{fg.rs} {fg.li_green}{sub_d}{fg.rs}""")
