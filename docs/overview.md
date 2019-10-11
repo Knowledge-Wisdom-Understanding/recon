@@ -8,7 +8,7 @@ O.G. Auto-Recon.
 
 ## Usage
 
-See [Usage](/usage.md)
+See [Usage](/docs/usage.md)
 
 ## Output-Report-Structure
 
