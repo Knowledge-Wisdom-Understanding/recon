@@ -92,8 +92,10 @@ class ParamFuzzer:
                     print(fnf_error)
                     exit()
 
-                if len(php_urls) != 0 and (len(php_urls) < 10):
-                    for url in php_urls:
+                if len(php_urls) != 0 and (len(php_urls) < 20):
+                    filtered_urls = [str(x).lower() for x in php_urls]
+                    sorted_urls = [x for x in sorted(set(filtered_urls))]
+                    for url in sorted_urls:
                         with self.no_ssl_verification():
                             try:
                                 session = requests.Session()
