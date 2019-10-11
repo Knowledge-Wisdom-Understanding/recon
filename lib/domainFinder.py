@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import os
-from sty import fg, bg, ef, rs
+from sty import fg
 from python_hosts.hosts import Hosts, HostsEntry
 import re
 from lib import nmapParser

@@ -4,7 +4,7 @@ from subprocess import call
 from tqdm import tqdm
 from multiprocessing import Pool
 from functools import partial
-from sty import fg, rs
+from sty import fg
 from lib import topOpenPorts
 from lib import nmapOpenPorts
 from lib import nmapParser

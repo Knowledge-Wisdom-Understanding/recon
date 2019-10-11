@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import os
-from sty import fg, bg, ef, rs
+from sty import fg
 from subprocess import PIPE, Popen, check_output, STDOUT
 from lib import nmapParser
 from bs4 import BeautifulSoup, Comment

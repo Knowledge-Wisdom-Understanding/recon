@@ -8,7 +8,7 @@ from lib import enumWeb
 from lib import enumWebSSL
 from utils import config_parser
 import psutil
-from sty import fg, rs
+from sty import fg
 import os
 import signal
 import logging

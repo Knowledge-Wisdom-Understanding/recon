@@ -5,7 +5,7 @@ from subprocess import call, check_output, STDOUT
 from utils import config_parser
 from utils import helper_lists
 from urllib.parse import urlsplit
-from sty import fg, rs
+from sty import fg
 import requests
 from urllib3.exceptions import InsecureRequestWarning
 import warnings

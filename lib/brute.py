@@ -2,7 +2,7 @@
 
 import os
 from subprocess import call
-from sty import fg, bg, ef, rs
+from sty import fg
 import json
 from lib import nmapParser
 from utils import helper_lists

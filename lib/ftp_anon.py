@@ -2,7 +2,7 @@
 
 import ftplib
 import os
-from sty import fg, rs
+from sty import fg
 from subprocess import call
 from utils import config_parser
 from lib import nmapParser

@@ -3,7 +3,7 @@
 import os
 from subprocess import call
 import re
-from sty import fg, bg, ef, rs
+from sty import fg
 from lib import nmapParser
 from lib import enumWeb
 from lib import enumWebSSL

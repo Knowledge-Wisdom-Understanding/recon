@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import os
-from sty import fg, bg, ef, rs
+from sty import fg
 from lib import nmapParser
 from lib import dnsenum
 from utils import peaceout_banner

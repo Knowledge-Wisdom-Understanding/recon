@@ -2,7 +2,7 @@
 
 import os
 import re
-from sty import fg, bg, ef, rs
+from sty import fg
 from lib import nmapParser
 from lib import domainFinder
 from utils import dig_parser

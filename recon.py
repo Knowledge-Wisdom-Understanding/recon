@@ -2,7 +2,7 @@
 
 from termcolor import colored
 from lib import brute
-from sty import fg, bg, ef, rs
+from sty import fg
 import argparse
 import signal
 import time
