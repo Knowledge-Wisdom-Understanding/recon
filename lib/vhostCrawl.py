@@ -19,15 +19,16 @@ class checkSource:
         self.target = target
         self.htb_source_domains = []
 
-    def cmdline(self, command):
-        process = Popen(args=command, stdout=PIPE, shell=True)
-        return process.communicate()[0]
-
     def getLinks(self):
         """Grab all links from web server homepage i.e. http://IP:PORT/ and look for .htb domain names.
         If a .htb domain is found, add the hostname to the /etc/hosts file and then proceed to fuzz the hostname
         for virtual hostname routing using wfuzz. If a valid sub-hostname is found, add the domain to the /etc/hosts file as
         well using python_hosts library merge_names parameter.(Thanks for adding this feature! @jonhadfield)"""
+
+        def cmdline(command):
+            process = Popen(args=command, stdout=PIPE, shell=True)
+            return process.communicate()[0]
+
         np = nmapParser.NmapParserFunk(self.target)
         np.openPorts()
         http_ports = np.http_ports
@@ -98,7 +99,7 @@ class checkSource:
                     check_occurances = f"""sed -n -e 's/^.*C=//p' {wfuzzReport} | grep -v "Warning:" | cut -d " " -f 1 | sort | uniq -c"""
                     response_num = [
                         i.strip()
-                        for i in self.cmdline(check_occurances)
+                        for i in cmdline(check_occurances)
                         .decode("utf-8")
                         .split("\n")
                     ]
