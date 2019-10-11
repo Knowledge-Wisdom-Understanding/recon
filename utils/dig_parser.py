@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 
 from subprocess import PIPE, Popen
-import sys
-import os
 from utils import run_commands
 
 
