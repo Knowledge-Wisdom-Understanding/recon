@@ -89,19 +89,19 @@ class NmapParserFunk:
         #### Proxy Versions #########
         self.proxy_ssh_version = []
 
-    def parsefile(self, xmlfile):
-        parser = make_parser()
-        parser.setContentHandler(ContentHandler())
-        parser.parse(xmlfile)
-
     def openPorts(self):
         """The openPorts function will parse all found ports from the nmap.xml file fed to
         the report variable. All ports will be appended to the lists in __init__ and will
         then be accessible from the NmapParserFunk Class."""
+        def parsefile(xmlfile):
+            parser = make_parser()
+            parser.setContentHandler(ContentHandler())
+            parser.parse(xmlfile)
+
         c = config_parser.CommandParser(f"{os.getcwd()}/config/config.yaml", self.target)
         if os.path.exists(c.getPath("nmap", "nmap_top_ports_xml")):
             try:
-                self.parsefile(c.getPath("nmap", "nmap_top_ports_xml"))
+                parsefile(c.getPath("nmap", "nmap_top_ports_xml"))
                 report = NmapParser.parse_fromfile(c.getPath("nmap", "nmap_top_ports_xml"))
                 self.nmap_services += report.hosts[0].services
                 self.nmap_services = sorted(self.nmap_services, key=lambda s: s.port)
@@ -275,10 +275,15 @@ class NmapParserFunk:
         """The openPorts function will parse all found ports from the FullTcpNmap.xml file fed to
         the report variable. All ports will be appended to the lists in __init__ and will
         then be accessible from the NmapParserFunk Class."""
+        def parsefile(xmlfile):
+            parser = make_parser()
+            parser.setContentHandler(ContentHandler())
+            parser.parse(xmlfile)
+
         c = config_parser.CommandParser(f"{os.getcwd()}/config/config.yaml", self.target)
         if os.path.exists(c.getPath("nmap", "nmap_full_tcp_xml")):
             try:
-                self.parsefile(c.getPath("nmap", "nmap_full_tcp_xml"))
+                parsefile(c.getPath("nmap", "nmap_full_tcp_xml"))
                 report = NmapParser.parse_fromfile(c.getPath("nmap", "nmap_full_tcp_xml"))
                 self.nmap_services += report.hosts[0].services
                 self.nmap_services = sorted(self.nmap_services, key=lambda s: s.port)
@@ -431,102 +436,118 @@ class NmapParserFunk:
         """The openProxyPorts function will parse all found ports from the proxychains nmap xml file fed to
         the report variable. All ports will be appended to the lists in __init__ and will
         then be accessible from the NmapParserFunk Class."""
-        self.openPorts()
-        c = config_parser.CommandParser(f"{os.getcwd()}/config/config.yaml", self.target)
-        if not os.path.exists(c.getPath("nmap", "nmap_proxychain_top_ports")):
-            pass
-        else:
-            proxy_report = NmapParser.parse_fromfile(c.getPath("nmap", "nmap_proxychain_top_ports"))
-            self.proxy_nmap_services += proxy_report.hosts[0].services
-            self.proxy_nmap_services = sorted(
-                self.proxy_nmap_services, key=lambda s: s.port
-            )
-            ignored_windows_http_ports = [5985, 47001]
-            for service in self.proxy_nmap_services:
-                if "open" not in service.state:
-                    continue
-                self.proxy_services.append(
-                    (
-                        service.port,
-                        service.service,
-                        service.tunnel,
-                        service.cpelist,
-                        service.banner,
-                    )
-                )
-                for service in self.proxy_services:
-                    if service[0] not in self.proxy_tcp_ports:
-                        self.proxy_tcp_ports.append(service[0])
-                    if "ssl" in service[2]:
-                        if service[0] not in self.proxy_ssl_ports:
-                            self.proxy_ssl_ports.append(service[0])
-                    if "http" in service[1]:
-                        if "ssl" not in service[2]:
-                            if "ssl" not in service[1]:
-                                if "http-proxy" not in service[1]:
-                                    if service[0] not in ignored_windows_http_ports:
-                                        if service[0] not in self.proxy_http_ports:
-                                            self.proxy_http_ports.append(service[0])
-                    if "netbios-ssn" in service[1]:
-                        if service[0] not in self.proxy_smb_ports:
-                            self.proxy_smb_ports.append(service[0])
-                    if "microsoft-ds" in service[1]:
-                        if service[0] not in self.proxy_smb_ports:
-                            self.proxy_smb_ports.append(service[0])
-                    if "domain" in service[1]:
-                        if service[0] not in self.proxy_dns_ports:
-                            self.proxy_dns_ports.append(service[0])
-                    if "http-proxy" in service[1]:
-                        if service[0] not in self.proxy_ports2:
-                            self.proxy_ports2.append(service[0])
-                    if "ssh" in service[1]:
-                        if service[0] not in self.proxy_ssh_ports:
-                            self.proxy_ssh_ports.append(service[0])
-                        if service[4] not in self.proxy_ssh_version:
-                            self.proxy_ssh_version.append(service[4])
-                    if "oracle-tns" in service[1]:
-                        if service[0] != 49160:
-                            if service[0] not in self.proxy_oracle_tns_ports:
-                                self.proxy_oracle_tns_ports.append(service[0])
-                    if "ftp" in service[1]:
-                        if service[0] not in self.proxy_ftp_ports:
-                            self.proxy_ftp_ports.append(service[0])
-                    if "smtp" in service[1]:
-                        if service[0] not in self.proxy_smtp_ports:
-                            self.proxy_smtp_ports.append(service[0])
-                    if "rpcbind" in service[1]:
-                        if service[0] not in self.proxy_nfs_ports:
-                            self.proxy_nfs_ports.append(service[0])
-                    if "msrpc" in service[1]:
-                        if service[0] not in self.proxy_rpc_ports:
-                            self.proxy_rpc_ports.append(service[0])
-                    if "ldap" in service[1]:
-                        if service[0] not in self.proxy_ldap_ports:
-                            self.proxy_ldap_ports.append(service[0])
-                    if "BaseHTTPServer" in service[4]:
-                        if service[0] not in self.proxy_http_ports:
-                            self.proxy_http_ports.append(service[0])
 
-            # print("HTTP PORTS:", self.proxy_http_ports)
-            # print("ORACLE PORTS:", self.proxy_oracle_tns_ports)
-            # print("OPEN TCP PORTS:", self.proxy_tcp_ports)
-            # print("SSL:", self.proxy_ssl_ports)
-            # print("SMB:", self.proxy_smb_ports)
-            # print("DNS:", self.proxy_dns_ports)
-            # print("Services:", self.proxy_services)
-            # print("SSH:", self.proxy_ssh_ports)
-            # print("SSH VERSION:", self.proxy_ssh_version)
-            # print("Proxy Ports2:", self.proxy_ports2)
+        def parsefile(xmlfile):
+            parser = make_parser()
+            parser.setContentHandler(ContentHandler())
+            parser.parse(xmlfile)
+
+        c = config_parser.CommandParser(f"{os.getcwd()}/config/config.yaml", self.target)
+        if os.path.exists(c.getPath("nmap", "nmap_proxychain_top_ports")):
+            try:
+                parsefile(c.getPath("nmap", "nmap_proxychain_top_ports"))
+                proxy_report = NmapParser.parse_fromfile(c.getPath("nmap", "nmap_proxychain_top_ports"))
+                self.proxy_nmap_services += proxy_report.hosts[0].services
+                self.proxy_nmap_services = sorted(
+                    self.proxy_nmap_services, key=lambda s: s.port
+                )
+                ignored_windows_http_ports = [5985, 47001]
+                for service in self.proxy_nmap_services:
+                    if "open" not in service.state:
+                        continue
+                    self.proxy_services.append(
+                        (
+                            service.port,
+                            service.service,
+                            service.tunnel,
+                            service.cpelist,
+                            service.banner,
+                        )
+                    )
+                    for service in self.proxy_services:
+                        if service[0] not in self.proxy_tcp_ports:
+                            self.proxy_tcp_ports.append(service[0])
+                        if "ssl" in service[2] or ("ssl" in service[1]):
+                            if "imap" not in service[1]:
+                                if "pop3" not in service[1]:
+                                    if "ldap" not in service[1]:
+                                        if service[0] not in self.proxy_ssl_ports:
+                                            self.proxy_ssl_ports.append(service[0])
+                        if "http" in service[1]:
+                            if "ssl" not in service[2]:
+                                if "ssl" not in service[1]:
+                                    if "http-proxy" not in service[1]:
+                                        if service[0] not in ignored_windows_http_ports:
+                                            if service[0] not in self.proxy_http_ports:
+                                                self.proxy_http_ports.append(service[0])
+                        if "netbios-ssn" in service[1]:
+                            if service[0] not in self.proxy_smb_ports:
+                                self.proxy_smb_ports.append(service[0])
+                        if "microsoft-ds" in service[1]:
+                            if service[0] not in self.proxy_smb_ports:
+                                self.proxy_smb_ports.append(service[0])
+                        if "domain" in service[1]:
+                            if service[0] not in self.proxy_dns_ports:
+                                self.proxy_dns_ports.append(service[0])
+                        if "http-proxy" in service[1]:
+                            if service[0] not in self.proxy_ports2:
+                                self.proxy_ports2.append(service[0])
+                        if "ssh" in service[1]:
+                            if service[0] not in self.proxy_ssh_ports:
+                                self.proxy_ssh_ports.append(service[0])
+                            if service[4] not in self.proxy_ssh_version:
+                                self.proxy_ssh_version.append(service[4])
+                        if "oracle-tns" in service[1]:
+                            if service[0] != 49160:
+                                if service[0] not in self.proxy_oracle_tns_ports:
+                                    self.proxy_oracle_tns_ports.append(service[0])
+                        if "ftp" in service[1]:
+                            if service[0] not in self.proxy_ftp_ports:
+                                self.proxy_ftp_ports.append(service[0])
+                        if "smtp" in service[1]:
+                            if service[0] not in self.proxy_smtp_ports:
+                                self.proxy_smtp_ports.append(service[0])
+                        if "rpcbind" in service[1]:
+                            if service[0] not in self.proxy_nfs_ports:
+                                self.proxy_nfs_ports.append(service[0])
+                        if "msrpc" in service[1]:
+                            if service[0] not in self.proxy_rpc_ports:
+                                self.proxy_rpc_ports.append(service[0])
+                        if "ldap" in service[1]:
+                            if service[0] not in self.proxy_ldap_ports:
+                                self.proxy_ldap_ports.append(service[0])
+                        if "BaseHTTPServer" in service[4]:
+                            if service[0] not in self.proxy_http_ports:
+                                self.proxy_http_ports.append(service[0])
+
+                # print("HTTP PORTS:", self.proxy_http_ports)
+                # print("ORACLE PORTS:", self.proxy_oracle_tns_ports)
+                # print("OPEN TCP PORTS:", self.proxy_tcp_ports)
+                # print("SSL:", self.proxy_ssl_ports)
+                # print("SMB:", self.proxy_smb_ports)
+                # print("DNS:", self.proxy_dns_ports)
+                # print("Services:", self.proxy_services)
+                # print("SSH:", self.proxy_ssh_ports)
+                # print("SSH VERSION:", self.proxy_ssh_version)
+                # print("Proxy Ports2:", self.proxy_ports2)
+            except Exception as e:
+                print(f"""{c.getPath("nmap", "nmap_top_udp_ports_xml")} Cannot Parse UDP nmap xml file. {e}""")
+                return
 
     def openUdpPorts(self):
         """The openUdpPorts function will parse all found ports from the UDP nmap xml file fed to
         the report variable. All ports will be appended to the lists in __init__ and will
         then be accessible from the NmapParserFunk Class."""
 
+        def parsefile(xmlfile):
+            parser = make_parser()
+            parser.setContentHandler(ContentHandler())
+            parser.parse(xmlfile)
+
         c = config_parser.CommandParser(f"{os.getcwd()}/config/config.yaml", self.target)
         if os.path.exists(c.getPath("nmap", "nmap_top_udp_ports_xml")):
             try:
-                self.parsefile(c.getPath("nmap", "nmap_top_udp_ports_xml"))
+                parsefile(c.getPath("nmap", "nmap_top_udp_ports_xml"))
                 report = NmapParser.parse_fromfile(c.getPath("nmap", "nmap_top_udp_ports_xml"))
                 self.udp_nmap_services += report.hosts[0].services
                 self.udp_nmap_services = sorted(self.udp_nmap_services, key=lambda s: s.port)

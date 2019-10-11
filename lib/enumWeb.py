@@ -4,13 +4,13 @@ import os
 from sty import fg
 from lib import nmapParser
 from lib import domainFinder
-from subprocess import call, check_output, STDOUT
+from subprocess import call
 import glob
-from bs4 import BeautifulSoup  # SoupStrainer
-import requests
 from lib import vhostCrawl
 from utils import config_parser
-from utils import helper_lists
+# from utils import helper_lists
+# import requests
+# from bs4 import BeautifulSoup  # SoupStrainer
 
 
 class EnumWeb:
