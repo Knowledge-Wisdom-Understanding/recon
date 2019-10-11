@@ -12,7 +12,7 @@ Enum_Oracle() {
     reconDir2="$getcwd/$rhost-Report/oracle"
     cd /opt/odat
     echo -e "${NICE} ./odat.py sidguesser -s $rhost -p 1521 | tee $reconDir2/oracle-sid.txt"
-    ./odat.py sidguesser -s $rhost -p 1521 | tee $reconDir2/oracle-sid.txt
+    ./odat.py sidguesser -s $rhost -p 1521 | tee "$reconDir2/oracle-sid.txt"
     SIDS=$(sed -n -e 's/^.*server: //p' "$reconDir2/oracle-sid.txt")
     sid_list=$(echo "$SIDS" | tr "," "\n")
     if [[ -n $SIDS ]]; then

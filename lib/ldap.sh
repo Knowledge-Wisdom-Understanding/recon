@@ -6,7 +6,7 @@ NICE='\e[1;32;92m[+]\e[0m'
 ldap_enum() {
     echo -e "${NICE} ldapsearch -x -h $rhost -s base namingcontexts"
     ldapsearch -x -h $rhost -s base namingcontexts | tee "$rhost-Report/ldap/ldap-namingcontext.log"
-    dcList=$(sed -n -e 's/^.*namingContexts: //p' $rhost-Report/ldap/ldap-namingcontext.log)
+    dcList=$(sed -n -e 's/^.*namingContexts: //p' "$rhost-Report/ldap/ldap-namingcontext.log")
     echo -e "${NICE} ldapsearch -x -h $rhost -s base -b $dcList"
     ldapsearch -x -h $rhost -s base -b $dcList | tee "$rhost-Report/ldap/ldap-base.log"
     echo -e "${NICE} ldapsearch -x -h $rhost -s sub -b $dcList"
