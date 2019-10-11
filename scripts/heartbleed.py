@@ -24,7 +24,6 @@
 import sys
 import struct
 import socket
-import time
 import select
 import re
 import time
@@ -114,7 +113,7 @@ def build_heartbeat(tls_ver):
 # Payload
 0x01,       # Type (Request)
 0x40, 0x00  # Payload length
-    ] 
+    ]
     return heartbeat
 
 
@@ -310,7 +309,7 @@ def bleed(targ, port):
                         return
                                         
                 # send appropriate tls command if supported                        
-                if opts.starttls:       
+                if opts.starttls:
                     sys.stdout.flush()
                     if stls:
                         print 'Sending STLS Command...'
