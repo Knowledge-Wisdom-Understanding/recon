@@ -17,6 +17,7 @@ class digParse:
         self.subdomains = []
 
     def cmdline(self, command):
+        """This cmdline method will also log commands using the loginator method from run_commands Since stdout is not displayed in the terminal. ToDo: Log Dig's output to a file"""
         rc = run_commands.RunCommands(self.target)
         rc.loginator(command)
         process = Popen(args=command, stdout=PIPE, shell=True)
