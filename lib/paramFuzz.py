@@ -90,7 +90,8 @@ class ParamFuzzer:
                                 # url_paths.append(urlsplit(url).path)
                 except FileNotFoundError as fnf_error:
                     print(fnf_error)
-                    pass
+                    exit()
+
                 if len(php_urls) != 0 and (len(php_urls) < 10):
                     for url in php_urls:
                         with self.no_ssl_verification():
