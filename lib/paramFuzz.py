@@ -93,8 +93,7 @@ class ParamFuzzer:
                     exit()
 
                 if len(php_urls) != 0 and (len(php_urls) < 20):
-                    filtered_urls = [str(x).lower() for x in php_urls]
-                    sorted_urls = [x for x in sorted(set(filtered_urls))]
+                    sorted_urls = [u for u in sorted(set(str(x).lower() for x in php_urls))]
                     for url in sorted_urls:
                         with self.no_ssl_verification():
                             try:
