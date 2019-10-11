@@ -30,6 +30,8 @@ python3 -m pip install -r requirements.txt
 
 If you run python3 recon.py with no arguments, a list of more examples will be displayed.
 see [Docs Usage](../master/docs/usage.md) for more information.
+Typically, on your first run, you should only specify the -t --target option and then depending on the results, proceed to use other options &or continue
+your enumeration manually.
 
 ```text
 
@@ -121,17 +123,27 @@ python3 recon.py -t 10.10.10.10 -b ssh -p 2222 -u slickrick
 ```
 
 To ignore certain services from being scanned you can specify the -i , --ignore flag.  
-When specifying multiple services to ignore, services MUST be space delimited.
+When specifying multiple services to ignore, services MUST be space delimited. Only ignore topports if you have already ran this module
+as most other modules are dependent on nmap's initial top ports output.
 All the available ignore choices are:
 
 ```text
-http,httpcms,ssl,sslcms,aquatone,smb,dns,ldap,oracle,source,proxy,proxycms,fulltcp,topports,remaining,searchsploit
+http,httpcms,ssl,sslcms,aquatone,smb,dns,ldap,oracle,source,proxy,proxycms,fulltcp,topports,remaining,searchsploit,peaceout,ftpAnonDL
 ```
 
 ```shell
 python3 recon.py -t 10.10.10.10 -i http
 python3 recon.py -t 10.10.10.10 -i http ssl
 python3 recon.py --target 10.10.10.10 --ignore fulltcp http
+```
+
+You can also specify services that you wish to only scan, similar to the --ignore option, the -s, --service option will only scan the service specified.
+Please note that before you can use the -s, --service option, You must have already ran the topports nmap scan as most modules are dependent on nmap's output.
+The remaining services module scan is dependent on fulltcp scan module a.k.a. nmap full tcp scan, so if you are only specifying the fulltcp module,
+
+```shell
+python3 recon.py -t 10.10.10.10 -s http httpcms
+python3 recon.py -t 10.10.10.10 --service oracle
 ```
 
 ## Demo
@@ -142,6 +154,19 @@ python3 recon.py --target 10.10.10.10 --ignore fulltcp http
 
 This program is intended to be used in kali linux.
 If you notice a bug or have a feature request. Please create an issue or submit a pull request. Thanks!
+
+## Fun-Facts
+
+- I am aware that there is another very similar project with the same name Auto-Recon. Originally, this project started out as a bash script [Auto-Recon-Bash-Version](https://github.com/Knowledge-Wisdom-Understanding/Auto-Recon) which quickly got out of hand maintenance wise.
+- Please note, I did not copy the name Auto-Recon from the other project. This is a very Generic name and for those who care, If you check the original git commit from my Bash Auto-Recon project, You will see that both my project and Tib3rious project were created on the same exact day! March 1'st 2019.
+- My first commit to my original bash version of this project[Auto-Recon Original Commit](https://github.com/Knowledge-Wisdom-Understanding/Auto-Recon/commit/2c03459fa0c9844a66ba58097b326340bb4ef662)
+- Tib3rius's original first commit to his project [Tib3rius Auto-Recon](https://github.com/Tib3rius/AutoRecon/commit/a08eeed021df9025e15361914c7332ef1f37b04e)
+- As you can see, by matter of peculiar coincidance, both projects were created on March 1st, 2019.
+- I felt it necessary to point this out so that people wouldn't think that I copied the name Auto-Recon. Which by the way, as previously stated, is a very generic name!
+- I created this project not only to automate many repetitive scanning tasks that one would normally run while doing a CTF machine, but also as a fun project to sharpen my python programming skills.
+- Also, Please note, My project takes things a step further when it comes to features and DNS enumeration that you won't find in Tib3rius project, not to say my project is better, but to point out the enhanced features my project offers.
+- One more thing (Uncle voice from Jackie Chan Adventures) , The way Tib3rius implemented the asynchronous multiprocessing running of commands is far more sophisticated than my multiprocessing Pool implementation, having used far less lines of code to make everything work in his project. However, that being said, I found it a little lack luster in features offered and not very user friendly in customizability pertaining to editing the toml configuration files. Although I will say the ability to control the number of processes per number of hosts via command line arguments is a really awesome feature in his project.
+- Another reason I felt the need to create this project was that I like seeing all the output from commands that are being run in real time as opposed to waiting however long until all scans are completed to view the commands / scans output.
 
 ## Disclaimer
 
