@@ -60,8 +60,10 @@ optional arguments:
                         Web & and Dns Services. -t,--target must be specified.
                         -w, --web takes a URL as an argument. i.e. python3
                         recon.py -t 10.10.10.10 -w secret
-  -i {http,httpcms,ssl,sslcms,aquatone,smb,dns,ldap,oracle,source,proxy,proxycms,fulltcp,topports,remaining,searchsploit} [{http,httpcms,ssl,sslcms,aquatone,smb,dns,ldap,oracle,source,proxy,proxycms,fulltcp,topports,remaining,searchsploit} ...], --ignore {http,httpcms,ssl,sslcms,aquatone,smb,dns,ldap,oracle,source,proxy,proxycms,fulltcp,topports,remaining,searchsploit} [{http,httpcms,ssl,sslcms,aquatone,smb,dns,ldap,oracle,source,proxy,proxycms,fulltcp,topports,remaining,searchsploit} ...]
-                        Services to ignore during scan.
+  -i {http,httpcms,ssl,sslcms,aquatone,smb,dns,ldap,oracle,source,proxy,proxycms,fulltcp,topports,remaining,searchsploit,peaceout,ftpAnonDL} [{http,httpcms,ssl,sslcms,aquatone,smb,dns,ldap,oracle,source,proxy,proxycms,fulltcp,topports,remaining,searchsploit,peaceout,ftpAnonDL} ...], --ignore {http,httpcms,ssl,sslcms,aquatone,smb,dns,ldap,oracle,source,proxy,proxycms,fulltcp,topports,remaining,searchsploit,peaceout,ftpAnonDL} [{http,httpcms,ssl,sslcms,aquatone,smb,dns,ldap,oracle,source,proxy,proxycms,fulltcp,topports,remaining,searchsploit,peaceout,ftpAnonDL} ...]
+                        Service modules to ignore during scan.
+  -s {http,httpcms,ssl,sslcms,aquatone,smb,dns,ldap,oracle,source,proxy,proxycms,fulltcp,topports,remaining,searchsploit,peaceout,ftpAnonDL} [{http,httpcms,ssl,sslcms,aquatone,smb,dns,ldap,oracle,source,proxy,proxycms,fulltcp,topports,remaining,searchsploit,peaceout,ftpAnonDL} ...], --service {http,httpcms,ssl,sslcms,aquatone,smb,dns,ldap,oracle,source,proxy,proxycms,fulltcp,topports,remaining,searchsploit,peaceout,ftpAnonDL} [{http,httpcms,ssl,sslcms,aquatone,smb,dns,ldap,oracle,source,proxy,proxycms,fulltcp,topports,remaining,searchsploit,peaceout,ftpAnonDL} ...]
+                        Scan only specified service modules
   -b {ftp,smb,http,ssh}, --brute {ftp,smb,http,ssh}
                         Experimental! - Brute Force ssh,smb,ftp, or http. -t,
                         --target is REQUIRED. Must supply only one protocol at
