@@ -46,3 +46,4 @@ utils/helper_funcs.py
 *.xml
 .coverage
 coverage.xml
+lognificent.py
