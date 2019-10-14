@@ -167,7 +167,7 @@ If you notice a bug or have a feature request. Please create an issue or submit 
 - Don't get it twisted :smiling_imp: I didn't bite the name Auto-Recon from the other project.
 - My first commit to my original bash version of this project[Auto-Recon Original Commit](https://github.com/Knowledge-Wisdom-Understanding/Auto-Recon/commit/2c03459fa0c9844a66ba58097b326340bb4ef662)
 - Tib3rius's original first commit to his project [Tib3rius Auto-Recon](https://github.com/Tib3rius/AutoRecon/commit/a08eeed021df9025e15361914c7332ef1f37b04e)
-- Coincidentally, both projects were created on March 1st, 2019, in fact it's possible that Tib3rius copied me.
+- Coincidentally, both projects were created on March 1st, 2019.
 - Don't sweat the bozack. :sunglasses:
 
 ## Disclaimer
