@@ -158,7 +158,12 @@ python3 recon.py --target 10.10.10.10 --ignore fulltcp http
 
 You can also specify services that you wish to only scan, similar to the --ignore option, the -s, --service option will only scan the service specified.
 Please note that before you can use the -s, --service option, You must have already ran the topports nmap scan as most modules are dependent on nmap's output.
-The remaining services module scan is dependent on fulltcp scan module a.k.a. nmap full tcp scan, so if you are only specifying the fulltcp module,
+The remaining services module scan is dependent on fulltcp scan module a.k.a. nmap full tcp scan, so if you are only specifying the -s remaining module,
+make sure that you have already ran the fulltcp module or you could do
+
+```shell
+python3 recon.py -t 10.10.10.10 -s fulltcp remaining
+```
 
 ```shell
 python3 recon.py -t 10.10.10.10 -s http httpcms
