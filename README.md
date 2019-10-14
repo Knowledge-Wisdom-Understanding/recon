@@ -28,8 +28,19 @@ python3 -m pip install -r requirements.txt
 
 ### Usage
 
-Typically, on your first run, you should only specify the -t --target option and then depending on the results, proceed to use other options &or continue
-your enumeration manually.
+Typically, on your first run, you should only specify the -t --target option (python3 recon.py -t 10.10.10.10)
+Before you can use the -s --service option to specify specific modules, you must have already ran the topports module.
+For instance, if you wanted to skip all other modules on your first run, you could do something like,
+
+```shell
+python3 recon.py -t 10.10.10.10 -s topports http httpcms
+```
+
+Or skip web enumeration all together but scan everything else.
+
+```shell
+python3 recon.py -t 10.10.10.10 -i http httpcms ssl sslcms
+```
 
 #### Important
 
