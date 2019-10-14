@@ -162,16 +162,13 @@ If you notice a bug or have a feature request. Please create an issue or submit 
 
 ## Fun-Facts
 
-- I am aware that there is another very similar project with the same name Auto-Recon. Originally, this project started out as a bash script [Auto-Recon-Bash-Version](https://github.com/Knowledge-Wisdom-Understanding/Auto-Recon) which quickly got out of hand maintenance wise.
-- Please note, I did not copy the name Auto-Recon from the other project. This is a very Generic name and for those who care, If you check the original git commit from my Bash Auto-Recon project, You will see that both my project and Tib3rious project were created on the same exact day! March 1'st 2019.
+- I am aware that there is another very similar project with the same name Auto-Recon.
+- Originally, this project started out as a bash script [Auto-Recon-Bash-Version](https://github.com/Knowledge-Wisdom-Understanding/Auto-Recon) which quickly got out of hand maintenance wise.
+- Don't get it twisted :smiling_imp: I didn't bite the name Auto-Recon from the other project.
 - My first commit to my original bash version of this project[Auto-Recon Original Commit](https://github.com/Knowledge-Wisdom-Understanding/Auto-Recon/commit/2c03459fa0c9844a66ba58097b326340bb4ef662)
 - Tib3rius's original first commit to his project [Tib3rius Auto-Recon](https://github.com/Tib3rius/AutoRecon/commit/a08eeed021df9025e15361914c7332ef1f37b04e)
-- As you can see, by matter of peculiar coincidance, both projects were created on March 1st, 2019.
-- I felt it necessary to point this out so that people wouldn't think that I copied the name Auto-Recon. Which by the way, as previously stated, is a very generic name!
-- I created this project not only to automate many repetitive scanning tasks that one would normally run while doing a CTF machine, but also as a fun project to sharpen my python programming skills.
-- Also, Please note, My project takes things a step further when it comes to features and DNS enumeration that you won't find in Tib3rius project, not to say my project is better, but to point out the enhanced features my project offers.
-- One more thing (Uncle voice from Jackie Chan Adventures) , The way Tib3rius implemented the asynchronous multiprocessing running of commands is far more sophisticated than my multiprocessing Pool implementation, having used far less lines of code to make everything work in his project. However, that being said, I found it a little lack luster in features offered and not very user friendly in customizability pertaining to editing the toml configuration files. Although I will say the ability to control the number of processes per number of hosts via command line arguments is a really awesome feature in his project.
-- Another reason I felt the need to create this project was that I like seeing all the output from commands that are being run in real time as opposed to waiting however long until all scans are completed to view the commands / scans output.
+- Coincidentally, both projects were created on March 1st, 2019, in fact it's possible that Tib3rius copied me.
+- Don't sweat the bozack. :sunglasses:
 
 ## Disclaimer
 
