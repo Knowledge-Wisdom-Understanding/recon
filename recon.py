@@ -49,7 +49,7 @@ EXAMPLES = """
     Ex. python3 recon.py -t 10.10.10.10 --ignore aquatone
 """
 
-V = 3.3
+V = 3.5
 
 
 def banner():
@@ -120,7 +120,7 @@ def argument_parser():
         "--ignore",
         nargs="+",
         choices=["http", "httpcms", "ssl", "sslcms", "aquatone", "smb", "dns", "ldap", "oracle", "source",
-                 "proxy", "proxycms", "fulltcp", "topports", "remaining", "searchsploit", "peaceout", "ftpAnonDL"],
+                 "proxy", "proxycms", "fulltcp", "topports", "remaining", "searchsploit", "peaceout", "ftpAnonDL", "winrm"],
         help="Service modules to ignore during scan.",
         type=str.lower,
 
@@ -130,7 +130,7 @@ def argument_parser():
         "--service",
         nargs="+",
         choices=["http", "httpcms", "ssl", "sslcms", "aquatone", "smb", "dns", "ldap", "oracle", "source",
-                 "proxy", "proxycms", "fulltcp", "topports", "remaining", "searchsploit", "peaceout", "ftpAnonDL"],
+                 "proxy", "proxycms", "fulltcp", "topports", "remaining", "searchsploit", "peaceout", "ftpAnonDL", "winrm"],
         help="Scan only specified service modules",
         type=str.lower,
 
@@ -246,6 +246,7 @@ def main():
         "ftpAnonDL": rc.ftpAnonymous,
         "remaining": rc.enumRemainingServices,
         "searchsploit": rc.searchSploits,
+        "winrm": rc.winrmPwn,
         "peaceout": rc.peace
     }
     if args.ignore:
