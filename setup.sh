@@ -32,6 +32,12 @@ apt install php-guzzlehttp-psr7 -y
 php --ini
 apt install php7.3-curl -y
 
+echo -e "${DOPE} Installing Evil-Winrm"
+cd /opt
+git clone https://github.com/Hackplayers/evil-winrm.git
+cd evil-winrm
+gem install winrm winrm-fs colorize stringio
+
 echo -e "${DOPE} Installing Patator"
 apt install patator -y
 cd /opt
@@ -52,6 +58,14 @@ echo -e "${DOPE} Installing ODAT"
 apt install odat -y
 cd /opt
 git clone https://github.com/quentinhardy/odat.git
+
+echo -e "${DOPE} Cloning Impacket to opt folder"
+cd /opt
+git clone https://github.com/SecureAuthCorp/impacket.git
+
+echo -e "${DOPE} Cloning PowerShell Mafia's PowerSploit to /opt folder"
+cd /opt
+git clone https://github.com/PowerShellMafia/PowerSploit.git
 
 echo -e "${DOPE} Installing Seclists"
 apt install seclists -y
