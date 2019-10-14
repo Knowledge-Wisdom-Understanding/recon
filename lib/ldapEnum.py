@@ -153,9 +153,9 @@ class LdapEnum:
                         return zip(usernames, passwords)
 
             def checkWinRm():
+                HeresJonny()
                 r = requests.post(f"http://{self.target}:5985/wsman", data="")
                 if r.status_code == 401:
-                    HeresJonny()
                     user_pass = dict(parseCreds())
                     users = []
                     passwords = []
