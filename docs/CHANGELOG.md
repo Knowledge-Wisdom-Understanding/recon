@@ -2,6 +2,10 @@
 
 All changes to this project will be noted here.
 
+## [3.5] - 2019-10-13 9:41 PM
+
+- Added winrm and improved ldap enumeration :boom:
+
 ## [3.4] - 2019-10-09 3:19 PM
 
 ### Added_v3.4
