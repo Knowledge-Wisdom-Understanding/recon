@@ -28,10 +28,13 @@ python3 -m pip install -r requirements.txt
 
 ### Usage
 
-If you run python3 recon.py with no arguments, a list of more examples will be displayed.
-see [Docs Usage](../master/docs/usage.md) for more information.
 Typically, on your first run, you should only specify the -t --target option and then depending on the results, proceed to use other options &or continue
 your enumeration manually.
+
+#### Important
+
+- MAKE SURE TO CHECK OUT THE [Config](../master/config/config.yaml) file for all your customization needs :octocat:
+- All required non-default kali linux dependencies are included in setup.sh.
 
 ```text
 
@@ -41,7 +44,7 @@ your enumeration manually.
        __/__/   /_\   \ |  |  \   __\/  _ \|  |       __/ __ \_/ ___\/  _ \|       |
       |   |     ___    \|  |  /|  | (  |_| )  |    |   \  ___/\  \__(  |_| )   |   |
       |___|____/\__\____|____/_|__|\_\____/|__|____|_  /\___  |\___  \____/|___|  /
-      gtihub.com/Knowledge-Wisdom-Understanding  \___\/  \__\/  \__\_/ v3.3 \___\/
+      gtihub.com/Knowledge-Wisdom-Understanding  \___\/  \__\/  \__\_/ v3.5 \___\/
 
 
 usage: python3 recon.py -t 10.10.10.10
@@ -60,9 +63,9 @@ optional arguments:
                         Web & and Dns Services. -t,--target must be specified.
                         -w, --web takes a URL as an argument. i.e. python3
                         recon.py -t 10.10.10.10 -w secret
-  -i {http,httpcms,ssl,sslcms,aquatone,smb,dns,ldap,oracle,source,proxy,proxycms,fulltcp,topports,remaining,searchsploit,peaceout,ftpAnonDL} [{http,httpcms,ssl,sslcms,aquatone,smb,dns,ldap,oracle,source,proxy,proxycms,fulltcp,topports,remaining,searchsploit,peaceout,ftpAnonDL} ...], --ignore {http,httpcms,ssl,sslcms,aquatone,smb,dns,ldap,oracle,source,proxy,proxycms,fulltcp,topports,remaining,searchsploit,peaceout,ftpAnonDL} [{http,httpcms,ssl,sslcms,aquatone,smb,dns,ldap,oracle,source,proxy,proxycms,fulltcp,topports,remaining,searchsploit,peaceout,ftpAnonDL} ...]
+  -i {http,httpcms,ssl,sslcms,aquatone,smb,dns,ldap,oracle,source,proxy,proxycms,fulltcp,topports,remaining,searchsploit,peaceout,ftpAnonDL} [{http,httpcms,ssl,sslcms,aquatone,smb,dns,ldap,oracle,source,proxy,proxycms,fulltcp,topports,remaining,searchsploit,peaceout,ftpAnonDL} ...], --ignore {http,httpcms,ssl,sslcms,aquatone,smb,dns,ldap,oracle,source,proxy,proxycms,fulltcp,topports,remaining,searchsploit,peaceout,ftpAnonDL} [{http,httpcms,ssl,sslcms,aquatone,smb,dns,ldap,oracle,source,proxy,proxycms,fulltcp,topports,remaining,searchsploit,peaceout,ftpAnonDL,winrm} ...]
                         Service modules to ignore during scan.
-  -s {http,httpcms,ssl,sslcms,aquatone,smb,dns,ldap,oracle,source,proxy,proxycms,fulltcp,topports,remaining,searchsploit,peaceout,ftpAnonDL} [{http,httpcms,ssl,sslcms,aquatone,smb,dns,ldap,oracle,source,proxy,proxycms,fulltcp,topports,remaining,searchsploit,peaceout,ftpAnonDL} ...], --service {http,httpcms,ssl,sslcms,aquatone,smb,dns,ldap,oracle,source,proxy,proxycms,fulltcp,topports,remaining,searchsploit,peaceout,ftpAnonDL} [{http,httpcms,ssl,sslcms,aquatone,smb,dns,ldap,oracle,source,proxy,proxycms,fulltcp,topports,remaining,searchsploit,peaceout,ftpAnonDL} ...]
+  -s {http,httpcms,ssl,sslcms,aquatone,smb,dns,ldap,oracle,source,proxy,proxycms,fulltcp,topports,remaining,searchsploit,peaceout,ftpAnonDL} [{http,httpcms,ssl,sslcms,aquatone,smb,dns,ldap,oracle,source,proxy,proxycms,fulltcp,topports,remaining,searchsploit,peaceout,ftpAnonDL} ...], --service {http,httpcms,ssl,sslcms,aquatone,smb,dns,ldap,oracle,source,proxy,proxycms,fulltcp,topports,remaining,searchsploit,peaceout,ftpAnonDL} [{http,httpcms,ssl,sslcms,aquatone,smb,dns,ldap,oracle,source,proxy,proxycms,fulltcp,topports,remaining,searchsploit,peaceout,ftpAnonDL,winrm} ...]
                         Scan only specified service modules
   -b {ftp,smb,http,ssh}, --brute {ftp,smb,http,ssh}
                         Experimental! - Brute Force ssh,smb,ftp, or http. -t,
