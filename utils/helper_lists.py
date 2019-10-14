@@ -314,7 +314,6 @@ class ignoreDomains:
             ".localdomain",
             "localhost.localdomain",
             ".localhost",
-            ".local",
             ".acme",
             ".css",
             ".name",
@@ -352,6 +351,7 @@ class ignoreDomains:
             ".login",
             ".hta",
             ".robots",
+            ".portcu",
         ]
 
 

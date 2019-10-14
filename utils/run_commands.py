@@ -41,7 +41,7 @@ class RunCommands:
     def loginator(self, executed_command):
         c = config_parser.CommandParser(f"{os.getcwd()}/config/config.yaml", self.target)
         logging.basicConfig(
-            filename=c.getPath("report", "log"),
+            filename=c.getPath("report", "commandLog"),
             format='%(asctime)s %(message)s',
             datefmt='%m/%d/%Y %I:%M:%S %p',
             level=logging.INFO
@@ -291,3 +291,7 @@ class RunCommands:
     def ftpAnonymous(self):
         ft = ftp_anon.FtpCheck(self.target)
         ft.anonymousLogin()
+
+    def winrmPwn(self):
+        ldwrm = ldapEnum.LdapEnum(self.target)
+        ldwrm.PwnWinRM()
