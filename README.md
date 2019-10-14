@@ -30,17 +30,20 @@ python3 -m pip install -r requirements.txt
 
 Typically, on your first run, you should only specify the -t --target option (python3 recon.py -t 10.10.10.10)
 Before you can use the -s --service option to specify specific modules, you must have already ran the topports module.
-For instance, if you wanted to skip all other modules on your first run, you could do something like,
+For instance, if you really wanted to skip all other modules on your first run, and only scan the web after topports,
+you could do something like,
 
 ```shell
-python3 recon.py -t 10.10.10.10 -s topports http httpcms
+python3 recon.py -t 10.10.10.10 -s topports dns http httpcms ssl sslcms sort_urls aquatone source
 ```
 
 Or skip web enumeration all together but scan everything else.
 
 ```shell
-python3 recon.py -t 10.10.10.10 -i http httpcms ssl sslcms
+python3 recon.py -t 10.10.10.10 -i dns http httpcms ssl sslcms sort_urls aquatone source
 ```
+
+The remaining services module is dependent on the fulltcp module.
 
 #### Important
 
