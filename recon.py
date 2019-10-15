@@ -49,7 +49,7 @@ EXAMPLES = """
     Ex. python3 recon.py -t 10.10.10.10 --ignore aquatone
 """
 
-V = 3.5
+V = 3.6
 
 
 def banner():
