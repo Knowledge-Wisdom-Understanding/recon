@@ -26,7 +26,7 @@ Ex. python3 recon.py -t 10.10.10.10 --ignore aquatone
        __/__/   /_\   \ |  |  \   __\/  _ \|  |       __/ __ \_/ ___\/  _ \|       |
       |   |     ___    \|  |  /|  | (  |_| )  |    |   \  ___/\  \__(  |_| )   |   |
       |___|____/\__\____|____/_|__|\_\____/|__|____|_  /\___  |\___  \____/|___|  /
-      gtihub.com/Knowledge-Wisdom-Understanding  \___\/  \__\/  \__\_/ v3.3 \___\/
+      gtihub.com/Knowledge-Wisdom-Understanding  \___\/  \__\/  \__\_/ v3.6 \___\/
 
 
 usage: python3 recon.py -t 10.10.10.10
@@ -45,9 +45,9 @@ optional arguments:
                         Web & and Dns Services. -t,--target must be specified.
                         -w, --web takes a URL as an argument. i.e. python3
                         recon.py -t 10.10.10.10 -w secret
-  -i {http,httpcms,ssl,sslcms,aquatone,smb,dns,ldap,oracle,source,proxy,proxycms,fulltcp,topports,remaining,searchsploit,peaceout,ftpAnonDL} [{http,httpcms,ssl,sslcms,aquatone,smb,dns,ldap,oracle,source,proxy,proxycms,fulltcp,topports,remaining,searchsploit,peaceout,ftpAnonDL} ...], --ignore {http,httpcms,ssl,sslcms,aquatone,smb,dns,ldap,oracle,source,proxy,proxycms,fulltcp,topports,remaining,searchsploit,peaceout,ftpAnonDL} [{http,httpcms,ssl,sslcms,aquatone,smb,dns,ldap,oracle,source,proxy,proxycms,fulltcp,topports,remaining,searchsploit,peaceout,ftpAnonDL} ...]
+  -i {http,httpcms,ssl,sslcms,aquatone,smb,dns,ldap,removecolor,oracle,source,sort_urls,proxy,proxycms,fulltcp,topports,remaining,searchsploit,peaceout,ftpAnonDL,winrm} [{http,httpcms,ssl,sslcms,aquatone,smb,dns,ldap,removecolor,oracle,source,sort_urls,proxy,proxycms,fulltcp,topports,remaining,searchsploit,peaceout,ftpAnonDL,winrm} ...], --ignore {http,httpcms,ssl,sslcms,aquatone,smb,dns,ldap,removecolor,oracle,source,sort_urls,proxy,proxycms,fulltcp,topports,remaining,searchsploit,peaceout,ftpAnonDL,winrm} [{http,httpcms,ssl,sslcms,aquatone,smb,dns,ldap,removecolor,oracle,source,sort_urls,proxy,proxycms,fulltcp,topports,remaining,searchsploit,peaceout,ftpAnonDL,winrm} ...]
                         Service modules to ignore during scan.
-  -s {http,httpcms,ssl,sslcms,aquatone,smb,dns,ldap,oracle,source,proxy,proxycms,fulltcp,topports,remaining,searchsploit,peaceout,ftpAnonDL} [{http,httpcms,ssl,sslcms,aquatone,smb,dns,ldap,oracle,source,proxy,proxycms,fulltcp,topports,remaining,searchsploit,peaceout,ftpAnonDL} ...], --service {http,httpcms,ssl,sslcms,aquatone,smb,dns,ldap,oracle,source,proxy,proxycms,fulltcp,topports,remaining,searchsploit,peaceout,ftpAnonDL} [{http,httpcms,ssl,sslcms,aquatone,smb,dns,ldap,oracle,source,proxy,proxycms,fulltcp,topports,remaining,searchsploit,peaceout,ftpAnonDL} ...]
+  -s {http,httpcms,ssl,sslcms,aquatone,smb,dns,ldap,removecolor,oracle,source,sort_urls,proxy,proxycms,fulltcp,topports,remaining,searchsploit,peaceout,ftpAnonDL,winrm} [{http,httpcms,ssl,sslcms,aquatone,smb,dns,ldap,removecolor,oracle,source,sort_urls,proxy,proxycms,fulltcp,topports,remaining,searchsploit,peaceout,ftpAnonDL,winrm} ...], --service {http,httpcms,ssl,sslcms,aquatone,smb,dns,ldap,removecolor,oracle,source,sort_urls,proxy,proxycms,fulltcp,topports,remaining,searchsploit,peaceout,ftpAnonDL,winrm} [{http,httpcms,ssl,sslcms,aquatone,smb,dns,ldap,removecolor,oracle,source,sort_urls,proxy,proxycms,fulltcp,topports,remaining,searchsploit,peaceout,ftpAnonDL,winrm} ...]
                         Scan only specified service modules
   -b {ftp,smb,http,ssh}, --brute {ftp,smb,http,ssh}
                         Experimental! - Brute Force ssh,smb,ftp, or http. -t,
@@ -84,6 +84,23 @@ python3 recon.py -t 10.10.10.10 -w somedirectory
 python3 recon.py -t 10.10.10.10 -w ' '
 ```
 
+Typically, on your first run, you should only specify the -t --target option (python3 recon.py -t 10.10.10.10)
+Before you can use the -s --service option to specify specific modules, you must have already ran the topports module.
+For instance, if you really wanted to skip all other modules on your first run, and only scan the web after topports,
+you could do something like,
+
+```shell
+python3 recon.py -t 10.10.10.10 -s topports dns http httpcms ssl sslcms sort_urls aquatone source
+```
+
+Or skip web enumeration all together but scan everything else.
+
+```shell
+python3 recon.py -t 10.10.10.10 -i dns http httpcms ssl sslcms sort_urls aquatone source
+```
+
+The remaining services module is dependent on the fulltcp module.
+
 To Scan + Enumerate all IPv4 addr's in ips.txt file
 
 ```shell
@@ -115,7 +132,7 @@ as most other modules are dependent on nmap's initial top ports output.
 All the available ignore choices are:
 
 ```text
-http,httpcms,ssl,sslcms,aquatone,smb,dns,ldap,oracle,source,proxy,proxycms,fulltcp,topports,remaining,searchsploit,peaceout,ftpAnonDL
+http,httpcms,ssl,sslcms,aquatone,smb,dns,ldap,oracle,source,sort_urls,proxy,proxycms,fulltcp,topports,remaining,searchsploit,peaceout,ftpAnonDL,winrm
 ```
 
 ```shell
@@ -126,9 +143,19 @@ python3 recon.py --target 10.10.10.10 --ignore fulltcp http
 
 You can also specify services that you wish to only scan, similar to the --ignore option, the -s, --service option will only scan the service specified.
 Please note that before you can use the -s, --service option, You must have already ran the topports nmap scan as most modules are dependent on nmap's output.
-The remaining services module scan is dependent on fulltcp scan module a.k.a. nmap full tcp scan, so if you are only specifying the fulltcp module,
+The remaining services module scan is dependent on fulltcp scan module a.k.a. nmap full tcp scan, so if you are only specifying the -s remaining module,
+make sure that you have already ran the fulltcp module or you could do
+
+```shell
+python3 recon.py -t 10.10.10.10 -s fulltcp remaining
+```
 
 ```shell
 python3 recon.py -t 10.10.10.10 -s http httpcms
 python3 recon.py -t 10.10.10.10 --service oracle
 ```
+
+### Important
+
+- MAKE SURE TO CHECK OUT THE [Config](../master/config/config.yaml) file for all your customization needs :octocat:
+- All required non-default kali linux dependencies are included in setup.sh.
