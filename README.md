@@ -27,28 +27,6 @@ python3 -m pip install -r requirements.txt
 
 ### Usage
 
-Typically, on your first run, you should only specify the -t --target option (python3 recon.py -t 10.10.10.10)
-Before you can use the -s --service option to specify specific modules, you must have already ran the topports module.
-For instance, if you really wanted to skip all other modules on your first run, and only scan the web after topports,
-you could do something like,
-
-```shell
-python3 recon.py -t 10.10.10.10 -s topports dns http httpcms ssl sslcms sort_urls aquatone source
-```
-
-Or skip web enumeration all together but scan everything else.
-
-```shell
-python3 recon.py -t 10.10.10.10 -i dns http httpcms ssl sslcms sort_urls aquatone source
-```
-
-The remaining services module is dependent on the fulltcp module.
-
-#### Important
-
-- MAKE SURE TO CHECK OUT THE [Config](../master/config/config.yaml) file for all your customization needs :octocat:
-- All required non-default kali linux dependencies are included in setup.sh.
-
 ```text
 
        _____________          ____    ________________
@@ -115,6 +93,23 @@ python3 recon.py -t 10.10.10.10 -w somedirectory
 python3 recon.py -t 10.10.10.10 -w ' '
 ```
 
+Typically, on your first run, you should only specify the -t --target option (python3 recon.py -t 10.10.10.10)
+Before you can use the -s --service option to specify specific modules, you must have already ran the topports module.
+For instance, if you really wanted to skip all other modules on your first run, and only scan the web after topports,
+you could do something like,
+
+```shell
+python3 recon.py -t 10.10.10.10 -s topports dns http httpcms ssl sslcms sort_urls aquatone source
+```
+
+Or skip web enumeration all together but scan everything else.
+
+```shell
+python3 recon.py -t 10.10.10.10 -i dns http httpcms ssl sslcms sort_urls aquatone source
+```
+
+The remaining services module is dependent on the fulltcp module.
+
 To Scan + Enumerate all IPv4 addr's in ips.txt file
 
 ```shell
@@ -168,6 +163,11 @@ python3 recon.py -t 10.10.10.10 -s fulltcp remaining
 python3 recon.py -t 10.10.10.10 -s http httpcms
 python3 recon.py -t 10.10.10.10 --service oracle
 ```
+
+#### Important
+
+- MAKE SURE TO CHECK OUT THE [Config](../master/config/config.yaml) file for all your customization needs :octocat:
+- All required non-default kali linux dependencies are included in setup.sh.
 
 ## Demo
 
