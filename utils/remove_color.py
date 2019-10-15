@@ -44,8 +44,9 @@ class Clean:
                                 removeColor(self, rf)
                             if "drupal" in rf:
                                 removeColor(self, rf)
-                            if "oracle" in rf:
+                            if "joomlavs" in rf:
                                 removeColor(self, rf)
+                            if "oracle" in rf:
                                 removeColor(self, rf)
                             if "wpscan" in rf:
                                 removeColor(self, rf)
@@ -83,6 +84,8 @@ class Clean:
                                 if "dnsenum" in rf:
                                     removeColor(self, rf)
                                 if "drupal" in rf:
+                                    removeColor(self, rf)
+                                if "joomlavs" in rf:
                                     removeColor(self, rf)
                                 if "oracle" in rf:
                                     removeColor(self, rf)
