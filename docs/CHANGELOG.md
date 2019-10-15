@@ -7,6 +7,7 @@ All changes to this project will be noted here.
 ### Fixed_v3.6
 
 - Fixed bug :bug: in nmap parser to prevent https ports from being added to http ports.
+- Added Joomlavs joomla scanner
 
 ### Added_v3.6
 
@@ -44,4 +45,4 @@ All changes to this project will be noted here.
 
 ### Added_v3.2
 
-- Ignore certain service scannign modules with the -i --ignore option. Useful for cases where Firewalls or IDS/IPS systems are disrupting or timing out certain tools.
+- Ignore certain service scanning modules with the -i --ignore option. Useful for cases where Firewalls or IDS/IPS systems are disrupting or timing out certain tools.
