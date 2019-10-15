@@ -136,16 +136,14 @@ class NmapParserFunk:
                                             self.ssl_ports.append(service[0])
                                         if service[8] not in self.ssl_script_results:
                                             self.ssl_script_results.append(service[8])
-                        if "http" in service[1]:
-                            if "ssl" not in service[2]:
-                                if "ssl" not in service[1]:
-                                    if "MiniServ" not in service[5]:
-                                        if "http-proxy" not in service[1]:
-                                            if service[0] not in ignored_windows_http_ports:
-                                                if service[0] not in self.http_ports:
-                                                    self.http_ports.append(service[0])
-                                                if service[8] not in self.http_script_results:
-                                                    self.http_script_results.append(service[8])
+                        if "http" in service[1] and ("ssl/http" not in service[1]) and ("ssl" not in service[2]) and ("ssl" not in service[1]):
+                            if "MiniServ" not in service[5]:
+                                if "http-proxy" not in service[1]:
+                                    if service[0] not in ignored_windows_http_ports:
+                                        if service[0] not in self.http_ports:
+                                            self.http_ports.append(service[0])
+                                        if service[8] not in self.http_script_results:
+                                            self.http_script_results.append(service[8])
                         if "netbios-ssn" in service[1]:
                             if service[0] not in self.smb_ports:
                                 self.smb_ports.append(service[0])
@@ -197,7 +195,7 @@ class NmapParserFunk:
                         if "BaseHTTPServer" in service[4]:
                             if service[0] not in self.http_ports:
                                 self.http_ports.append(service[0])
-                        if "Apache" in service[5]:
+                        if "Apache" in service[5] and ("ssl/http" not in service[1]) and ("ssl" not in service[2]) and ("ssl" not in service[1]):
                             if service[0] not in self.http_ports:
                                 self.http_ports.append(service[0])
                         if "telnet" in service[1]:
@@ -318,16 +316,14 @@ class NmapParserFunk:
                                             self.ssl_ports.append(service[0])
                                         if service[8] not in self.ssl_script_results:
                                             self.ssl_script_results.append(service[8])
-                        if "http" in service[1]:
-                            if "ssl" not in service[2]:
-                                if "ssl" not in service[1]:
-                                    if "MiniServ" not in service[5]:
-                                        if "http-proxy" not in service[1]:
-                                            if service[0] not in ignored_windows_http_ports:
-                                                if service[0] not in self.http_ports:
-                                                    self.http_ports.append(service[0])
-                                                if service[8] not in self.http_script_results:
-                                                    self.http_script_results.append(service[8])
+                        if "http" in service[1] and ("ssl/http" not in service[1]) and ("ssl" not in service[2]) and ("ssl" not in service[1]):
+                            if "MiniServ" not in service[5]:
+                                if "http-proxy" not in service[1]:
+                                    if service[0] not in ignored_windows_http_ports:
+                                        if service[0] not in self.http_ports:
+                                            self.http_ports.append(service[0])
+                                        if service[8] not in self.http_script_results:
+                                            self.http_script_results.append(service[8])
                         if "netbios-ssn" in service[1]:
                             if service[0] not in self.smb_ports:
                                 self.smb_ports.append(service[0])
@@ -379,7 +375,7 @@ class NmapParserFunk:
                         if "BaseHTTPServer" in service[4]:
                             if service[0] not in self.http_ports:
                                 self.http_ports.append(service[0])
-                        if "Apache" in service[5]:
+                        if "Apache" in service[5] and ("ssl/http" not in service[1]) and ("ssl" not in service[2]) and ("ssl" not in service[1]):
                             if service[0] not in self.http_ports:
                                 self.http_ports.append(service[0])
                         if "telnet" in service[1]:
