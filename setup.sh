@@ -38,6 +38,14 @@ git clone https://github.com/Hackplayers/evil-winrm.git
 cd evil-winrm
 gem install winrm winrm-fs colorize stringio
 
+echo -e "${DOPE} Installing Joomlavs"
+cd /opt
+git clone https://github.com/rastating/joomlavs.git
+cd joomlavs
+apt install build-essential patch
+apt install ruby-dev zlib1g-dev liblzma-dev libcurl4-openssl-dev
+gem install bundler && bundle install
+
 echo -e "${DOPE} Installing Patator"
 apt install patator -y
 cd /opt
