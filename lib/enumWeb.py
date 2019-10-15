@@ -170,6 +170,7 @@ class EnumWeb:
                                                                 os.makedirs(c.getPath("vuln", "vulnDir"))
                                                             cms_commands.append(c.getCmd("vuln", "searchsploit", strang=str(cms), name="Joomla"))
                                                             cms_commands.append(c.getCmd("web", "joomscanHost", host=hn, httpPort=http_port))
+                                                            cms_commands.append(c.getCmd("web", "joomlavsHost", host=hn, httpPort=http_port))
                                                         if "Magento" in cms:
                                                             if not os.path.exists(c.getPath("vuln", "vulnDir")):
                                                                 os.makedirs(c.getPath("vuln", "vulnDir"))
@@ -196,31 +197,30 @@ class EnumWeb:
                                                 if "WordPress" in cms:
                                                     wpscan_cmd = c.getCmd("web", "wpscanHttpTarget", httpPort=http_port)
                                                     cms_commands.append(wpscan_cmd)
-                                                    manual_brute_force_script = f"""
-        #!/bin/bash
+                                                    manual_brute_force_script = f"""#!/bin/bash
 
-        if [[ -n $(grep -i "User(s) Identified" {c.getPath("web","wpscanHttpTarget", httpPort=http_port)}) ]]; then
-            grep -w -A 100 "User(s)" {c.getPath("web","wpscanHttpTarget", httpPort=http_port)} | grep -w "[+]" | cut -d " " -f 2 | head -n -7 >{c.getPath("web", "wordpressUsers")}
-            {c.getCmd("web", "CewlWeb", httpPort=http_port)}
-            sleep 10
-            echo "Adding John Rules to Cewl Wordlist!"
-            {c.getCmd("web", "cewl2John")}
-            sleep 3
-            # brute force again with wpscan
-            {c.getCmd("web", "wpscanCewlBrute", httpPort=http_port)}
-            sleep 1
-            if grep -i "No Valid Passwords Found" {c.getPath("web", "wpscanCewlBrute")}; then
-                if [[ -s {c.getPath("web", "johnCewlWordlist")} ]]; then
-                    {c.getCmd("web", "wpscanCewlJohnBrute", httpPort=http_port)}
-                else
-                    echo "John wordlist is empty :("
-                fi
-                sleep 1
-                if grep -i "No Valid Passwords Found" {c.getPath("web", "wordpressJohnCewlBrute")}; then
-                    {c.getCmd("web", "wpscanFastTrackBrute", httpPort=http_port)}
-                fi
-            fi
+if [[ -n $(grep -i "User(s) Identified" {c.getPath("web","wpscanHttpTarget", httpPort=http_port)}) ]]; then
+    grep -w -A 100 "User(s)" {c.getPath("web","wpscanHttpTarget", httpPort=http_port)} | grep -w "[+]" | grep -v "WPVulnDB" | cut -d " " -f 2 | head -n -7 >{c.getPath("web", "wordpressUsers")}
+    {c.getCmd("web", "CewlWeb", httpPort=http_port)}
+    sleep 10
+    echo "Adding John Rules to Cewl Wordlist!"
+    {c.getCmd("web", "cewl2John")}
+    sleep 3
+    # brute force again with wpscan
+    {c.getCmd("web", "wpscanCewlBrute", httpPort=http_port)}
+    sleep 1
+    if grep -i "No Valid Passwords Found" {c.getPath("web", "wpscanCewlBrute")}; then
+        if [[ -s {c.getPath("web", "johnCewlWordlist")} ]]; then
+            {c.getCmd("web", "wpscanCewlJohnBrute", httpPort=http_port)}
+        else
+            echo "John wordlist is empty :("
         fi
+        sleep 1
+        if grep -i "No Valid Passwords Found" {c.getPath("web", "wordpressJohnCewlBrute")}; then
+            {c.getCmd("web", "wpscanFastTrackBrute", httpPort=http_port)}
+        fi
+    fi
+fi
                                                     """
                                                     try:
                                                         with open(c.getPath("web", "wpscanBashBruteScript"), "w") as wpb:
@@ -240,6 +240,7 @@ class EnumWeb:
                                                         os.makedirs(c.getPath("vuln", "vulnDir"))
                                                     cms_commands.append(c.getCmd("vuln", "searchsploit", strang=str(cms), name="Joomla"))
                                                     cms_commands.append(c.getCmd("web", "joomscan", httpPort=http_port))
+                                                    cms_commands.append(c.getCmd("web", "joomlavsTarget", httpPort=http_port))
                                                 if "Magento" in cms:
                                                     if not os.path.exists(c.getPath("vuln", "vulnDir")):
                                                         os.makedirs(c.getPath("vuln", "vulnDir"))
