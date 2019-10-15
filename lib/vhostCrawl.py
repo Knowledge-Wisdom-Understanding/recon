@@ -78,21 +78,27 @@ class checkSource:
                         self.htb_source_domains.append(d)
                     try:
                         import wfuzz
+                        from tqdm import tqdm
 
                         tk5 = c.getPath("wordlists", "top5Ksubs")
                         print(f"""{cmd_info} wfuzz -z file,{tk5} -u {vhostnames[0]}:{hp} -H 'Host: FUZZ.{vhostnames[0]}:{hp}'""")
                         print(f"{fg.li_yellow}Wfuzz's STDOUT is Hidden to prevent filling up Terminal. Desired Response Codes are unpredictable during initial fuzz session. Only 404 is filtered.{fg.rs} STDOUT will be written to {fg.li_magenta}{wfuzzReport}{fg.rs}")
                         str_domain = f"""{vhostnames[0]}:{hp}"""
                         fuzz_domain = f"""FUZZ.{vhostnames[0]}:{hp}"""
-                        for r in wfuzz.fuzz(
-                            url=str_domain,
-                            hc=[404],
-                            payloads=[("file", dict(fn=tk5))],
-                            headers=[("Host", fuzz_domain)],
-                            printer=(wfuzzReport, "raw"),
-                        ):
-                            # print(r)
-                            pass
+                        wordlist_lines = 4997
+                        with tqdm(total=wordlist_lines) as pbar:
+                            for r in wfuzz.fuzz(
+                                url=str_domain,
+                                hc=[404],
+                                payloads=[("file", dict(fn=tk5))],
+                                headers=[("Host", fuzz_domain)],
+                                printer=(wfuzzReport, "raw"),
+                            ):
+                                # print(r)
+                                pbar.update()
+                                pbar.set_description_str(desc=f"{fg.li_yellow}wfuzz{fg.rs}")
+                                # pass
+
                     except Exception as e:
                         print(e)
 
