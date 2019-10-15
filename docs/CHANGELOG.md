@@ -7,11 +7,12 @@ All changes to this project will be noted here.
 ### Fixed_v3.6
 
 - Fixed bug :bug: in nmap parser to prevent https ports from being added to http ports.
-- Added Joomlavs joomla scanner
+- Fixed writing wpscanBrute.sh output format :penguin:
 
 ### Added_v3.6
 
 - Added tqdm progress bar to Wfuzz :boom:
+- Added Joomlavs joomla scanner
 
 ## [3.5] - 2019-10-13 9:41 PM
 
