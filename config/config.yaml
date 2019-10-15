@@ -1,7 +1,7 @@
 # These are all the commands that are used throughout this project, If you would like to change up the syntax for a certain command, you can do so here.
 # Just make sure to keep all the $variables in the command somewhere as these $variables such as $target and $port and $host etc... are required.
 # You can also add other custom tools here as well, just make sure to go into the corresponding lib/ file and change the command there as well.
-# See this projects Documentation for more details.
+# See Documentation for more details.
 commands:
   web:
     "whatwebHttpTarget": "whatweb -v -a 3 http://$target:$port | tee $reportDir/web/whatweb-$target-$port.log"
