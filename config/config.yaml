@@ -158,7 +158,7 @@ commands:
     "showmount": "showmount -e $target 2>&1 | tee $reportDir/nfs/showmount.log"
   nmap:
     "nmapTopTcpPorts": "nmap -vv -Pn -sV -sC -p $topTcpPorts --script-timeout 5m -oA $nmapReportDir/top-ports-$target $target"
-    "nmapFullTcpScan": "nmap -vv -Pn -sC -sV -O -p- -T4 --script-timeout 2m -oA $nmapReportDir/full-tcp-scan-$target $target"
+    "nmapFullTcpScan": "nmap -vv -Pn -sC -sV -p- -T4 --script-timeout 2m -oA $nmapReportDir/full-tcp-scan-$target $target"
     "nmapTopUdpScan": "nmap -sUV -vv --reason -T4 --max-retries 3 --max-rtt-timeout 150ms -pU:$topUdpPorts -oA $nmapReportDir/top-udp-ports $target"
     "nmapVulners": "nmap -vv -sV -Pn --script nmap-vulners -p $openTcpPorts -oA $nmapReportDir/vulnscan-$target $target"
   ldap:
