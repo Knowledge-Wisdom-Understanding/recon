@@ -2,7 +2,19 @@
 
 All changes to this project will be noted here.
 
+## [3.6] - 2019-10-15 1:20 PM
+
+### Fixed_v3.6
+
+- Fixed bug :bug: in nmap parser to prevent https ports from being added to http ports.
+
+### Added_v3.6
+
+- Added tqdm progress bar to Wfuzz :boom:
+
 ## [3.5] - 2019-10-13 9:41 PM
+
+### Added_v3.5
 
 - Added winrm and improved ldap enumeration :boom:
 
@@ -12,7 +24,7 @@ All changes to this project will be noted here.
 
 - Scan only services specified by the -s --service module option. Really Awesome!
 
-### Fixed
+### Fixed_v3.4
 
 - Fixed Typos in config.yaml for wpscan. Fixed enumWeb.CMS() . Write found source hostnames to log file.
 - Fixed really lame typo in recon.py in the FUNK_MAP.
