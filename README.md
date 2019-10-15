@@ -7,7 +7,6 @@
 
 - The purpose of O.G. Auto-Recon is to automate the initial information gathering phase and then enumerate based off those results as much as possible.
 - This tool is intended for CTF's and can be fairly noisy. (Not the most stealth conscious tool...)
-- O.G. Auto-Recon won't auto-pwn a box for you, but It's a nice way to start a CTF.
 - All tools in this project are compliant with the OSCP exam rules.
 - Command syntax can be easily modified in the config/config.yaml settings. \$variable names should remain unchanged.
 - If Virtual Host Routing is detected, **O.G. Auto-Recon** will add the host names to your /etc/hosts file and continue to enumerate the newly discovered host names.
