@@ -128,7 +128,7 @@ commands:
     "patator_ssh_multiple_users_custom": "patator ssh_login host=$target port=$port user=FILE0 0=$users password=FILE1 1=$wordlist persistent=0 -l $reportDir/ssh/patatorBrute-Multiple -x free=user:code=0 -x ignore:mesg='Authentication failed.'"
     "nmapSSH": "nmap -v -sV --script=ssh-auth-methods.nse,ssh-hostkey.nse,ssh-publickey-acceptance.nse,ssh-run.nse,ssh2-enum-algos.nse,sshv1.nse --script-args=unsafe=1 -p $p -oA $nmapReportDir/ssh-$target $target"
   cassandra:
-    "nmapCassandra": "nmap -Pn -sV -p $cassandraPorts --script='banner,(cassandra* or ssl*) and not (brute or broadcast or dos or external or fuzzer)' -oA $nmapReportDir/cassandra $target"
+    "nmapCassandra": "nmap -Pn -sV -p $cassandraPorts --script=cassandra-info.nse -oA $nmapReportDir/cassandra $target"
   cups:
     "nmapCups": "nmap -vv -sV -Pn --script=cups-info.nse,cups-queue-info.nse -p $cupsPorts -oA $nmapReportDir/cups $target"
   java:
@@ -147,11 +147,12 @@ commands:
   kerberos:
     "nmapKerberos": "nmap -Pn -sV -p $kerberosPorts --script='banner,krb5-enum-users' -oA $nmapReportDir/kerberos $target"
   mongodb:
-    "nmapMongo": "nmap -Pkn -sV -p $mongoPorts --script='banner,(mongodb* or ssl*) and not (brute or broadcast or dos or external or fuzzer)' -oA $nmapReportDir/mongo $target"
+    "nmapMongo": "nmap -Pkn -sV -p $mongoPorts --script=mongodb-databases.nse,mongodb-info.nse -oA $nmapReportDir/mongo $target"
   mssql:
-    "nmapMssql": "nmap -Pn -sV -p $mssqlPorts --script='banner,(ms-sql* or ssl*) and not (brute or broadcast or dos or external or fuzzer)' --script-args='mssql.instance-port=$mssqlPort,mssql.username=sa,mssql.password=sa' -oA $nmapReportDir/mssql $target"
+    "nmapMssqlbrute": "nmap -Pn -sV -p $mssqlPorts --script=ms-sql-brute --script-args userdb=$pwd/wordlists/mssql-users.txt,passdb=$pwd/wordlists/mssql-pass.txt -oA $nmapReportDir/mssqlbrute $target"
+    "nmapMssql": "nmap -Pn -sV -p $mysqlPorts --script=ms-sql-info,ms-sql-config,ms-sql-dump-hashes --script-args=mssql.instance-port=1433,mssql.username=sa,mssql.password=sa -oA $nmapReportDir/mysql $target"
   mysql:
-    "nmapMysql": "nmap -Pn -sV -p $mysqlPorts --script='banner,(mysql* or ssl*) and not (brute or broadcast or dos or external or fuzzer)' -oA $nmapReportDir/mysql $target"
+    "nmapMysql": "nmap -Pn -sV -p $mysqlPorts --script=mysql-variables.nse,mysql-users.nse,mysql-query.nse,mysql-enum.nse,mysql-empty-password.nse,mysql-databases.nse -oA $nmapReportDir/mysql $target"
   nfs:
     "nmapNfs": "nmap -vv -sV -p $nfsPorts --script=nfs-ls.nse,nfs-statfs.nse,nfs-showmount.nse -oA $nmapReportDir/nfs $target"
     "showmount": "showmount -e $target 2>&1 | tee $reportDir/nfs/showmount.log"
@@ -195,7 +196,7 @@ commands:
   telnet:
     "nmapTelnet": "nmap -Pn -sV -p $telnetPorts --script='banner,telnet-encryption,telnet-ntlm-info' -oA $nmapReportDir/telnet $target"
   vnc:
-    "nmapVnc": "nmap -Pn -sV -p $vncPorts --script='banner,(vnc* or realvnc* or ssl*) and not (brute or broadcast or dos or external or fuzzer) --script-args='unsafe=1' -oA $nmapReportDir/vnc $target"
+    "nmapVnc": "nmap -Pn -sV -p $vncPorts --script=realvnc-auth-bypass.nse,vnc-info.nse,vnc-title.nse -oA $nmapReportDir/vnc $target"
   vuln:
     "searchsploit": "echo '[+] $strang' >> $reportDir/vulns/$name.log && searchsploit $strang --exclude='/dos/' >> $reportDir/vulns/$name.log"
   john:
