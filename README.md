@@ -57,7 +57,7 @@ The remaining services module is dependent on the fulltcp module.
        __/__/   /_\   \ |  |  \   __\/  _ \|  |       __/ __ \_/ ___\/  _ \|       |
       |   |     ___    \|  |  /|  | (  |_| )  |    |   \  ___/\  \__(  |_| )   |   |
       |___|____/\__\____|____/_|__|\_\____/|__|____|_  /\___  |\___  \____/|___|  /
-      gtihub.com/Knowledge-Wisdom-Understanding  \___\/  \__\/  \__\_/ v3.5 \___\/
+      gtihub.com/Knowledge-Wisdom-Understanding  \___\/  \__\/  \__\_/ v3.6 \___\/
 
 
 usage: python3 recon.py -t 10.10.10.10
