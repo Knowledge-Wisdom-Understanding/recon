@@ -30,7 +30,7 @@ class ParamFuzzer:
             datefmt='%m/%d/%Y %I:%M:%S %p',
             level=logging.INFO
         )
-        logging.info(f"[+] {executed_command}")
+        logging.info(f"[+] {executed_command} \n")
 
     @contextlib.contextmanager
     def no_ssl_verification(self):
