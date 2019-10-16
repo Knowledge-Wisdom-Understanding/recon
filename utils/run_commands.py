@@ -46,7 +46,7 @@ class RunCommands:
             datefmt='%m/%d/%Y %I:%M:%S %p',
             level=logging.INFO
         )
-        logging.info(f"[+] {executed_command}")
+        logging.info(f"[+] {executed_command} \n")
 
     def mpRun(self, commands):
         """Pool all commands to run from each service class and run them 2 at a time.,"""
