@@ -25,7 +25,7 @@ class ParamFuzzer:
     def loginator(self, executed_command):
         c = config_parser.CommandParser(f"{os.getcwd()}/config/config.yaml", self.target)
         logging.basicConfig(
-            filename=c.getPath("report", "log"),
+            filename=c.getPath("report", "commandLog"),
             format='%(asctime)s %(message)s',
             datefmt='%m/%d/%Y %I:%M:%S %p',
             level=logging.INFO
