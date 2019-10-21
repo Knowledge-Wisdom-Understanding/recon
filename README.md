@@ -108,7 +108,10 @@ Or skip web enumeration all together but scan everything else.
 python3 recon.py -t 10.10.10.10 -i dns http httpcms ssl sslcms sort_urls aquatone source
 ```
 
-The remaining services module is dependent on the fulltcp module.
+The remaining services module is also dependent on the topports and or fulltcp module.
+Now you can skip doing a fulltcp scan if the target is slow. However, be advised,
+The UDP nmap scan is bundled with the fulltcp module currently, so skipping fulltcp module
+will result in missing some udp enumeration.
 
 To Scan + Enumerate all IPv4 addr's in ips.txt file
 
@@ -152,11 +155,9 @@ python3 recon.py --target 10.10.10.10 --ignore fulltcp http
 
 You can also specify services that you wish to only scan, similar to the --ignore option, the -s, --service option will only scan the service specified.
 Please note that before you can use the -s, --service option, You must have already ran the topports nmap scan as most modules are dependent on nmap's output.
-The remaining services module scan is dependent on fulltcp scan module a.k.a. nmap full tcp scan, so if you are only specifying the -s remaining module,
-make sure that you have already ran the fulltcp module or you could do
 
 ```shell
-python3 recon.py -t 10.10.10.10 -s fulltcp remaining
+python3 recon.py -t 10.10.10.10 -s topports remaining
 ```
 
 ```shell
