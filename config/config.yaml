@@ -206,7 +206,7 @@ commands:
   vnc:
     "nmapVnc": "nmap -Pn -sV -p $vncPorts --script=realvnc-auth-bypass.nse,vnc-info.nse,vnc-title.nse -oA $nmapReportDir/vnc $target"
   vuln:
-    "searchsploit": "echo '[+] $strang' >> $reportDir/vulns/$name.log && searchsploit $strang --exclude='/dos/' >> $reportDir/vulns/$name.log"
+    "searchsploit": 'echo ''[+] "$strang"'' >> $reportDir/vulns/$name.log && searchsploit $strang --exclude=''/dos/'' >> $reportDir/vulns/$name.log'
   john:
     "jcrack": "john $hashfile --wordlist=/usr/share/wordlists/rockyou.txt"
     "jshow": "john --show $hashfile"

@@ -33,7 +33,7 @@ class Search:
         ssh_product = list(sorted(set(merge(ntop.ssh_product, np.ssh_product))))
         smtp_product = list(sorted(set(merge(ntop.smtp_product, np.smtp_product))))
         products = list(sorted(set(merge(ntop.all_products, np.all_products))))
-        http_title = list(sorted(set(merge(ntop.http_script_title, np.http_script_title))))
+        http_title = ntop.http_script_title
         ignore = ["apache", "mysql", "microsoft"]
         commands_to_run = []
         c = config_parser.CommandParser(f"{os.getcwd()}/config/config.yaml", self.target)
