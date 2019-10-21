@@ -54,6 +54,7 @@ class NmapParserFunk:
         ###### UDP PORTS ############
         self.snmp_ports = []
         self.sip_udp_ports = []
+        self.ike_ports = []
         ####### VERSION #############
         self.ssh_version = []
         self.ftp_version = []
@@ -570,6 +571,9 @@ class NmapParserFunk:
                         if "sip" in service[1]:
                             if service[0] not in self.sip_udp_ports:
                                 self.sip_udp_ports.append(service[0])
+                        if "isakmp?" in service[1] or ("isakmp" in service[1]):
+                            if service[0] not in self.ike_ports:
+                                self.ike_ports.append(service[0])
 
                 # print("SNMP PORTS", self.snmp_ports)
                 # print("UDP SERVICES", self.udp_services)
