@@ -4,6 +4,7 @@ import os
 from sty import fg
 from lib import nmapParser
 from utils import config_parser
+from heapq import merge
 #from lib import brute
 
 
@@ -24,13 +25,15 @@ class Search:
         and attempt to run searchsploit against each service. Also, the HTTP-TITLE from nmap's
         script scans will be ran against searchsploit as oftentimes, a CMS's title may give away
         a vulnerable service or the CMS version itself."""
+        ntop = nmapParser.NmapParserFunk(self.target)
+        ntop.openPorts()
         np = nmapParser.NmapParserFunk(self.target)
         np.allOpenPorts()
-        ftp_product = np.ftp_product
-        ssh_product = np.ssh_product
-        smtp_product = np.smtp_product
-        products = np.all_products
-        http_title = np.http_script_title
+        ftp_product = list(sorted(set(merge(ntop.ftp_product, np.ftp_product))))
+        ssh_product = list(sorted(set(merge(ntop.ssh_product, np.ssh_product))))
+        smtp_product = list(sorted(set(merge(ntop.smtp_product, np.smtp_product))))
+        products = list(sorted(set(merge(ntop.all_products, np.all_products))))
+        http_title = list(sorted(set(merge(ntop.http_script_title, np.http_script_title))))
         ignore = ["apache", "mysql", "microsoft"]
         commands_to_run = []
         c = config_parser.CommandParser(f"{os.getcwd()}/config/config.yaml", self.target)

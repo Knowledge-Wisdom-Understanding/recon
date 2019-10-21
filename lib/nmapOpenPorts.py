@@ -4,6 +4,7 @@ import os
 from lib import nmapParser
 from shutil import which
 from utils import config_parser
+from heapq import merge
 
 
 class NmapOpenPorts:
@@ -19,29 +20,32 @@ class NmapOpenPorts:
         found by nmaps fullTcpScan results. The following services will be enumerated
         if their respective ports are open. FTP, SMTP, NFS, RPC, TELNET, SIP, VNC, CUPS, MSSQL,
         MYSQL, CASSANDRA, MONGODB, POP3 SNMP, AND KERBEROS."""
+        ntop = nmapParser.NmapParserFunk(self.target)
+        ntop.openPorts()
         np = nmapParser.NmapParserFunk(self.target)
         np.allOpenPorts()
-        ftpPorts = np.ftp_ports
-        smtpPorts = np.smtp_ports
-        nfsPorts = np.nfs_ports
-        rpcPorts = np.rpc_ports
-        telnetPorts = np.telnet_ports
-        sipPorts = np.sip_ports
-        vncPorts = np.vnc_ports
-        cupsPorts = np.cups_ports
-        javaRmiPorts = np.java_rmi_ports
-        mssqlPorts = np.mssql_ports
-        mysqlPorts = np.mysql_ports
-        cassandraPorts = np.cassandra_ports
-        mongoPorts = np.mongo_ports
-        pop3Ports = np.pop3_ports
-        kerberosPorts = np.kerberos_ports
-        fingerPorts = np.finger_ports
-        tcpPorts = np.tcp_ports
+        ftpPorts = list(sorted(set(merge(np.ftp_ports, ntop.ftp_ports))))
+        smtpPorts = list(sorted(set(merge(ntop.smtp_ports, np.smtp_ports))))
+        nfsPorts = list(sorted(set(merge(ntop.nfs_ports, np.nfs_ports))))
+        rpcPorts = list(sorted(set(merge(ntop.rpc_ports, np.rpc_ports))))
+        telnetPorts = list(sorted(set(merge(ntop.telnet_ports, np.telnet_ports))))
+        sipPorts = list(sorted(set(merge(ntop.sip_ports, np.sip_ports))))
+        vncPorts = list(sorted(set(merge(ntop.vnc_ports, np.vnc_ports))))
+        cupsPorts = list(sorted(set(merge(ntop.cups_ports, np.cups_ports))))
+        javaRmiPorts = list(sorted(set(merge(ntop.java_rmi_ports, np.java_rmi_ports))))
+        mssqlPorts = list(sorted(set(merge(ntop.mssql_ports, np.mssql_ports))))
+        mysqlPorts = list(sorted(set(merge(ntop.mysql_ports, np.mysql_ports))))
+        cassandraPorts = list(sorted(set(merge(ntop.cassandra_ports, np.cassandra_ports))))
+        mongoPorts = list(sorted(set(merge(ntop.mongo_ports, np.mongo_ports))))
+        pop3Ports = list(sorted(set(merge(ntop.pop3_ports, np.pop3_ports))))
+        kerberosPorts = list(sorted(set(merge(ntop.kerberos_ports, np.kerberos_ports))))
+        fingerPorts = list(sorted(set(merge(ntop.finger_ports, np.finger_ports))))
+        tcpPorts = list(sorted(set(merge(ntop.tcp_ports, np.tcp_ports))))
         string_tcp_ports = ",".join(map(str, tcpPorts))
         unp = nmapParser.NmapParserFunk(self.target)
         unp.openUdpPorts()
         snmpPorts = unp.snmp_ports
+        ikePorts = unp.ike_ports
         c = config_parser.CommandParser(f"{os.getcwd()}/config/config.yaml", self.target)
         unsorted_commands = []
         unsorted_commands.append(c.getCmd("nmap", "nmapVulners", openTcpPorts=string_tcp_ports))
@@ -51,6 +55,10 @@ class NmapOpenPorts:
             unsorted_commands.append(c.getCmd("snmp", "snmpwalk"))
             unsorted_commands.append(c.getCmd("snmp", "snmpCheck"))
             unsorted_commands.append(c.getCmd("snmp", "onesixtyone"))
+        if len(ikePorts) != 0:
+            unsorted_commands.append(c.getCmd("ike", "ikescan"))
+            unsorted_commands.append(c.getCmd("ike", "ikescan4500"))
+            unsorted_commands.append(c.getCmd("ike", "nmapIke"))
         if len(ftpPorts) != 0:
             string_ftp_ports = ",".join(map(str, ftpPorts))
             unsorted_commands.append(c.getCmd("ftp", "nmapFtp", ftpPorts=string_ftp_ports))
