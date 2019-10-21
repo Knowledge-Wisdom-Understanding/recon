@@ -65,6 +65,9 @@ class DomainFinder:
             tmpdns = []
             for x in sdns:
                 tmpdns.append(x)
+                _ips = re.findall(r"[0-9]+(?:\.[0-9]+){3}", x)
+                if len(_ips) > 0:
+                    tmpdns.remove(x)
         except FileNotFoundError as fnf_error:
             print(fnf_error)
             exit()
@@ -221,6 +224,9 @@ class DomainFinder:
                     for x in matches:
                         if not any(s in x for s in ignore):
                             self.redirect_hostname.append(x)
+                            _ips_ignore = re.findall(r"[0-9]+(?:\.[0-9]+){3}", x)
+                            if len(_ips_ignore) > 0:
+                                self.redirect_hostname.remove(x)
                     if "|_http-title: Did not follow redirect to http:" in line:
                         print(line)
                         split_line2 = line.split()

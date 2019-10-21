@@ -352,6 +352,8 @@ class ignoreDomains:
             ".hta",
             ".robots",
             ".portcu",
+            "locald",
+            "localh"
         ]
 
 
