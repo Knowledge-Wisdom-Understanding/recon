@@ -44,9 +44,10 @@ EXAMPLES = """
     Ex. python3 recon.py -t 10.10.10.10 -b ssh -p 2222
     Ex. python3 recon.py -t 10.10.10.10 -b ssh -u bob -P /usr/share/seclists/Passwords/darkc0de.txt
     Ex. python3 recon.py -t 10.10.10.10 --ignore http httpcms ssl sslcms aquatone dns
-    Ex. python3 recon.py -t 10.10.10.10 --ignore ssl sslcms
-    Ex. python3 recon.py -t 10.10.10.10 --ignore fulltcp topports
-    Ex. python3 recon.py -t 10.10.10.10 --ignore aquatone
+    Ex. python3 recon.py -t 10.10.10.10 --i ssl sslcms
+    Ex. python3 recon.py -t 10.10.10.10 --i fulltcp topports
+    Ex. python3 recon.py -t 10.10.10.10 --service http
+    Ex. python3 recon.py -t 10.10.10.10 -s topports remaining
 """
 
 V = 3.6
