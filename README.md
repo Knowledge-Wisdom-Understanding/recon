@@ -138,7 +138,7 @@ python3 recon.py -t 10.10.10.10 -b ssh -p 2222 -u slickrick
 To ignore certain services from being scanned you can specify the -i , --ignore flag.  
 When specifying multiple services to ignore, services MUST be space delimited. Only ignore topports if you have already ran this module
 as most other modules are dependent on nmap's initial top ports output.
-All the available ignore choices are:
+All the available modules are as follows:
 
 ```text
 http,httpcms,ssl,sslcms,aquatone,smb,dns,ldap,oracle,source,sort_urls,proxy,proxycms,fulltcp,topports,remaining,searchsploit,peaceout,ftpAnonDL,winrm
