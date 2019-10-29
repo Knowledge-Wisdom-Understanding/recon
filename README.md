@@ -22,7 +22,6 @@ git clone https://github.com/Knowledge-Wisdom-Understanding/recon.git
 cd recon
 chmod +x setup.sh
 ./setup.sh
-python3 -m pip install -r requirements.txt
 ```
 
 ### Usage
