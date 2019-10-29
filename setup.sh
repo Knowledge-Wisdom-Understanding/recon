@@ -7,6 +7,7 @@ if [[ $EUID -ne 0 ]]; then
 fi
 
 DOPE='\e[92m[+]\e[0m'
+cwd=$(echo $PWD)
 
 echo -e "${DOPE} Running: apt-get update -y"
 apt-get update -y
@@ -42,8 +43,8 @@ echo -e "${DOPE} Installing Joomlavs"
 cd /opt
 git clone https://github.com/rastating/joomlavs.git
 cd joomlavs
-apt install build-essential patch
-apt install ruby-dev zlib1g-dev liblzma-dev libcurl4-openssl-dev
+apt install build-essential patch -y
+apt install ruby-dev zlib1g-dev liblzma-dev libcurl4-openssl-dev -y
 gem install bundler && bundle install
 
 echo -e "${DOPE} Installing Patator"
@@ -114,5 +115,9 @@ else
     python3 -m pip install -r requirements.txt
 fi
 ln -s /opt/fierce/fierce/fierce.py /usr/local/bin/fierce.py
+
+cd $cwd
+echo -e "${DOPE} Installing requirements.txt"
+python3 -m pip install -r requirements.txt
 
 echo -e "${DOPE} Congratulations, All tools installed successfully!"
