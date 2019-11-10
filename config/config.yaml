@@ -147,7 +147,7 @@ commands:
     "dnsDigAxfr": "dig axfr @$target $alldns | tee $reportDir/dns/dig-axfr-$target.log"
     "vhost": "gobuster vhost -u http://$hosts -w /usr/share/seclists/Discovery/DNS/subdomains-top1million-20000.txt -t 100 -o $reportDir/dns/gobuster-vhost-top20k.log"
   ftp:
-    "nmapFtp": "nmap -vv -sV -Pn -p $ftpPorts --script=ftp-anon.nse,ftp-bounce.nse,ftp-libopie.nse,ftp-proftpd-backdoor.nse,ftp-vsftpd-backdoor.nse,ftp-vuln-cve2010-4221.nse,ftp-syst.nse -oA $nmapReportDir/ftp $target"
+    "nmapFtp": "nmap -vv -sV -Pn -p $ftpPorts --script=ftp-anon.nse,ftp-libopie.nse,ftp-proftpd-backdoor.nse,ftp-vsftpd-backdoor.nse,ftp-vuln-cve2010-4221.nse,ftp-syst.nse -oA $nmapReportDir/ftp $target"
   ike:
     "ikescan4500": "ike-scan --sport=4500 --dport=4500 $target | tee $nmapReportDir/ikescan-4500.log"
     "ikescan": "ike-scan $target | tee $nmapReportDir/ikescan-500.log"
