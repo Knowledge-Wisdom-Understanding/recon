@@ -528,7 +528,7 @@ class NmapParserFunk:
                 # print("SSH VERSION:", self.proxy_ssh_version)
                 # print("Proxy Ports2:", self.proxy_ports2)
             except Exception as e:
-                print(f"""{c.getPath("nmap", "nmap_proxychain_top_ports")} Cannot Parse UDP nmap xml file. {e}""")
+                print(f"""{c.getPath("nmap", "nmap_proxychain_top_ports")} Cannot Parse proxychain top ports nmap xml file. {e}""")
                 return
 
     def openUdpPorts(self):
