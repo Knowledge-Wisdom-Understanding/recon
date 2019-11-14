@@ -47,3 +47,7 @@ utils/helper_funcs.py
 .coverage
 coverage.xml
 lognificent.py
+config/user.yaml
+utils/__init__.pyc
+utils/dig_parser.pyc
+utils/htb_parse.py
