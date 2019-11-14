@@ -356,7 +356,8 @@ class ignoreDomains:
             ".robots",
             ".portcu",
             "locald",
-            "localh"
+            "localh",
+            "127.0.0.1"
         ]
 
 
