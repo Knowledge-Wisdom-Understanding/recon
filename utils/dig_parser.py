@@ -2,6 +2,9 @@
 
 from subprocess import PIPE, Popen
 from utils import run_commands
+from utils import helper_lists
+from collections.abc import Iterable
+import re
 
 
 class digParse:
@@ -50,19 +53,35 @@ class digParse:
 
     def parseDigAxfr(self):
         """parseDigAxfr will perform a zone transer and append the results to self.subdomains list."""
+        def flatten(lis):
+            for item in lis:
+                if isinstance(item, Iterable) and not isinstance(item, str):
+                    for x in flatten(item):
+                        yield x
+                else:
+                    yield item
         dig_output = [
             i.strip() for i in self.cmdline(self.command).decode("utf-8").split("\n")
         ]
         dig_filtered = [i.split() for i in dig_output if len(i) >= 9]
         domains = [
-            i[0]
+            i[0] and i[4::]
             for i in dig_filtered
-            if i[-2] in ["PTR", "MX", "NS", "CNAME", "TXT", "SOA", "A"]
+            if i[-2] or i[-3] in ["PTR", "MX", "NS", "CNAME", "TXT", "SOA", "A"]
         ]
         unsorted_hosts = []
+        domains = list(flatten(domains))
         for d in domains:
             unsorted_hosts.append(d.rstrip("."))
         sorted_hosts = sorted(set(unsorted_hosts))
-        for d in sorted_hosts:
+        matches = [re.findall(r"(?:[a-zA-Z0-9](?:[a-zA-Z0-9\-]{,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{3,6}", x) for x in sorted_hosts]
+        _sorted_hosts = []
+        ig = helper_lists.ignoreDomains()
+        ignore = ig.ignore
+        matches = list(flatten(matches))
+        for x in matches:
+            if not any(s in x for s in ignore):
+                _sorted_hosts.append(x)
+        for d in _sorted_hosts:
             if d not in self.subdomains:
                 self.subdomains.append(d)
