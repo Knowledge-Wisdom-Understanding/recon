@@ -7,7 +7,7 @@ if [[ $EUID -ne 0 ]]; then
 fi
 
 DOPE='\e[92m[+]\e[0m'
-cwd=$(echo $PWD)
+cwd=$(echo "$PWD")
 
 echo -e "${DOPE} Running: apt-get update -y"
 apt-get update -y
@@ -116,7 +116,7 @@ else
 fi
 ln -s /opt/fierce/fierce/fierce.py /usr/local/bin/fierce.py
 
-cd $cwd
+cd "$cwd"
 echo -e "${DOPE} Installing requirements.txt"
 python3 -m pip install -r requirements.txt
 
