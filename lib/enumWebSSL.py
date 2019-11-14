@@ -40,7 +40,7 @@ class EnumWebSSL:
             if not os.path.exists(c.getPath("web", "aquatoneDir")):
                 os.makedirs(c.getPath("web", "aquatoneDir"))
             print(fg.li_cyan + "Enumerating HTTPS/SSL Ports" + fg.rs)
-            if heartbleed == True:
+            if heartbleed is True:
                 rc = run_commands.RunCommands(self.target)
                 be_mine = peaceout_banner.heartbleed(self.target)
                 be_mine.bleedOut()
