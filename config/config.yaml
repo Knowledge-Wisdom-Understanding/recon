@@ -158,7 +158,7 @@ commands:
     "nmapMongo": "nmap -Pkn -sV -p $mongoPorts --script=mongodb-databases.nse,mongodb-info.nse -oA $nmapReportDir/mongo $target"
   mssql:
     "nmapMssqlbrute": "nmap -Pn -sV -p $mssqlPorts --script=ms-sql-brute --script-args userdb=$pwd/wordlists/mssql-users.txt,passdb=$pwd/wordlists/mssql-pass.txt -oA $nmapReportDir/mssqlbrute $target"
-    "nmapMssql": "nmap -Pn -sV -p $mysqlPorts --script=ms-sql-info,ms-sql-config,ms-sql-dump-hashes --script-args=mssql.instance-port=1433,mssql.username=sa,mssql.password=sa -oA $nmapReportDir/mysql $target"
+    "nmapMssql": "nmap -Pn -sV -p $mssqlPorts --script=ms-sql-info,ms-sql-config,ms-sql-dump-hashes --script-args=mssql.instance-port=1433,mssql.username=sa,mssql.password=sa -oA $nmapReportDir/mysql $target"
   mysql:
     "nmapMysql": "nmap -Pn -sV -p $mysqlPorts --script=mysql-variables.nse,mysql-users.nse,mysql-query.nse,mysql-enum.nse,mysql-empty-password.nse,mysql-databases.nse -oA $nmapReportDir/mysql $target"
   nfs:
