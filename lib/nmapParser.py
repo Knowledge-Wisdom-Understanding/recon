@@ -107,7 +107,7 @@ class NmapParserFunk:
                 self.nmap_services += report.hosts[0].services
                 self.nmap_services = sorted(self.nmap_services, key=lambda s: s.port)
                 # print(self.nmap_services)
-                ignored_windows_http_ports = [5985, 47001]
+                ignored_windows_http_ports = [593, 5985, 47001]
                 for service in self.nmap_services:
                     if "open" not in service.state:
                         continue
