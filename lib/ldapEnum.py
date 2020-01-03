@@ -141,7 +141,7 @@ class LdapEnum:
                 john_show_cmd = c.getCmd("john", "jshow", hashfile=f"{c.getPath('loot', 'krbHashes')}")
                 john_show_output = [i.strip() for i in cmdline(john_show_cmd).decode("utf-8").split("\n")]
                 num_cracked = [int(p[0]) for p in sorted(set(i for i in john_show_output if "password hash cracked," in i))]
-                if num_cracked is not None:
+                if (len(num_cracked) > 0):
                     if num_cracked[0] >= 1:
                         passwords = []
                         usernames = []
@@ -156,7 +156,11 @@ class LdapEnum:
                 HeresJonny()
                 r = requests.post(f"http://{self.target}:5985/wsman", data="")
                 if r.status_code == 401:
-                    user_pass = dict(parseCreds())
+                    try:
+                        user_pass = dict(parseCreds())
+                    except TypeError as te:
+                        print(te)
+                        return 1
                     users = []
                     passwords = []
                     for k, v in user_pass.items():
