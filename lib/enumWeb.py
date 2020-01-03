@@ -32,6 +32,8 @@ class EnumWeb:
         if len(http_ports) == 0:
             pass
         else:
+            # hl = helper_lists.IgnoreHttpPorts()
+            # _http_ports = [x for x in http_ports if x not in hl.ignore_http_ports]
             print(f"""{fg.li_cyan}Enumerating HTTP Ports! {fg.rs}""")
             c = config_parser.CommandParser(f"{os.getcwd()}/config/config.yaml", self.target)
             dn = domainFinder.DomainFinder(self.target)

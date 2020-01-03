@@ -851,3 +851,8 @@ class ignoreURLS:
         self.ignore_precise = [
             "index.php"
         ]
+
+
+class IgnoreHttpPorts:
+    def __init__(self):
+        self.ignore_http_ports = [593, 5985, 47001]
