@@ -172,7 +172,7 @@ commands:
   ldap:
     "nmapLdap": "nmap -vv -Pn -sV -p $ldapPorts --script ldap* -oA $nmapReportDir/ldap-$target $target"
     "enum4linuxLdap": "enum4linux -a -M -l -d $target | tee $reportDir/ldap/ldapEnum4linux.log"
-    "GetNPUsers": "/opt/impacket/examples/GetNPUsers.py $domain/ -dc-ip 10.10.10.161 -usersfile $reportDir/wordlists/ldapUsernames.txt | tee $reportDir/ldap/getNPUserNamesBrute.log"
+    "GetNPUsers": "/opt/impacket/examples/GetNPUsers.py $domain/ -dc-ip $target -usersfile $reportDir/wordlists/ldapUsernames.txt | tee $reportDir/ldap/getNPUserNamesBrute.log"
   oracle:
     "nmapOracle": "nmap -sV -p 1521 --script oracle-enum-users.nse,oracle-sid-brute.nse,oracle-tns-version.nse -oA $nmapReportDir/oracle $target"
     "tnscmd10g": "tnscmd10g $mode -h $target -p 1521 | tee $reportDir/oracle/oracle-$mode.log"
