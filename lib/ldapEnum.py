@@ -105,7 +105,7 @@ class LdapEnum:
                 users = parse_users()
                 domain = parse_ldap_domain()
                 if len(domain) == 1 and (len(users) != 0):
-                    dope_cmd = f"""{c.getCmd("ldap", "GetNPUsers", domain=str(domain[0]))}"""
+                    dope_cmd = f"""{c.getCmd("ldap", "GetNPUsers", target=self.target ,domain=str(domain[0]))}"""
                     print(f"[{fg.li_magenta}+{fg.rs}] {dope_cmd}")
                     call(dope_cmd, shell=True)
 
