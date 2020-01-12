@@ -187,6 +187,8 @@ class LdapEnum:
                                 d = dict(regex.findall(str(successful_login_check).replace("'", "").replace('"', '').replace(']', '')))
                                 valid_pass = d['password']
                                 return valid_pass
+                            else:
+                                return None
 
                     except FileNotFoundError as fnf_err:
                         print(fnf_err)
@@ -288,20 +290,21 @@ class LdapEnum:
                         os.makedirs(c.getPath("loot", "lootDir"))
                     usernameAsPassword()
                     valid_password = parse_acc_check()
-                    print(f"{fg.li_green}[!]{fg.rs} Found Valid Credentials!!!\n Username: {fg.li_green}{valid_password}{fg.rs}\n Password: {fg.li_green}{valid_password}{fg.rs}\n")
-                    print(f"[{fg.li_magenta}+{fg.rs}] Running smbmap with credentials")
-                    auth_smb_check = c.getCmd("smb", "authSmb", validPass=valid_password)
-                    print(auth_smb_check)
-                    call(auth_smb_check, shell=True)
-                    if self.target == "10.10.10.172":
-                        autopwn_banner = r"""
-                         _______         __          ______
-                        |   _   |.--.--.|  |_.-----.|   __ \.--.--.--.-----.
-                        |       ||  |  ||   _|  _  ||    __/|  |  |  |     |
-                        |___|___||_____||____|_____||___|   |________|__|__|
-                                            MONTEVERDE
-                        """
-                        print(f"{fg.li_magenta}{autopwn_banner}{fg.rs}")
-                        monteverde(valid_password)
+                    if valid_password is not None:
+                        print(f"{fg.li_green}[!]{fg.rs} Found Valid Credentials!!!\n Username: {fg.li_green}{valid_password}{fg.rs}\n Password: {fg.li_green}{valid_password}{fg.rs}\n")
+                        print(f"[{fg.li_magenta}+{fg.rs}] Running smbmap with credentials")
+                        auth_smb_check = c.getCmd("smb", "authSmb", validPass=valid_password)
+                        print(auth_smb_check)
+                        call(auth_smb_check, shell=True)
+                        if self.target == "10.10.10.172":
+                            autopwn_banner = r"""
+                            _______         __          ______
+                            |   _   |.--.--.|  |_.-----.|   __ \.--.--.--.-----.
+                            |       ||  |  ||   _|  _  ||    __/|  |  |  |     |
+                            |___|___||_____||____|_____||___|   |________|__|__|
+                                                MONTEVERDE
+                            """
+                            print(f"{fg.li_magenta}{autopwn_banner}{fg.rs}")
+                            monteverde(valid_password)
 
             checkWinRm()
