@@ -51,3 +51,6 @@ config/user.yaml
 utils/__init__.pyc
 utils/dig_parser.pyc
 utils/htb_parse.py
+cracked*
+t.txt
+cracked
