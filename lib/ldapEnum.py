@@ -127,7 +127,7 @@ class LdapEnum:
 
             def HeresJonny():
                 krb_hashes = check_parse_hashes()
-                if len(krb_hashes) != 0:
+                if krb_hashes:
                     print(f"[{fg.li_magenta}+{fg.rs}] Found krb hash!")
                     print(f"[{fg.li_magenta}+{fg.rs}] BruteForcing The Hash!")
                     john_cmd = c.getCmd("john", "jcrack", hashfile=f"{c.getPath('loot', 'krbHashes')}")
