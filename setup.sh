@@ -71,6 +71,12 @@ git clone https://github.com/quentinhardy/odat.git
 echo -e "${DOPE} Cloning Impacket to opt folder"
 cd /opt
 git clone https://github.com/SecureAuthCorp/impacket.git
+apt install python3-impacket -y
+apt install impacket-scripts -y
+apt install python-impacket -y
+
+echo -e "${DOPE} Installing enum4linux dependencies"
+apt install polenum -y
 
 echo -e "${DOPE} Cloning PowerShell Mafia's PowerSploit to /opt folder"
 cd /opt
