@@ -155,7 +155,7 @@ commands:
   kerberos:
     "nmapKerberos": "nmap -Pn -sV -p $kerberosPorts --script='banner,krb5-enum-users' -oA $nmapReportDir/kerberos $target"
   mongodb:
-    "nmapMongo": "nmap -Pkn -sV -p $mongoPorts --script=mongodb-databases.nse,mongodb-info.nse -oA $nmapReportDir/mongo $target"
+    "nmapMongo": "nmap -Pn -sV -p $mongoPorts --script=mongodb-databases.nse,mongodb-info.nse -oA $nmapReportDir/mongo $target"
   mssql:
     "nmapMssqlbrute": "nmap -Pn -sV -p $mssqlPorts --script=ms-sql-brute --script-args userdb=$pwd/wordlists/mssql-users.txt,passdb=$pwd/wordlists/mssql-pass.txt -oA $nmapReportDir/mssqlbrute $target"
     "nmapMssql": "nmap -Pn -sV -p $mssqlPorts --script=ms-sql-info,ms-sql-config,ms-sql-dump-hashes --script-args=mssql.instance-port=1433,mssql.username=sa,mssql.password=sa -oA $nmapReportDir/mysql $target"
