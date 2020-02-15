@@ -357,7 +357,9 @@ class ignoreDomains:
             ".portcu",
             "locald",
             "localh",
-            "127.0.0.1"
+            "127.0.0.1",
+            ".jar",
+            "jar"
         ]
 
 

@@ -72,7 +72,8 @@ optional arguments:
                         List of usernames to try for brute forcing. Not yet
                         implimented
   -P PASSWORDS, --PASSWORDS PASSWORDS
-                        List of passwords to try. Not required for SSH
+                        List of passwords to try. Optional for SSH, By default
+                        wordlists/probable-v2-top1575.txt will be used.
 
 ```
 
