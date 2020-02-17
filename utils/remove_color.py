@@ -50,6 +50,8 @@ class Clean:
                                 removeColor(self, rf)
                             if "wpscan" in rf:
                                 removeColor(self, rf)
+                            if "dnsenum" in rf:
+                                removeColor(self, rf)
                             if "vulns" in rf:
                                 if fnmatch(rf, "*.log"):
                                     removeColor(self, rf)
