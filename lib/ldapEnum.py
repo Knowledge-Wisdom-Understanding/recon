@@ -8,6 +8,7 @@ import re
 from subprocess import call, PIPE, Popen
 import requests
 from utils import helper_lists
+from collections.abc import Iterable
 
 
 class LdapEnum:
@@ -58,13 +59,25 @@ class LdapEnum:
         else:
             c = config_parser.CommandParser(f"{os.getcwd()}/config/config.yaml", self.target)
 
+            def flatten(lis):
+                for item in lis:
+                    if isinstance(item, Iterable) and not isinstance(item, str):
+                        for x in flatten(item):
+                            yield x
+                    else:
+                        yield item
+
             def parse_users():
+                """
+                Returns a list of users
+                """
                 user_list = []
                 ignore_list = ["Administrators", 'DnsAdmins', 'DnsUpdateProxy', 'ExchangeLegacyInterop',
                                'Guests', 'IIS_IUSRS', 'Replicator', 'Users', 'SMB3_11', 'DefaultAccount', 'Guest']
                 if os.path.exists(c.getPath("ldap", "ldapEnum4linux")):
                     f = open(c.getPath("ldap", "ldapEnum4linux"), 'r')
                     users = [re.findall(r"\[([A-Za-z0-9_-]+)\]", u) for u in sorted(set(line.rstrip() for line in f))]
+                    users = list(flatten(users))
                     for u in users:
                         if u not in user_list:
                             for x in u:
@@ -82,21 +95,24 @@ class LdapEnum:
                         return user_list
 
             def parse_ldap_domain():
+                """
+                Returns a domain as a list
+                """
                 if os.path.exists(c.getPath("ldap", "ldapEnum4linux")):
                     ig = helper_lists.ignoreDomains()
                     ignore_extensions = ig.ignore
                     lf = open(c.getPath("ldap", "ldapEnum4linux"), 'r')
                     domain = []
                     dns = [re.findall(r"(?:[a-zA-Z0-9](?:[a-zA-Z0-9\-]{,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{3,6}", d) for d in sorted(set(line.rstrip() for line in lf))]
+                    dns = list(flatten(dns))
                     for x in dns:
                         if x not in domain:
-                            for dn in x:
-                                if not any(s in dn for s in ignore_extensions):
-                                    dn_lower = dn.lower()
-                                    if dn_lower not in domain and (not dn_lower.startswith("ldap")) and (not dn_lower.endswith("portcu")):
-                                        num_dots = int(dn_lower.count("."))
-                                        if num_dots <= 1:
-                                            domain.append(dn_lower)
+                            if not any(s in dns for s in ignore_extensions):
+                                dn_lower = x.lower()
+                                if dn_lower not in domain and (not dn_lower.startswith("ldap")) and (not dn_lower.endswith("portcu")):
+                                    num_dots = int(dn_lower.count("."))
+                                    if num_dots <= 1:
+                                        domain.append(dn_lower)
                     lf.close()
                     # print(domain)
                     return domain
@@ -104,10 +120,12 @@ class LdapEnum:
             def GetNPUsers():
                 users = parse_users()
                 domain = parse_ldap_domain()
-                if len(domain) == 1 and (len(users) != 0):
-                    dope_cmd = f"""{c.getCmd("ldap", "GetNPUsers", domain=str(domain[0]))}"""
-                    print(f"[{fg.li_magenta}+{fg.rs}] {dope_cmd}")
-                    call(dope_cmd, shell=True)
+                if domain:
+                    if users:
+                        if len(domain) == 1 and (len(users) != 0):
+                            dope_cmd = f"""{c.getCmd("ldap", "GetNPUsers", domain=str(domain[0]))}"""
+                            print(f"[{fg.li_magenta}+{fg.rs}] {dope_cmd}")
+                            call(dope_cmd, shell=True)
 
             def check_parse_hashes():
                 GetNPUsers()

@@ -8,7 +8,7 @@ from subprocess import call
 import glob
 from lib import vhostCrawl
 from utils import config_parser
-# from utils import helper_lists
+from utils import helper_lists
 # import requests
 # from bs4 import BeautifulSoup  # SoupStrainer
 
@@ -32,8 +32,8 @@ class EnumWeb:
         if len(http_ports) == 0:
             pass
         else:
-            # hl = helper_lists.IgnoreHttpPorts()
-            # _http_ports = [x for x in http_ports if x not in hl.ignore_http_ports]
+            hl = helper_lists.IgnoreHttpPorts()
+            _http_ports = [x for x in http_ports if x not in hl.ignore_http_ports]
             print(f"""{fg.li_cyan}Enumerating HTTP Ports! {fg.rs}""")
             c = config_parser.CommandParser(f"{os.getcwd()}/config/config.yaml", self.target)
             dn = domainFinder.DomainFinder(self.target)
@@ -57,7 +57,7 @@ class EnumWeb:
             if len(another_array_of_hostnames) != 0:
                 sorted_hostnames = sorted(set(another_array_of_hostnames))
                 for hostname in sorted_hostnames:
-                    for port in http_ports:
+                    for port in _http_ports:
                         if not os.path.exists(c.getPath("web", "eyewitnessDirHost", host=hostname, port=port)):
                             os.makedirs(c.getPath("web", "eyewitnessDirHost", host=hostname, port=port))
 
@@ -69,7 +69,7 @@ class EnumWeb:
                         commands.append(c.getCmd("web", "dirsearchHttpHostBig", host=hostname, port=port))
                         commands.append(c.getCmd("web", "niktoHost", host=hostname, port=port))
             else:
-                for port in http_ports:
+                for port in _http_ports:
                     if not os.path.exists(c.getPath("web", "eyewitnessDirTarget", port=port)):
                         os.makedirs(c.getPath("web", "eyewitnessDirTarget", port=port))
 
