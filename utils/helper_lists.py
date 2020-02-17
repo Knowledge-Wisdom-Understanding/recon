@@ -857,4 +857,4 @@ class ignoreURLS:
 
 class IgnoreHttpPorts:
     def __init__(self):
-        self.ignore_http_ports = [593, 5985, 47001]
+        self.ignore_http_ports = [593, 5985, 47001, 49670]

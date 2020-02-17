@@ -42,7 +42,7 @@ class checkSource:
                 try:
                     url = f"""http://{self.target}:{hp}"""
                     wfuzzReport = c.getPath("web", "wfuzzReport", port=hp)
-                    page = requests.get(url, verify=False)
+                    page = requests.get(url, verify=False, timeout=(5, 30))
                     data = page.text
                     soup = BeautifulSoup(data, "html.parser")
                     # links = []
@@ -62,7 +62,7 @@ class checkSource:
                 except requests.exceptions.RequestException as req_err:
                     print("Some Ambiguous Exception:", req_err)
                     continue
-                if len(source_domain_name) != 0:
+                if source_domain_name:
                     vhostnames = [i for i in sorted(set(source_domain_name))]
                     vhost_log = open(c.getPath("web", "vhostnames"), "a+")
                     for vh in vhostnames:
