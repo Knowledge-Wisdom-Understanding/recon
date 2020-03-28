@@ -75,16 +75,16 @@ class LdapEnum:
                 ignore_list = ["Administrators", 'DnsAdmins', 'DnsUpdateProxy', 'ExchangeLegacyInterop',
                                'Guests', 'IIS_IUSRS', 'Replicator', 'Users', 'SMB3_11', 'DefaultAccount', 'Guest']
                 if os.path.exists(c.getPath("ldap", "ldapEnum4linux")):
-                    f = open(c.getPath("ldap", "ldapEnum4linux"), 'r')
-                    users = [re.findall(r"\[([A-Za-z0-9_-]+)\]", u) for u in sorted(set(line.rstrip() for line in f))]
-                    users = list(flatten(users))
-                    for u in users:
-                        if u not in user_list:
-                            for x in u:
-                                if not x.startswith("0x") and (len(x) > 1) and (x not in ignore_list):
-                                    user_list.append(x)
-                    f.close()
-                    if len(user_list) != 0:
+                    with open(c.getPath("ldap", "ldapEnum4linux"), 'r') as enum_ldap:
+                        regex = r"\[([A-Za-z0-9_-]+)\]"
+                        users = [line.rstrip() for line in enum_ldap.readlines()]
+                        sorted_users = [re.findall(regex, u) for u in users]
+                        users = list(flatten(sorted_users))
+                        for u in users:
+                            if u not in user_list:
+                                if not u.startswith("0x") and (len(u) > 1) and (u not in ignore_list):
+                                    user_list.append(u)
+                    if user_list:
                         if not os.path.exists(c.getPath("wordlists", "wordlistsDir")):
                             os.makedirs(c.getPath("wordlists", "wordlistsDir"))
                         print(f"[{fg.li_magenta}+{fg.rs}] Creating List of Valid Usernames")
