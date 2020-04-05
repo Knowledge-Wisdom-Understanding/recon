@@ -16793,6 +16793,7 @@ not
 not2crawl
 nota
 note
+note.txt
 notebook
 notepad
 notepads

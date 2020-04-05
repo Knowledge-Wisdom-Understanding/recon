@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import os
-from lib import nmapParser
+from lib import nmapParser, kerbEnum
 from shutil import which
 from utils import config_parser
 from heapq import merge
@@ -49,79 +49,81 @@ class NmapOpenPorts:
         c = config_parser.CommandParser(f"{os.getcwd()}/config/config.yaml", self.target)
         unsorted_commands = []
         unsorted_commands.append(c.getCmd("nmap", "nmapVulners", openTcpPorts=string_tcp_ports))
-        if len(snmpPorts) != 0:
+        if snmpPorts:
             if not os.path.exists(c.getPath("snmp", "snmpDir")):
                 os.makedirs(c.getPath("snmp", "snmpDir"))
             unsorted_commands.append(c.getCmd("snmp", "snmpwalk"))
             unsorted_commands.append(c.getCmd("snmp", "snmpCheck"))
             unsorted_commands.append(c.getCmd("snmp", "onesixtyone"))
-        if len(ikePorts) != 0:
+        if ikePorts:
             unsorted_commands.append(c.getCmd("ike", "ikescan"))
             unsorted_commands.append(c.getCmd("ike", "ikescan4500"))
             unsorted_commands.append(c.getCmd("ike", "nmapIke"))
-        if len(ftpPorts) != 0:
+        if ftpPorts:
             string_ftp_ports = ",".join(map(str, ftpPorts))
             unsorted_commands.append(c.getCmd("ftp", "nmapFtp", ftpPorts=string_ftp_ports))
-        if len(fingerPorts) != 0:
+        if fingerPorts:
             if not os.path.exists(c.getPath("finger", "fingerDir")):
                 os.makedirs(c.getPath("finger", "fingerDir"))
             for p in fingerPorts:
                 unsorted_commands.append(c.getCmd("finger", "fingerUserEnum", p=p))
-        if len(smtpPorts) != 0:
+        if smtpPorts:
             if not os.path.exists(c.getPath("smtp", "smtpDir")):
                 os.makedirs(c.getPath("smtp", "smtpDir"))
             for p in smtpPorts:
                 unsorted_commands.append(c.getCmd("smtp", "smtpUserEnum", p=p))
-        if len(nfsPorts) != 0:
+        if nfsPorts:
             if not os.path.exists(c.getPath("nfs", "nfsDir")):
                 os.makedirs(c.getPath("nfs", "nfsDir"))
             string_nfs_ports = ",".join(map(str, nfsPorts))
             unsorted_commands.append(c.getCmd("nfs", "nmapNfs", nfsPorts=string_nfs_ports))
             unsorted_commands.append(c.getCmd("nfs", "showmount"))
-        if len(rpcPorts) != 0:
+        if rpcPorts:
             if not os.path.exists(c.getPath("rpc", "rpcDir")):
                 os.makedirs(c.getPath("rpc", "rpcDir"))
             if not os.path.exists(c.getPath("smb", "smbScan")):
                 unsorted_commands.append(c.getCmd("rpc", "enum4linuxRpc"))
             if which("impacket-rpcdump"):
                 unsorted_commands.append(c.getCmd("rpc", "rpcdump"))
-        if len(cupsPorts) != 0:
+        if cupsPorts:
             string_cups_ports = ",".join(map(str, cupsPorts))
             unsorted_commands.append(c.getCmd("cups", "nmapCups", cupsPorts=string_cups_ports))
-        if len(javaRmiPorts) != 0:
+        if javaRmiPorts:
             string_java_rmi_ports = ",".join(map(str, javaRmiPorts))
             unsorted_commands.append(c.getCmd("java", "javaRmiDump", javarmiPorts=string_java_rmi_ports))
             unsorted_commands.append(c.getCmd("java", "javaRmiVulns", javarmiPorts=string_java_rmi_ports))
-        if len(sipPorts) != 0:
+        if sipPorts:
             if not os.path.exists(c.getPath("sip", "sipDir")):
                 os.makedirs(c.getPath("sip", "sipDir"))
             string_sip_ports = ",".join(map(str, sipPorts))
             unsorted_commands.append(c.getCmd("sip", "nmapSip", sipPorts=string_sip_ports))
             unsorted_commands.append(c.getCmd("sip", "svwar"))
-        if len(vncPorts) != 0:
+        if vncPorts:
             string_vnc_ports = ",".join(map(str, vncPorts))
             unsorted_commands.append(c.getCmd("vnc", "nmapVnc", vncPorts=string_vnc_ports))
-        if len(telnetPorts) != 0:
+        if telnetPorts:
             string_telnet_ports = ",".join(map(str, telnetPorts))
             unsorted_commands.append(c.getCmd("telnet", "nmapTelnet", telnetPorts=string_telnet_ports))
-        if len(cassandraPorts) != 0:
+        if cassandraPorts:
             string_cassandra_ports = ",".join(map(str, cassandraPorts))
             unsorted_commands.append(c.getCmd("cassandra", "nmapCassandra", cassandraPorts=string_cassandra_ports))
-        if len(mssqlPorts) != 0:
+        if mssqlPorts:
             string_mssql_ports = ",".join(map(str, mssqlPorts))
             unsorted_commands.append(c.getCmd("mssql", "nmapMssql", mssqlPorts=string_mssql_ports, mssqlPort=mssqlPorts[0]))
-        if len(mysqlPorts) != 0:
+        if mysqlPorts:
             string_mysql_ports = ",".join(map(str, mysqlPorts))
             unsorted_commands.append(c.getCmd("mysql", "nmapMysql", mysqlPorts=string_mysql_ports))
-        if len(mongoPorts) != 0:
+        if mongoPorts:
             string_mongo_ports = ",".join(map(str, mongoPorts))
             unsorted_commands.append(c.getCmd("mongodb", "nmapMongo", mongoPorts=string_mongo_ports))
-        if len(pop3Ports) != 0:
+        if pop3Ports:
             string_pop3_ports = ",".join(map(str, pop3Ports))
             unsorted_commands.append(c.getCmd("pop3", "nmapPop3", popPorts=string_pop3_ports))
-        if len(kerberosPorts) != 0:
+        if kerberosPorts:
             string_kerberos_ports = ",".join(map(str, kerberosPorts))
             unsorted_commands.append(c.getCmd("kerberos", "nmapKerberos", kerberosPorts=string_kerberos_ports))
+            kirby = kerbEnum.KerbEnum(self.target)
+            kirby.PwnWinRM()
 
         set_sorted_cmds = sorted(set(unsorted_commands))
         cmds_to_run = []

@@ -22,6 +22,10 @@ git clone https://github.com/maK-/parameth.git
 cd parameth
 python -m pip install -r requirements.txt
 
+echo -e "${DOPE} Installing kerbrute. Hopefully you have go installed on your system."
+go get github.com/ropnop/kerbrute || echo "doesn't look like you have go installed. go get command failed."
+
+
 echo -e "${DOPE} Installing magescan and dependencies"
 cd /opt
 git clone https://github.com/steverobbins/magescan magescan

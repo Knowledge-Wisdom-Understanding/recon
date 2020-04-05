@@ -39,7 +39,7 @@ class EnumWeb:
             c = config_parser.CommandParser(f"{os.getcwd()}/config/config.yaml", self.target)
             dn = domainFinder.DomainFinder(self.target)
             dn.getRedirect()
-            hostnames = dn.redirect_hostname
+            hostnames = sorted(set(a.lower() for a in dn.redirect_hostname))
             if not os.path.exists(c.getPath("web", "webDir")):
                 os.makedirs(c.getPath("web", "webDir"))
             if not os.path.exists(c.getPath("web", "aquatoneDir")):
@@ -57,7 +57,7 @@ class EnumWeb:
                         another_array_of_hostnames.append(d)
 
                 commands = []
-                sorted_hostnames = sorted(set(another_array_of_hostnames))
+                sorted_hostnames = sorted(set(a.lower() for a in another_array_of_hostnames))
                 for hostname in sorted_hostnames:
                     for port in _http_ports:
                         commands.append(c.getCmd("web", "niktoHost", host=hostname, port=port))

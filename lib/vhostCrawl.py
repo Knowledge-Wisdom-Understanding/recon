@@ -73,7 +73,7 @@ class checkSource:
                 if self.hostnames and not source_domain_name:
                     all_hostnames = self.hostnames
                 if all_hostnames:
-                    vhostnames = [i for i in sorted(set(all_hostnames))]
+                    vhostnames = [i.lower() for i in sorted(set(all_hostnames))]
                     vhost_log = open(c.getPath("web", "vhostnames"), "a+")
                     for vh in vhostnames:
                         vhost_log.write(vh)

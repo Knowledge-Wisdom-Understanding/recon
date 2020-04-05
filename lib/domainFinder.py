@@ -77,6 +77,8 @@ class DomainFinder:
                 _ips = re.findall(r"[0-9]+(?:\.[0-9]+){3}", x)
                 if len(_ips) > 0:
                     tmpdns.remove(x)
+            if tmpdns:
+                tmpdns = sorted(set(a.lower() for a in tmpdns))
         except FileNotFoundError as fnf_error:
             print(fnf_error)
             exit()
@@ -88,11 +90,11 @@ class DomainFinder:
 
             unsortedhostnames = []
             for x in tmpdns2:
-                unsortedhostnames.append(x)
+                unsortedhostnames.append(x.lower())
             allsortedhostnames = sorted(set(tmpdns2))
             allsortedhostnameslist = []
             for x in allsortedhostnames:
-                allsortedhostnameslist.append(x)
+                allsortedhostnameslist.append(x.lower())
         else:
             if not os.path.exists(c.getPath("webSSL", "webSSLDir")):
                 os.makedirs(c.getPath("webSSL", "webSSLDir"))
@@ -135,10 +137,10 @@ class DomainFinder:
                     ignore_chars_regex = re.compile(r"[@_!#$%^&*()<>?/\|}{~:]")
                     for x in both:
                         if ignore_chars_regex.search(x) is None:
-                            tmpdns2.append(x)
+                            tmpdns2.append(x.lower())
                     for x in tmpdns:
                         if x not in ignore:
-                            tmpdns2.append(x)
+                            tmpdns2.append(x.lower())
 
                     unsortedhostnames = []
                     for x in tmpdns2:
@@ -147,7 +149,7 @@ class DomainFinder:
                     allsortedhostnameslist = []
                     for x in allsortedhostnames:
                         if x not in ignore:
-                            allsortedhostnameslist.append(x)
+                            allsortedhostnameslist.append(x.lower())
                     for x in allsortedhostnameslist:
                         ips = re.findall(r"[0-9]+(?:\.[0-9]+){3}", x)
                         if len(ips) > 0:
@@ -157,7 +159,7 @@ class DomainFinder:
             if len(allsortedhostnameslist) != 0:
                 for x in allsortedhostnameslist:
                     if x not in ignore:
-                        self.redirect_hostname.append(x)
+                        self.redirect_hostname.append(x.lower())
                 print(f"""{cmd_info} Adding {fg.li_cyan}{allsortedhostnameslist} {fg.rs}to /etc/hosts""")
                 hosts = Hosts(path="/etc/hosts")
                 new_entry = HostsEntry(
@@ -177,15 +179,15 @@ class DomainFinder:
             sub_hosts = dp.subdomains
             if len(dig_hosts) != 0:
                 for x in dig_hosts:
-                    allsortedhostnameslist.append(x)
-                    self.fqdn_hostname.append(x)
+                    allsortedhostnameslist.append(x.lower())
+                    self.fqdn_hostname.append(x.lower())
             if len(sub_hosts) != 0:
                 for x in sub_hosts:
-                    allsortedhostnameslist.append(x)
+                    allsortedhostnameslist.append(x.lower())
 
             ######## Check For Zone Transfer: Running dig ###############
             if len(allsortedhostnameslist) != 0:
-                allsortedhostnameslist = sorted(set(allsortedhostnameslist))
+                allsortedhostnameslist = sorted(set(a.lower() for a in allsortedhostnameslist))
                 alldns = " ".join(map(str, allsortedhostnameslist))
                 zonexferDns = []
                 dig_command = c.getCmd("dns", "dnsDigAxfr", alldns=alldns)
@@ -194,12 +196,12 @@ class DomainFinder:
                 dp2.parseDigAxfr()
                 subdomains = dp2.subdomains
                 for x in subdomains:
-                    zonexferDns.append(x)
-                sortedAllDomains = sorted(set(zonexferDns))
+                    zonexferDns.append(x.lower())
+                sortedAllDomains = sorted(set(a.lower() for a in zonexferDns))
                 sortedAllDomainsList = []
                 for x in sortedAllDomains:
-                    sortedAllDomainsList.append(x)
-                    self.redirect_hostname.append(x)
+                    sortedAllDomainsList.append(x.lower())
+                    self.redirect_hostname.append(x.lower())
                 if len(zonexferDns) != 0:
                     print(f"""{cmd_info} Adding {fg.li_cyan}{sortedAllDomainsList} {fg.rs}to /etc/hosts""")
                     hosts = Hosts(path="/etc/hosts")
@@ -213,6 +215,7 @@ class DomainFinder:
 
     def getRedirect(self):
         """Extra Function for enumWeb HTTP hosts so as not to run Scan() twice."""
+        cmd_info = "[" + fg.li_green + "+" + fg.rs + "]"
         np = nmapParser.NmapParserFunk(self.target)
         np.openPorts()
         dnsPort = np.dns_ports
@@ -254,34 +257,36 @@ class DomainFinder:
                             .replace("/", "")
                             .replace("'", "")
                         )
-                        self.redirect_hostname.append(redirect_domainName)
+                        self.redirect_hostname.append(redirect_domainName.lower())
         except FileNotFoundError as fnf_error:
             print(fnf_error)
         if len(dnsPort) != 0:
             if not os.path.exists(c.getPath("dns", "dnsDir")):
                 os.makedirs(c.getPath("dns", "dnsDir"))
             dig_cmd = c.getCmd("dns", "dnsDig")
+            print(f"{cmd_info} Checking for hostnames {cmd_info} {dig_cmd}")
             dp = dig_parser.digParse(self.target, dig_cmd)
             dp.parseDig()
             dig_hosts = dp.hosts
             sub_hosts = dp.subdomains
             if len(dig_hosts) != 0:
                 for x in dig_hosts:
-                    self.redirect_hostname.append(x)
+                    self.redirect_hostname.append(x.lower())
             if len(sub_hosts) != 0:
                 for x in sub_hosts:
-                    self.redirect_hostname.append(x)
+                    self.redirect_hostname.append(x.lower())
             if len(self.redirect_hostname) != 0:
                 _alldns = list(flatten(self.redirect_hostname))
-                _alldns = sorted(set(_alldns))
+                _alldns = sorted(set(a.lower() for a in _alldns))
                 alldns = " ".join(map(str, _alldns))
                 zonexferDns = []
                 dig_command = c.getCmd("dns", "dnsDigAxfr", alldns=alldns)
+                print(f"{cmd_info} Checking for hostnames {cmd_info} {dig_command}")
                 dp2 = dig_parser.digParse(self.target, dig_command)
                 dp2.parseDigAxfr()
                 subdomains = dp2.subdomains
                 for x in subdomains:
-                    zonexferDns.append(x)
-                sortedAllDomains = sorted(set(zonexferDns))
+                    zonexferDns.append(x.lower())
+                sortedAllDomains = sorted(set(a.lower() for a in zonexferDns))
                 for x in sortedAllDomains:
-                    self.redirect_hostname.append(x)
+                    self.redirect_hostname.append(x.lower())

@@ -86,7 +86,7 @@ class DnsEnum:
             sdns = sorted(set(dns))
             tmpdns = []
             for x in sdns:
-                tmpdns.append(x)
+                tmpdns.append(x.lower())
         except FileNotFoundError as fnf_error:
             print(fnf_error)
             exit()
@@ -94,14 +94,14 @@ class DnsEnum:
         if len(ssl_ports) == 0:
             tmpdns2 = []
             for x in tmpdns:
-                tmpdns2.append(x)
+                tmpdns2.append(x.lower())
 
             unsortedhostnames = []
             for x in tmpdns2:
-                unsortedhostnames.append(x)
+                unsortedhostnames.append(x.lower())
             allsortedhostnames = sorted(set(tmpdns2))
             for x in allsortedhostnames:
-                allsortedhostnameslist.append(x)
+                allsortedhostnameslist.append(x.lower())
         else:
             for sslport in ssl_ports:
                 if not os.path.exists(c.getPath("webSSL", "webSSLScanTarget", sslport=sslport)):
@@ -136,30 +136,30 @@ class DnsEnum:
 
                     both = []
                     for x in domainName:
-                        both.append(x)
+                        both.append(x.lower())
                     for x in altDomainNames:
-                        both.append(x)
+                        both.append(x.lower())
 
                     tmpdns2 = []
                     ignore_chars_regex = re.compile(r"[@_!#$%^&*()<>?/\|}{~:]")
                     for x in both:
                         if ignore_chars_regex.search(x) is None:
-                            tmpdns2.append(x)
+                            tmpdns2.append(x.lower())
                     for x in tmpdns:
-                        tmpdns2.append(x)
+                        tmpdns2.append(x.lower())
 
                     unsortedhostnames = []
                     for x in tmpdns2:
-                        unsortedhostnames.append(x)
+                        unsortedhostnames.append(x.lower())
                     allsortedhostnames = sorted(set(tmpdns2))
                     allsortedhostnameslist = []
                     for x in allsortedhostnames:
-                        allsortedhostnameslist.append(x)
+                        allsortedhostnameslist.append(x.lower())
 
         if len(dnsPort) == 0:
             if len(allsortedhostnameslist) != 0:
                 for x in allsortedhostnameslist:
-                    self.hostnames.append(x)
+                    self.hostnames.append(x.lower())
 
         else:
             ######## Check For Zone Transfer ###############
@@ -172,10 +172,10 @@ class DnsEnum:
             sub_hosts = dp.subdomains
             if len(dig_hosts) != 0:
                 for x in dig_hosts:
-                    self.hostnames.append(x)
+                    self.hostnames.append(x.lower())
             if len(sub_hosts) != 0:
                 for x in sub_hosts:
-                    self.hostnames.append(x)
+                    self.hostnames.append(x.lower())
             if len(self.hostnames) != 0:
                 alldns = " ".join(map(str, self.hostnames))
                 zonexferDns = []
@@ -184,7 +184,7 @@ class DnsEnum:
                 dp2.parseDigAxfr()
                 subdomains = dp2.subdomains
                 for x in subdomains:
-                    zonexferDns.append(x)
+                    zonexferDns.append(x.lower())
                 sortedAllDomains = sorted(set(zonexferDns))
                 for x in sortedAllDomains:
-                    self.hostnames.append(x)
+                    self.hostnames.append(x.lower())

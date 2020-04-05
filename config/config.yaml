@@ -158,6 +158,7 @@ commands:
     "nmapIke": "nmap -Pn -sUV -p 500,4500 --script=ike-version.nse -oA $nmapReportDir/ike-version $target"
   kerberos:
     "nmapKerberos": "nmap -Pn -sV -p $kerberosPorts --script='banner,krb5-enum-users' -oA $nmapReportDir/kerberos $target"
+    "kerbrute": "kerbrute userenum -t 80 --dc $target -d $domain $pwd/wordlists/usernames.txt -o $reportDir/kerberos/kerbrute_usernames.log"
   mongodb:
     "nmapMongo": "nmap -Pn -sV -p $mongoPorts --script=mongodb-databases.nse,mongodb-info.nse -oA $nmapReportDir/mongo $target"
   mssql:
@@ -400,6 +401,9 @@ paths:
     "snmpwalk_log": "$reportDir/snmp/snmpwalk.log"
     "snmpcheck_log": "$reportDir/snmp/snmp-check.log"
     "snmp_onesixtyone_log": "$reportDir/snmp/onesixtyone.log"
+  kerberos:
+    "kerbDir": "$reportDir/kerberos"
+    "kerbUsers": "$reportDir/kerberos/kerbrute_usernames.log"
   ldap:
     "ldapDir": "$reportDir/ldap"
     "ldapEnum4linux": "$reportDir/ldap/ldapEnum4linux.log"
