@@ -76,7 +76,7 @@ class LdapEnum:
                                'Guests', 'IIS_IUSRS', 'Replicator', 'Users', 'SMB3_11', 'DefaultAccount', 'Guest']
                 if os.path.exists(c.getPath("ldap", "ldapEnum4linux")):
                     with open(c.getPath("ldap", "ldapEnum4linux"), 'r') as enum_ldap:
-                        regex = r"\[([A-Za-z0-9_-]+)\]"
+                        regex = r"\[([A-Za-z0-9_.-]+)\]"
                         users = [line.rstrip() for line in enum_ldap.readlines()]
                         sorted_users = [re.findall(regex, u) for u in users]
                         users = list(flatten(sorted_users))
