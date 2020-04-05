@@ -15,9 +15,13 @@ import contextlib
 
 
 class checkSource:
-    def __init__(self, target):
+    def __init__(self, target, hostnames=None):
+        """
+        param hostnames (list): list of hostnames
+        """
         self.target = target
         self.htb_source_domains = []
+        self.hostnames = hostnames
 
     def getLinks(self):
         """Grab all links from web server homepage i.e. http://IP:PORT/ and look for .htb domain names.
@@ -62,8 +66,14 @@ class checkSource:
                 except requests.exceptions.RequestException as req_err:
                     print("Some Ambiguous Exception:", req_err)
                     continue
-                if source_domain_name:
-                    vhostnames = [i for i in sorted(set(source_domain_name))]
+                if source_domain_name and self.hostnames:
+                    all_hostnames = list(set(source_domain_name).union(set(self.hostnames)))
+                if source_domain_name and not self.hostnames:
+                    all_hostnames = source_domain_name
+                if self.hostnames and not source_domain_name:
+                    all_hostnames = self.hostnames
+                if all_hostnames:
+                    vhostnames = [i for i in sorted(set(all_hostnames))]
                     vhost_log = open(c.getPath("web", "vhostnames"), "a+")
                     for vh in vhostnames:
                         vhost_log.write(vh)
@@ -89,7 +99,7 @@ class checkSource:
                         with tqdm(total=wordlist_lines) as pbar:
                             for r in wfuzz.fuzz(
                                 url=str_domain,
-                                hc=[404],
+                                hc=[404, 400],
                                 payloads=[("file", dict(fn=tk5))],
                                 headers=[("Host", fuzz_domain)],
                                 printer=(wfuzzReport, "raw"),
@@ -101,50 +111,51 @@ class checkSource:
 
                     except Exception as e:
                         print(e)
-
-                    check_occurances = f"""sed -n -e 's/^.*C=//p' {wfuzzReport} | grep -v "Warning:" | cut -d " " -f 1 | sort | uniq -c"""
-                    response_num = [
-                        i.strip()
-                        for i in cmdline(check_occurances)
-                        .decode("utf-8")
-                        .split("\n")
-                    ]
-                    res_filt = [i.split() for i in sorted(set(response_num))]
-                    filt2arr = [c for c in res_filt if len(c) != 0 and int(c[0]) < 5]
-                    status_code = []
-                    if len(filt2arr) != 0 and (len(filt2arr) < 5):
-                        # print(filt2arr)
-                        for htprc in filt2arr:
-                            status_code.append(htprc[1])
-                    if len(status_code) != 0:
-                        for _ in status_code:
-                            # print(status_code)
-                            awk_print = "awk '{print $8}'"
-                            get_domain_cmd = f"""sed -n -e 's/^.*C={status_code}//p' {wfuzzReport} | {awk_print}"""
-                            get_domains = (
-                                check_output(get_domain_cmd, shell=True, stderr=STDOUT)
-                                .rstrip()
-                                .decode("utf-8")
-                                .replace('"', "")
-                            )
-                            subdomains = []
-                            if get_domains is not None:
-                                subdomains.append(get_domains)
-                                sub_d = "{}.{}".format(
-                                    subdomains[0], vhostnames[0]
+                    if os.path.exists(wfuzzReport):
+                        awk_print = "awk '{print $6}'"
+                        check_occurances = f"""sed -n -e 's/^.*C=//p' {wfuzzReport} | grep -v "Warning:" | {awk_print} | sort | uniq -c"""
+                        response_num = [
+                            i.strip()
+                            for i in cmdline(check_occurances)
+                            .decode("utf-8")
+                            .split("\n")
+                        ]
+                        res_filt = [i.split() for i in sorted(set(response_num))]
+                        filt2arr = [c for c in res_filt if len(c) != 0 and int(c[0]) < 5]
+                        status_code = []
+                        if len(filt2arr) != 0 and (len(filt2arr) < 5):
+                            # print(filt2arr)
+                            for htprc in filt2arr:
+                                status_code.append(htprc[1])
+                        if len(status_code) != 0:
+                            for _ in status_code:
+                                # print(status_code)
+                                awk_print = "awk '{print $9}'"
+                                get_domain_cmd = f"""grep '{status_code} Ch' {wfuzzReport} | {awk_print}"""
+                                get_domains = (
+                                    check_output(get_domain_cmd, shell=True, stderr=STDOUT)
+                                    .rstrip()
+                                    .decode("utf-8")
+                                    .replace('"', "")
                                 )
+                                subdomains = []
+                                if get_domains is not None:
+                                    subdomains.append(get_domains)
+                                    sub_d = "{}.{}".format(
+                                        subdomains[0], vhostnames[0]
+                                    )
 
-                                print(f"""{cmd_info_orange}{fg.li_blue} Found Subdomain!{fg.rs} {fg.li_green}{sub_d}{fg.rs}""")
-                                print(f"""{cmd_info}{fg.li_magenta} Adding{fg.rs} {fg.li_cyan}{sub_d}{fg.rs} to /etc/hosts file""")
-                                hosts = Hosts(path="/etc/hosts")
-                                new_entry = HostsEntry(
-                                    entry_type="ipv4",
-                                    address=self.target,
-                                    names=[sub_d],
-                                )
-                                hosts.add([new_entry], merge_names=True)
-                                hosts.write()
-                                self.htb_source_domains.append(sub_d)
+                                    print(f"""{cmd_info_orange}{fg.li_blue} Found Subdomain!{fg.rs} {fg.li_green}{sub_d}{fg.rs}""")
+                                    print(f"""{cmd_info}{fg.li_magenta} Adding{fg.rs} {fg.li_cyan}{sub_d}{fg.rs} to /etc/hosts file""")
+                                    hosts = Hosts(path="/etc/hosts")
+                                    new_entry = HostsEntry(
+                                        entry_type="ipv4",
+                                        address=self.target,
+                                        names=[sub_d],
+                                    )
+                                    hosts.add([new_entry], merge_names=True)
+                                    hosts.write()
+                                    self.htb_source_domains.append(sub_d)
 
 
 class sourceCommentChecker:

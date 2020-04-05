@@ -1,4 +1,11 @@
 james
+sharon
+backslash
+gang
+forward
+backward
+slash
+forwardslash
 guly
 mango
 MrR3boot

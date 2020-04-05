@@ -13,6 +13,11 @@ class NmapParserFunk:
 
     def __init__(self, target):
         self.target = target
+        ##### OS Version #############
+        self.osversions = []
+        self.osversion = {}
+        self.os_system = []
+        self.os_system_type = []
         ##### SERVICES ###############
         self.services = []
         self.nmap_services = []
@@ -106,6 +111,33 @@ class NmapParserFunk:
                 report = NmapParser.parse_fromfile(c.getPath("nmap", "nmap_top_ports_xml"))
                 self.nmap_services += report.hosts[0].services
                 self.nmap_services = sorted(self.nmap_services, key=lambda s: s.port)
+                self.osversions += report.hosts[0].os_match_probabilities()
+                if self.osversions:
+                    self.osversion[self.target] = {
+                        "name": self.osversions[0].name,
+                        "accuracy": self.osversions[0].accuracy
+                    }
+                    # print(json.dumps(self.osversion))
+                    try:
+                        for k, v in self.osversion.items():
+                            # print(f"Key: {k} \n Value: {v}")
+                            self.os_system.append(v.get('name'))
+                    except KeyError as ke_err:
+                        print(f"Key Error: {ke_err}")
+                    except ValueError as ve_err:
+                        print(f"Value Error: {ve_err}")
+                        pass
+                    # print(self.os_system)
+                    if self.os_system:
+                        self.os_system = self.os_system[0].split()
+                        # print(self.os_system)
+                        windows = ['Microsoft', 'Windows']
+                        if not any(s in windows for s in self.os_system):
+                            self.os_system_type.append("Linux")
+                        else:
+                            self.os_system_type.append("Windows")
+                        # print(self.os_system_type)
+
                 # print(self.nmap_services)
                 ignored_windows_http_ports = [593, 5985, 47001, 49669, 49670]
                 for service in self.nmap_services:

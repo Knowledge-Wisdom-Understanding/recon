@@ -23,7 +23,7 @@ class EnumWebSSL:
 
     def Scan(self):
         """Enumerate HTTPS/SSL Web Server ports based on nmaps output. This function will run the following tools;
-        WhatWeb, WafW00f, Dirsearch, EyeWitness, Nikto, and curl robots.txt"""
+        WhatWeb, WafW00f, Dirsearch, Nikto, and curl robots.txt"""
         np = nmapParser.NmapParserFunk(self.target)
         np.openPorts()
         df = dnsenum.DnsEnum(self.target)
@@ -31,6 +31,7 @@ class EnumWebSSL:
         heartbleed = df.heartbleed
         hostnames = df.hostnames
         ssl_ports = np.ssl_ports
+        system_type = np.os_system_type
         if len(ssl_ports) == 0:
             pass
         else:
@@ -50,23 +51,31 @@ class EnumWebSSL:
             commands = []
             if len(hostnames) == 0:
                 for sslport in ssl_ports:
+                    commands.append(c.getCmd("webSSL", "niktoSSLTarget", port=sslport))
                     commands.append(c.getCmd("webSSL", "whatwebSSLTarget", port=sslport))
-                    commands.append(c.getCmd("webSSL", "eyewitnessSSLTarget", port=sslport))
                     commands.append(c.getCmd("webSSL", "wafw00fSSLTarget", port=sslport))
                     commands.append(c.getCmd("webSSL", "curlRobotsSSLTarget", port=sslport))
-                    commands.append(c.getCmd("webSSL", "dirsearchSSLTargetBig", port=sslport))
-                    commands.append(c.getCmd("webSSL", "dirsearchSSLTargetDict", port=sslport))
-                    commands.append(c.getCmd("webSSL", "niktoSSLTarget", port=sslport))
+                    if system_type:
+                        if system_type[0] == "Windows":
+                            commands.append(c.getCmd("webSSL", "dirsearchSSLTargetDictWindows", port=sslport))
+                        if system_type[0] == "Linux":
+                            commands.append(c.getCmd("webSSL", "dirsearchSSLTargetDict", port=sslport))
+                    else:
+                        commands.append(c.getCmd("webSSL", "dirsearchSSLTargetDict", port=sslport))
             else:
                 for sslport in ssl_ports:
                     for host in hostnames:
+                        commands.append(c.getCmd("webSSL", "niktoSSLHost", host=host, port=sslport))
                         commands.append(c.getCmd("webSSL", "whatwebSSLHost", host=host, port=sslport))
-                        commands.append(c.getCmd("webSSL", "eyewitnessSSLHost", host=host, port=sslport))
                         commands.append(c.getCmd("webSSL", "wafw00fSSLHost", host=host, port=sslport))
                         commands.append(c.getCmd("webSSL", "curlRobotsSSLHost", host=host, port=sslport))
-                        commands.append(c.getCmd("webSSL", "dirsearchSSLHostDict", host=host, port=sslport))
-                        commands.append(c.getCmd("webSSL", "dirsearchSSLHostBig", host=host, port=sslport))
-                        commands.append(c.getCmd("webSSL", "niktoSSLHost", host=host, port=sslport))
+                        if system_type:
+                            if system_type[0] == "Windows":
+                                commands.append(c.getCmd("webSSL", "dirsearchSSLHostDictWindows", host=host, port=sslport))
+                            if system_type[0] == "Linux":
+                                commands.append(c.getCmd("webSSL", "dirsearchSSLHostDict", host=host, port=sslport))
+                        else:
+                            commands.append(c.getCmd("webSSL", "dirsearchSSLHostDict", host=host, port=sslport))
 
             self.processes = tuple(commands)
 
@@ -93,7 +102,6 @@ class EnumWebSSL:
                 for proxy_ssl_port in proxy_ssl_ports:
                     proxy_commands.append(c.getCmd("proxySSL", "whatwebSSLProxy", proxy=proxy, proxySSLPort=proxy_ssl_port))
                     proxy_commands.append(c.getCmd("proxySSL", "dirsearchProxySSLDict", proxySslPort=proxy_ports, proxy=proxy_ssl_port))
-                    proxy_commands.append(c.getCmd("proxySSL", "dirsearchProxySSLBig", proxySSLPort=proxy_ports, proxy=proxy_ssl_port))
                     proxy_commands.append(c.getCmd("proxySSL", "niktoProxySSL", proxySSLPort=proxy, proxy=proxy_ssl_port))
 
             self.proxy_processes = tuple(proxy_commands)
@@ -276,10 +284,9 @@ class EnumWebSSL2:
 
     def ScanWebOption(self):
         """Enumerate Web Server ports based on nmaps output. This function will run the following tools;
-        WhatWeb, WafW00f, Dirsearch, EyeWitness, Nikto, and curl robots.txt
-        This is almost identical to the normal web scan except, it uses much larger wordlists
-         and doesn't run EyeWitnesss Since that tool is run on the intended default
-        Original Scan option."""
+        WhatWeb, WafW00f, Dirsearch Nikto, and curl robots.txt
+        This is almost identical to the normal web scan except, it uses much larger wordlists.
+        """
         np = nmapParser.NmapParserFunk(self.target)
         np.openPorts()
         df = dnsenum.DnsEnum(self.target)
@@ -299,7 +306,6 @@ class EnumWebSSL2:
             if len(hostnames) == 0:
                 for sslport in ssl_ports:
                     commands.append(c.getCmd("webSSL", "whatwebSSLTarget", port=sslport))
-                    # commands.append(c.getCmd("webSSL", "eyewitnessSSLTarget", port=sslport))
                     # commands.append(c.getCmd("webSSL", "wafw00fSSLTarget", port=sslport))
                     # commands.append(c.getCmd("webSSL", "curlRobotsSSLTarget", port=sslport))
                     commands.append(c.getCmd("webSSL", "dirsearchSSLTargetDListMed", port=sslport, url=self.web))
@@ -311,7 +317,6 @@ class EnumWebSSL2:
                 for sslport in ssl_ports:
                     for hostname in hostnames:
                         commands.append(c.getCmd("webSSL", "whatwebSSLHost", host=hostname, port=sslport))
-                        # commands.append(c.getCmd("webSSL", "eyewitnessSSLHost", host=hostname, port=sslport))
                         # commands.append(c.getCmd("webSSL", "wafw00fSSLHost", host=hostname, port=sslport))
                         # commands.append(c.getCmd("webSSL", "curlRobotsSSLHost", host=hostname, port=sslport))
                         commands.append(c.getCmd("webSSL", "dirsearchSSLHostDListMed", host=hostname, port=sslport, url=self.web))

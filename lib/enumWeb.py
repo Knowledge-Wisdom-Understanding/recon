@@ -25,10 +25,11 @@ class EnumWeb:
 
     def Scan(self):
         """Enumerate Web Server ports based on nmaps output. This function will run the following tools;
-        WhatWeb, WafW00f, Dirsearch, EyeWitness, Nikto, and curl robots.txt"""
+        WhatWeb, WafW00f, Dirsearch, Nikto, and curl robots.txt"""
         np = nmapParser.NmapParserFunk(self.target)
         np.openPorts()
         http_ports = np.http_ports
+        system_type = np.os_system_type
         if len(http_ports) == 0:
             pass
         else:
@@ -43,43 +44,47 @@ class EnumWeb:
                 os.makedirs(c.getPath("web", "webDir"))
             if not os.path.exists(c.getPath("web", "aquatoneDir")):
                 os.makedirs(c.getPath("web", "aquatoneDir"))
-            vhc = vhostCrawl.checkSource(self.target)
-            vhc.getLinks()
-            htb_source_domains = vhc.htb_source_domains
-            commands = []
             another_array_of_hostnames = []
-            if len(htb_source_domains) != 0:
-                for d in htb_source_domains:
-                    another_array_of_hostnames.append(d)
-            if len(hostnames) != 0:
+            if hostnames:
                 for d in hostnames:
                     another_array_of_hostnames.append(d)
-            if len(another_array_of_hostnames) != 0:
+            if another_array_of_hostnames:
+                vhc = vhostCrawl.checkSource(self.target, hostnames=another_array_of_hostnames)
+                vhc.getLinks()
+                htb_source_domains = vhc.htb_source_domains
+                if htb_source_domains:
+                    for d in htb_source_domains:
+                        another_array_of_hostnames.append(d)
+
+                commands = []
                 sorted_hostnames = sorted(set(another_array_of_hostnames))
                 for hostname in sorted_hostnames:
                     for port in _http_ports:
-                        if not os.path.exists(c.getPath("web", "eyewitnessDirHost", host=hostname, port=port)):
-                            os.makedirs(c.getPath("web", "eyewitnessDirHost", host=hostname, port=port))
-
+                        commands.append(c.getCmd("web", "niktoHost", host=hostname, port=port))
                         commands.append(c.getCmd("web", "whatwebHttpHost", host=hostname, port=port))
-                        commands.append(c.getCmd("web", "eyewitnessHost", host=hostname, port=port))
                         commands.append(c.getCmd("web", "wafw00fHost", host=hostname, port=port))
                         commands.append(c.getCmd("web", "curlRobotsHost", host=hostname, port=port))
-                        commands.append(c.getCmd("web", "dirsearchHttpHostDict", host=hostname, port=port))
-                        commands.append(c.getCmd("web", "dirsearchHttpHostBig", host=hostname, port=port))
-                        commands.append(c.getCmd("web", "niktoHost", host=hostname, port=port))
+                        if system_type:
+                            if system_type[0] == "Windows":
+                                commands.append(c.getCmd("web", "dirsearchHttpHostDictWindows", host=hostname, port=port))
+                            if system_type[0] == "Linux":
+                                commands.append(c.getCmd("web", "dirsearchHttpHostDict", host=hostname, port=port))
+                        else:
+                            commands.append(c.getCmd("web", "dirsearchHttpHostDict", host=hostname, port=port))
+
             else:
                 for port in _http_ports:
-                    if not os.path.exists(c.getPath("web", "eyewitnessDirTarget", port=port)):
-                        os.makedirs(c.getPath("web", "eyewitnessDirTarget", port=port))
-
+                    commands.append(c.getCmd("web", "niktoTarget", port=port))
                     commands.append(c.getCmd("web", "whatwebHttpTarget", port=port))
-                    commands.append(c.getCmd("web", "eyewitnessTarget", port=port))
                     commands.append(c.getCmd("web", "wafw00fTarget", port=port))
                     commands.append(c.getCmd("web", "curlRobotsTarget", port=port))
-                    commands.append(c.getCmd("web", "dirsearchHttpTargetBig", port=port))
-                    commands.append(c.getCmd("web", "dirsearchHttpTargetDict", port=port))
-                    commands.append(c.getCmd("web", "niktoTarget", port=port))
+                    if system_type:
+                        if system_type[0] == "Windows":
+                            commands.append(c.getCmd("web", "dirsearchHttpHostDictWindows", port=port))
+                        if system_type[0] == "Linux":
+                            commands.append(c.getCmd("web", "dirsearchHttpHostDict", port=port))
+                    else:
+                        commands.append(c.getCmd("web", "dirsearchHttpHostDict", port=port))
 
             # sorted_cmds = sorted(set(commands), reverse=True)
             # commands_to_run = [i for i in sorted_cmds]
@@ -294,15 +299,11 @@ fi
             proxy_commands = []
             for proxy in proxy_ports:
                 print(f"""{fg.li_cyan} Enumerating HTTP Ports Through Port: {proxy}, Running the following commands: {fg.rs}""")
-                if not os.path.exists(c.getPath("proxy", "eyewitnessDirPT", proxy=proxy)):
-                    os.makedirs(c.getPath("proxy", "eyewitnessDirPT", proxy=proxy))
-                proxy_commands.append(c.getCmd("proxy", "eyewitnessProxyServer", proxy=proxy))
                 proxy_commands.append(c.getCmd("proxy", "whatwebProxyServer", proxy=proxy))
                 if len(proxy_http_ports) != 0:
                     for proxy_http_port in proxy_http_ports:
                         proxy_commands.append(c.getCmd("proxy", "whatwebProxyHttpPorts", proxy=proxy, httpProxy=proxy_http_port))
                         proxy_commands.append(c.getCmd("proxy", "dirsearchHttpProxyPortsDict", proxy=proxy, httpProxy=proxy_http_port))
-                        proxy_commands.append(c.getCmd("proxy", "dirsearchHttpProxyPortsBig", proxy=proxy, httpProxy=proxy_http_port))
                         proxy_commands.append(c.getCmd("proxy", "niktoProxyHttpPort", proxy=proxy, httpProxy=proxy_http_port))
 
             self.proxy_processes = tuple(proxy_commands)
@@ -336,7 +337,7 @@ class EnumWeb2:
 
     def ScanWebOption(self):
         """Enumerate Web Server ports based on nmaps output. This function will run the following tools;
-        WhatWeb, WafW00f, Dirsearch, EyeWitness, Nikto, and curl robots.txt
+        WhatWeb, WafW00f, Dirsearch, Nikto, and curl robots.txt
         This is almost identical to the normal web scan except it uses much larger wordlists
         """
         np = nmapParser.NmapParserFunk(self.target)
@@ -360,9 +361,6 @@ class EnumWeb2:
                 sorted_hostnames = sorted(set(hostnames))
                 for hostname in sorted_hostnames:
                     for port in http_ports:
-                        if not os.path.exists(c.getPath("web", "eyewitnessDirHost", host=hostname, port=port)):
-                            os.makedirs(c.getPath("web", "eyewitnessDirHost", host=hostname, port=port))
-
                         commands.append(c.getCmd("web", "whatwebHttpHost", host=hostname, port=port))
                         # commands.append(c.getCmd("web", "eyewitnessHost", host=hostname, port=port))
                         # commands.append(c.getCmd("web", "wafw00fHost", host=hostname, port=port))
@@ -375,9 +373,6 @@ class EnumWeb2:
 
             else:
                 for port in http_ports:
-                    if not os.path.exists(c.getPath("web", "eyewitnessDirTarget", port=port)):
-                        os.makedirs(c.getPath("web", "eyewitnessDirTarget", port=port))
-
                     commands.append(c.getCmd("web", "whatwebHttpTarget", port=port))
                     # commands.append(c.getCmd("web", "eyewitnessTarget", port=port))
                     # commands.append(c.getCmd("web", "wafw00fTarget", port=port))
