@@ -9,6 +9,7 @@ from utils import dig_parser
 from subprocess import call
 from utils import config_parser
 from utils import helper_lists
+from collections.abc import Iterable
 
 
 class DomainFinder:
@@ -35,6 +36,14 @@ class DomainFinder:
         ig = helper_lists.ignoreDomains()
         ignore = ig.ignore
         dns = []
+
+        def flatten(lis):
+            for item in lis:
+                if isinstance(item, Iterable) and not isinstance(item, str):
+                    for x in flatten(item):
+                        yield x
+                else:
+                    yield item
         try:
             with open(c.getPath("nmap", "nmap_top_ports_nmap"), "r") as nm:
                 for line in nm:
@@ -176,6 +185,7 @@ class DomainFinder:
 
             ######## Check For Zone Transfer: Running dig ###############
             if len(allsortedhostnameslist) != 0:
+                allsortedhostnameslist = sorted(set(allsortedhostnameslist))
                 alldns = " ".join(map(str, allsortedhostnameslist))
                 zonexferDns = []
                 dig_command = c.getCmd("dns", "dnsDigAxfr", alldns=alldns)
@@ -209,6 +219,14 @@ class DomainFinder:
         c = config_parser.CommandParser(f"{os.getcwd()}/config/config.yaml", self.target)
         ig = helper_lists.ignoreDomains()
         ignore = ig.ignore
+
+        def flatten(lis):
+            for item in lis:
+                if isinstance(item, Iterable) and not isinstance(item, str):
+                    for x in flatten(item):
+                        yield x
+                else:
+                    yield item
         try:
             with open(c.getPath("nmap", "nmap_top_ports_nmap"), "r") as nm:
                 for line in nm:
@@ -254,7 +272,9 @@ class DomainFinder:
                 for x in sub_hosts:
                     self.redirect_hostname.append(x)
             if len(self.redirect_hostname) != 0:
-                alldns = " ".join(map(str, self.redirect_hostname))
+                _alldns = list(flatten(self.redirect_hostname))
+                _alldns = sorted(set(_alldns))
+                alldns = " ".join(map(str, _alldns))
                 zonexferDns = []
                 dig_command = c.getCmd("dns", "dnsDigAxfr", alldns=alldns)
                 dp2 = dig_parser.digParse(self.target, dig_command)
