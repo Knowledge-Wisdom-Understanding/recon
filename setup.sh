@@ -38,6 +38,7 @@ cd /opt
 git clone https://github.com/Hackplayers/evil-winrm.git
 cd evil-winrm
 gem install winrm winrm-fs colorize stringio
+#gem install evil-winrm
 
 echo -e "${DOPE} Installing Joomlavs"
 cd /opt
@@ -52,8 +53,8 @@ apt install patator -y
 cd /opt
 git clone https://github.com/lanjelot/patator.git
 cd patator
-python -m pip install -r requirements.txt
-python setup.py install
+python3 -m pip install -r requirements.txt
+python3 setup.py install
 
 echo -e "${DOPE} Installing EyeWitness"
 apt install eyewitness -y
