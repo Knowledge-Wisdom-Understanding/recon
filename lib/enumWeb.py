@@ -44,6 +44,7 @@ class EnumWeb:
                 os.makedirs(c.getPath("web", "webDir"))
             if not os.path.exists(c.getPath("web", "aquatoneDir")):
                 os.makedirs(c.getPath("web", "aquatoneDir"))
+            commands = []
             another_array_of_hostnames = []
             if hostnames:
                 for d in hostnames:
@@ -56,7 +57,6 @@ class EnumWeb:
                     for d in htb_source_domains:
                         another_array_of_hostnames.append(d)
 
-                commands = []
                 sorted_hostnames = sorted(set(a.lower() for a in another_array_of_hostnames))
                 for hostname in sorted_hostnames:
                     for port in _http_ports:
@@ -80,11 +80,11 @@ class EnumWeb:
                     commands.append(c.getCmd("web", "curlRobotsTarget", port=port))
                     if system_type:
                         if system_type[0] == "Windows":
-                            commands.append(c.getCmd("web", "dirsearchHttpHostDictWindows", port=port))
+                            commands.append(c.getCmd("web", "dirsearchHttpTargetDictWindows", port=port))
                         if system_type[0] == "Linux":
-                            commands.append(c.getCmd("web", "dirsearchHttpHostDict", port=port))
+                            commands.append(c.getCmd("web", "dirsearchHttpTargetDict", port=port))
                     else:
-                        commands.append(c.getCmd("web", "dirsearchHttpHostDict", port=port))
+                        commands.append(c.getCmd("web", "dirsearchHttpTargetDict", port=port))
 
             # sorted_cmds = sorted(set(commands), reverse=True)
             # commands_to_run = [i for i in sorted_cmds]
