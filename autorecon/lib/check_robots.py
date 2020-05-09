@@ -54,7 +54,7 @@ class ParseRobots:
         if self.check_robots():
             robots = self.check_robots()
             disallow_dirs = []
-            regex = r"^\s*Disallow:(.*)"
+            regex = r"^\s*Disallow: (.*)"
             matches = re.findall(regex, robots, re.MULTILINE | re.IGNORECASE)
             if len(matches) < 5:
                 for m in matches:
