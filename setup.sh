@@ -131,4 +131,10 @@ cd "$cwd"
 echo -e "${DOPE} Installing requirements.txt"
 python3 -m pip install -r requirements.txt
 
+echo -e "${DOPE} Symlinking /opt/recon/config/config.yaml to ~/.config/autorecon/config.yaml"
+mkdir -p ~/.config/autorecon
+cd ~/.config/autorecon
+ln -sf /opt/recon/config/config.yaml config.yaml
+cd "$cwd"
+
 echo -e "${DOPE} Congratulations, All tools installed successfully!"

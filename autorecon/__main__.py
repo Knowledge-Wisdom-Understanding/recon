@@ -175,7 +175,6 @@ def signal_handler(sig, frame):
 
 def main():
     """Call All the Functionlity from all lib files to automate the enumeration process."""
-    print('test')
     banner()
     args = argument_parser()
     startTimer = time.time()
