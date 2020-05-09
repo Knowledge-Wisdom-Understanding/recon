@@ -9,3 +9,6 @@ beautifulsoup4==4.8.0
 termcolor==1.1.0
 PyYAML==5.1.2
 xmltodict
+pyasn1
+impacket
+python-ldap

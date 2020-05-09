@@ -54,3 +54,5 @@ utils/htb_parse.py
 cracked*
 t.txt
 cracked
+build
+autorecon.egg-info

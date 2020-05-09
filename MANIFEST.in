@@ -1,0 +1,2 @@
+include autorecon/wordlists/*
+include autorecon/scripts/*
