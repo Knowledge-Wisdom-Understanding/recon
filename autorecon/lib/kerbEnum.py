@@ -45,7 +45,6 @@ class KerbEnum:
                     _users = ' '.join(lines).split()
                     users = [u.replace(f"@{ad_domain}", "") for u in _users if ad_domain in u]
                     # print(users)
-                if users:
                     return users
 
         def parse_ad_domain():

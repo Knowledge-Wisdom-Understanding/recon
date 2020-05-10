@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
 
-# from __future__ import division
-# from __future__ import print_function
-# from __future__ import unicode_literals
 from impacket.ldap import ldap, ldapasn1
 from impacket.krb5 import constants
 from impacket.krb5.asn1 import AS_REQ, KERB_PA_PAC_REQUEST, KRB_ERROR, AS_REP, seq_set, seq_set_iter
@@ -14,7 +11,6 @@ from pyasn1.type.univ import noValue
 import ldap as _ldap
 import random
 import json
-import pprint
 import sys
 from datetime import datetime, timedelta
 import logging
@@ -98,10 +94,8 @@ class enumLdap:
                 searchFilter = "(&(sAMAccountName=*)(objectCategory=user))"
                 sc = ldap.SimplePagedResultsControl(size=100)
                 ldapConnection.search(searchFilter=searchFilter,
-                                      attributes=['sAMAccountName', 'pwdLastSet', 'mail', 'lastLogon'],
+                                      attributes=['sAMAccountName', 'pwdLastSet', 'mail', 'lastLogon', 'sambaNTPassword'],
                                       sizeLimit=0, searchControls=[sc], perRecordCallback=self.processRecord)
-                pp = pprint.PrettyPrinter(indent=2)
-                # pp.pprint(self.users)
                 return self.users
             except ldap.LDAPSearchError:
                 raise
@@ -189,25 +183,3 @@ class enumLdap:
             return '$krb5asrep$%d$%s@%s:%s$%s' % (asRep['enc-part']['etype'], clientName, domain,
                                                   hexlify(asRep['enc-part']['cipher'].asOctets()[:16]).decode(),
                                                   hexlify(asRep['enc-part']['cipher'].asOctets()[16:]).decode())
-
-# class GETNPUSERS:
-#     def __init__(self, target):
-
-# l = ldap.initialize('ldap://10.10.10.161')
-# base = l.search_s(naming_context, ldap.SCOPE_BASE)
-# print(base)
-
-# all_users = l.search_s(naming_context, ldap.SCOPE_SUBTREE)
-# _print.pprint(all_users)
-
-
-# _print.pprint(all_users)
-
-# service_users = l.search_s(naming_context, ldap.SCOPE_SUBTREE,
-#                            filterstr='(&(objectCategory=group)(cn=Test*)(cn=svc*))')
-
-# for u in service_users:
-#     print(u)
-
-
-# print(just_users)

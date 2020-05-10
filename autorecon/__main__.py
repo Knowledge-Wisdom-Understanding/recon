@@ -50,7 +50,7 @@ EXAMPLES = """
     Ex. python3 recon.py -t 10.10.10.10 -s topports remaining
 """
 
-V = "1.0.0"
+V = "1.0.4"
 
 
 def banner():
@@ -67,7 +67,7 @@ def banner():
        __/__/   /_\   \ |  |  \   __\/  _ \|  |       __/ __ \_/ ___\/  _ \|       |
       |   |     ___    \|  |  /|  | (  |_| )  |    |   \  ___/\  \__(  |_| )   |   |
       |___|____/\__\____|____/_|__|\_\____/|__|____|_  /\___  |\___  \____/|___|  /
-      gtihub.com/Knowledge-Wisdom-Understanding  \___\/  \__\/  \__\_/ v{V} \___\/
+      gtihub.com/Knowledge-Wisdom-Understanding  \___\/  \__\/  \__\_/      \___\/ v{V}
 
 """
 

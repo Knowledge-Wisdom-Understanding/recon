@@ -225,7 +225,6 @@ class RunCommands:
         ld.Scan()
         ldap_cmds = ld.processes
         self.mpRun(ldap_cmds)
-        ld.ldapSearch()
 
     def enumOracle(self):
         """Helper Function to Call Oracle Enumeration."""
