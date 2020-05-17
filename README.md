@@ -12,7 +12,7 @@
 - If Virtual Host Routing is detected, **O.G. Auto-Recon** will add the host names to your /etc/hosts file and continue to enumerate the newly discovered host names.
 - DNS enumeration is nerfed to ignore .com .co .eu .uk domains etc... since this tool was designed for CTF's like for instance, "hack the box". It will try to find most .htb domains if dns server's are detected..
 - This project use's various stand-alone & custom tools to enumerate a target based off nmap results.
-- All Commands and output are logged to a Report folder using the naming context, "IP-ADDRESS-Report/" which will look something like, 10.10.10.10-Report/ with a directory tree structure similar to this [report tree structure](../master/docs/overview.md)
+- All Commands and output are logged to a Report folder in the users ~/.local/share/autorecon/report directory using the naming context, "report/IP-ADDRESS/" which will look something like, report/10.10.10.108/ with a directory tree structure similar to this [report tree structure](../master/docs/overview.md)
 
 ### INSTALLATION
 
