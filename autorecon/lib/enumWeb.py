@@ -24,6 +24,38 @@ class EnumWeb:
         self.cms_processes = ""
         self.proxy_processes = ""
 
+    def check_links(self, hostnames, ports):
+        import urllib.request
+        import urllib.error
+        from bs4 import BeautifulSoup
+        import ssl
+        found_links = []
+        for host in hostnames:
+            for port in ports:
+                try:
+                    ctx = ssl.create_default_context()
+                    ctx.check_hostname = False
+                    ctx.verify_mode = ssl.CERT_NONE
+                    url = urllib.request.urlopen(f'http://{host}:{port}/', context=ctx)
+                    soup = BeautifulSoup(url, 'html.parser')
+                    for _link in soup.findAll('a'):
+                        if host in _link.get('href'):
+                            found_links.append(_link.get('href'))
+                except urllib.error.HTTPError as http_err:
+                    print("HTTPError on http://{}:{}/ : {}".format(host, port, http_err))
+                except urllib.error.ContentTooShortError as content_err:
+                    print("ContentTooShortError on http://{}:{}/ : {}".format(host, port, content_err))
+                except urllib.error.URLError as url_err:
+                    print("URLError on http://{}:{}/ : {}".format(host, port, url_err))
+        c = config_parser.CommandParser(f"{os.path.expanduser('~')}/.config/autorecon/config.yaml", self.target)
+        if not os.path.exists(c.getPath("web", "aquatoneDir")):
+            os.makedirs(c.getPath("web", "aquatoneDir"))
+        with open(c.getPath("web", "aquatoneDirUrls"), 'a') as weblinks:
+            if found_links:
+                for l in found_links:
+                    weblinks.write(l + '\n')
+        # return found_links
+
     def Scan(self):
         """Enumerate Web Server ports based on nmaps output. This function will run the following tools;
         WhatWeb, WafW00f, Dirsearch, Nikto, and curl robots.txt"""
@@ -59,6 +91,7 @@ class EnumWeb:
                         another_array_of_hostnames.append(d)
 
                 sorted_hostnames = sorted(set(a.lower() for a in another_array_of_hostnames))
+                self.check_links(sorted_hostnames, http_ports)
                 for hostname in sorted_hostnames:
                     for port in _http_ports:
                         commands.append(c.getCmd("web", "niktoHost", host=hostname, port=port))

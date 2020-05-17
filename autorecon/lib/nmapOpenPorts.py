@@ -27,7 +27,7 @@ class NmapOpenPorts:
         ftpPorts = list(sorted(set(merge(np.ftp_ports, ntop.ftp_ports))))
         smtpPorts = list(sorted(set(merge(ntop.smtp_ports, np.smtp_ports))))
         nfsPorts = list(sorted(set(merge(ntop.nfs_ports, np.nfs_ports))))
-        rpcPorts = list(sorted(set(merge(ntop.rpc_ports, np.rpc_ports))))
+        # rpcPorts = list(sorted(set(merge(ntop.rpc_ports, np.rpc_ports))))
         telnetPorts = list(sorted(set(merge(ntop.telnet_ports, np.telnet_ports))))
         sipPorts = list(sorted(set(merge(ntop.sip_ports, np.sip_ports))))
         vncPorts = list(sorted(set(merge(ntop.vnc_ports, np.vnc_ports))))
@@ -78,13 +78,13 @@ class NmapOpenPorts:
             string_nfs_ports = ",".join(map(str, nfsPorts))
             unsorted_commands.append(c.getCmd("nfs", "nmapNfs", nfsPorts=string_nfs_ports))
             unsorted_commands.append(c.getCmd("nfs", "showmount"))
-        if rpcPorts:
-            if not os.path.exists(c.getPath("rpc", "rpcDir")):
-                os.makedirs(c.getPath("rpc", "rpcDir"))
-            if not os.path.exists(c.getPath("smb", "smbScan")):
-                unsorted_commands.append(c.getCmd("rpc", "enum4linuxRpc"))
-            if which("impacket-rpcdump"):
-                unsorted_commands.append(c.getCmd("rpc", "rpcdump"))
+        # if rpcPorts:
+        #     if not os.path.exists(c.getPath("rpc", "rpcDir")):
+        #         os.makedirs(c.getPath("rpc", "rpcDir"))
+        #     if not os.path.exists(c.getPath("smb", "smbScan")):
+        #         unsorted_commands.append(c.getCmd("rpc", "enum4linuxRpc"))
+        #     if which("impacket-rpcdump"):
+        #         unsorted_commands.append(c.getCmd("rpc", "rpcdump"))
         if cupsPorts:
             string_cups_ports = ",".join(map(str, cupsPorts))
             unsorted_commands.append(c.getCmd("cups", "nmapCups", cupsPorts=string_cups_ports))

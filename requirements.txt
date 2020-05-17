@@ -1,6 +1,7 @@
 sty==1.0.0b11
 tqdm==4.35.0
 wfuzz==2.4
+shodan==1.23.0
 requests==2.21.0
 python_hosts==0.4.6
 psutil==5.6.7
@@ -12,3 +13,4 @@ xmltodict
 pyasn1
 impacket
 python-ldap
+pycurl<=7.43.0.3

@@ -84,33 +84,36 @@ class checkSource:
                     new_entry = HostsEntry(entry_type="ipv4", address=self.target, names=vhostnames)
                     hosts.add([new_entry], merge_names=True)
                     hosts.write()
+                    base_domain_name = []
                     for d in vhostnames:
                         self.htb_source_domains.append(d)
-                    try:
-                        import wfuzz
-                        from tqdm import tqdm
+                        if d.count('.') == 1:
+                            base_domain_name.append(d)
+                    # try:
+                    #     import wfuzz
+                    #     from tqdm import tqdm
 
-                        tk5 = c.getPath("wordlists", "top5Ksubs")
-                        print(f"""{cmd_info} wfuzz -z file,{tk5} -u {vhostnames[0]}:{hp} -H 'Host: FUZZ.{vhostnames[0]}:{hp}'""")
-                        print(f"{fg.li_yellow}Wfuzz's STDOUT is Hidden to prevent filling up Terminal. Desired Response Codes are unpredictable during initial fuzz session. Only 404 is filtered.{fg.rs} STDOUT will be written to {fg.li_magenta}{wfuzzReport}{fg.rs}")
-                        str_domain = f"""{vhostnames[0]}:{hp}"""
-                        fuzz_domain = f"""FUZZ.{vhostnames[0]}:{hp}"""
-                        wordlist_lines = 4997
-                        with tqdm(total=wordlist_lines) as pbar:
-                            for r in wfuzz.fuzz(
-                                url=str_domain,
-                                hc=[404, 400],
-                                payloads=[("file", dict(fn=tk5))],
-                                headers=[("Host", fuzz_domain)],
-                                printer=(wfuzzReport, "raw"),
-                            ):
-                                # print(r)
-                                pbar.update()
-                                pbar.set_description_str(desc=f"{fg.li_yellow}wfuzz{fg.rs}")
-                                # pass
+                    #     tk5 = c.getPath("wordlists", "top5Ksubs")
+                    #     print(f"""{cmd_info} wfuzz -z file,{tk5} -u {base_domain_name[0]}:{hp} -H 'Host: FUZZ.{base_domain_name[0]}:{hp}'""")
+                    #     print(f"{fg.li_yellow}Wfuzz's STDOUT is Hidden to prevent filling up Terminal. Desired Response Codes are unpredictable during initial fuzz session. {fg.rs} STDOUT will be written to {fg.li_magenta}{wfuzzReport}{fg.rs}")
+                    #     str_domain = f"""{base_domain_name[0]}:{hp}"""
+                    #     fuzz_domain = f"""FUZZ.{base_domain_name[0]}:{hp}"""
+                    #     wordlist_lines = 4997
+                    #     with tqdm(total=wordlist_lines) as pbar:
+                    #         for r in wfuzz.fuzz(
+                    #             url=str_domain,
+                    #             hc=[404, 400],
+                    #             payloads=[("file", dict(fn=tk5))],
+                    #             headers=[("Host", fuzz_domain)],
+                    #             printer=(wfuzzReport, "raw"),
+                    #         ):
+                    #             # print(r)
+                    #             pbar.update()
+                    #             pbar.set_description_str(desc=f"{fg.li_yellow}wfuzz{fg.rs}")
+                    #             # pass
 
-                    except Exception as e:
-                        print(e)
+                    # except Exception as e:
+                    #     print(e)
                     if os.path.exists(wfuzzReport):
                         awk_print = "awk '{print $6}'"
                         check_occurances = f"""sed -n -e 's/^.*C=//p' {wfuzzReport} | grep -v "Warning:" | {awk_print} | sort | uniq -c"""
@@ -127,11 +130,11 @@ class checkSource:
                             # print(filt2arr)
                             for htprc in filt2arr:
                                 status_code.append(htprc[1])
-                        if len(status_code) != 0:
+                        if len(status_code) != 0 and len(status_code) <= 5:
                             for _ in status_code:
                                 # print(status_code)
                                 awk_print = "awk '{print $9}'"
-                                get_domain_cmd = f"""grep '{status_code} Ch' {wfuzzReport} | {awk_print}"""
+                                get_domain_cmd = f"""grep '{_} Ch' {wfuzzReport} | {awk_print}"""
                                 get_domains = (
                                     check_output(get_domain_cmd, shell=True, stderr=STDOUT)
                                     .rstrip()
@@ -142,7 +145,7 @@ class checkSource:
                                 if get_domains is not None:
                                     subdomains.append(get_domains)
                                     sub_d = "{}.{}".format(
-                                        subdomains[0], vhostnames[0]
+                                        subdomains[0], base_domain_name[0]
                                     )
 
                                     print(f"""{cmd_info_orange}{fg.li_blue} Found Subdomain!{fg.rs} {fg.li_green}{sub_d}{fg.rs}""")
