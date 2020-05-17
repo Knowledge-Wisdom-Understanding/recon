@@ -131,6 +131,8 @@ else
 fi
 ln -s /opt/fierce/fierce/fierce.py /usr/local/bin/fierce.py
 
+apt install python3-ldap
+
 cd "$cwd"
 echo -e "${DOPE} Installing requirements.txt"
 python3 -m pip install -r requirements.txt
