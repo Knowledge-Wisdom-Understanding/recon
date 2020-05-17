@@ -22,6 +22,7 @@ git clone https://github.com/Knowledge-Wisdom-Understanding/recon.git
 cd recon
 chmod +x setup.sh
 ./setup.sh
+python3 setup.py install
 ```
 
 ### Usage
@@ -37,7 +38,7 @@ chmod +x setup.sh
       gtihub.com/Knowledge-Wisdom-Understanding  \___\/  \__\/  \__\_/ v3.6 \___\/
 
 
-usage: python3 recon.py -t 10.10.10.10
+usage:  autorecon -t 10.10.10.10
 
 An Information Gathering and Enumeration Framework
 
@@ -80,7 +81,7 @@ optional arguments:
 To scan a single target and enumerate based off of nmap results:
 
 ```shell
-python3 recon.py -t 10.10.10.10
+autorecon -t 10.10.10.10
 ```
 
 To Enumerate Web with larger wordlists
@@ -88,24 +89,24 @@ To Enumerate Web with larger wordlists
 - If you don't want to specify a directory , you can just enter ' ' as the argument for --web
 
 ```shell
-python3 recon.py -t 10.10.10.10 -w secret
-python3 recon.py -t 10.10.10.10 -w somedirectory
-python3 recon.py -t 10.10.10.10 -w ' '
+autorecon -t 10.10.10.10 -w secret
+autorecon -t 10.10.10.10 -w somedirectory
+autorecon -t 10.10.10.10 -w ' '
 ```
 
-Typically, on your first run, you should only specify the -t --target option (python3 recon.py -t 10.10.10.10)
+Typically, on your first run, you should only specify the -t --target option (autorecon -t 10.10.10.10)
 Before you can use the -s --service option to specify specific modules, you must have already ran the topports module.
 For instance, if you really wanted to skip all other modules on your first run, and only scan the web after topports,
 you could do something like,
 
 ```shell
-python3 recon.py -t 10.10.10.10 -s topports dns http httpcms ssl sslcms sort_urls aquatone source
+autorecon -t 10.10.10.10 -s topports dns http httpcms ssl sslcms sort_urls aquatone source
 ```
 
 Or skip web enumeration all together but scan everything else.
 
 ```shell
-python3 recon.py -t 10.10.10.10 -i dns http httpcms ssl sslcms sort_urls aquatone source
+autorecon -t 10.10.10.10 -i dns http httpcms ssl sslcms sort_urls aquatone source
 ```
 
 The remaining services module is also dependent on the topports and or fulltcp module.
@@ -116,26 +117,26 @@ will result in missing some udp enumeration.
 To Scan + Enumerate all IPv4 addr's in ips.txt file
 
 ```shell
-python3 recon.py -f ips.txt
+autorecon -f ips.txt
 ```
 
 To Fuzz all found php urls for parameters, you can use the -F --FUZZ flag with no argument.
 
 ```shell
-python3 recon.py -t 10.10.10.10 --FUZZ
+autorecon -t 10.10.10.10 --FUZZ
 ```
 
 Brute force ssh users on default port 22 If unique valid users found, brute force passwords
 
 ```shell
-python3 recon.py -t 10.10.10.10 -b ssh
+autorecon -t 10.10.10.10 -b ssh
 ```
 
 Same as above but for ssh on port 2222 etc...
 
 ```shell
-python3 recon.py -t 10.10.10.10 -b ssh -p 2222
-python3 recon.py -t 10.10.10.10 -b ssh -p 2222 -u slickrick
+autorecon -t 10.10.10.10 -b ssh -p 2222
+autorecon -t 10.10.10.10 -b ssh -p 2222 -u slickrick
 ```
 
 To ignore certain services from being scanned you can specify the -i , --ignore flag.  
@@ -148,21 +149,21 @@ http,httpcms,ssl,sslcms,aquatone,smb,dns,ldap,oracle,source,sort_urls,proxy,prox
 ```
 
 ```shell
-python3 recon.py -t 10.10.10.10 -i http
-python3 recon.py -t 10.10.10.10 -i http ssl
-python3 recon.py --target 10.10.10.10 --ignore fulltcp http
+autorecon -t 10.10.10.10 -i http
+autorecon -t 10.10.10.10 -i http ssl
+autorecon --target 10.10.10.10 --ignore fulltcp http
 ```
 
 You can also specify services that you wish to only scan, similar to the --ignore option, the -s, --service option will only scan the service specified.
 Please note that before you can use the -s, --service option, You must have already ran the topports nmap scan as most modules are dependent on nmap's output.
 
 ```shell
-python3 recon.py -t 10.10.10.10 -s topports remaining
+autorecon -t 10.10.10.10 -s topports remaining
 ```
 
 ```shell
-python3 recon.py -t 10.10.10.10 -s http httpcms
-python3 recon.py -t 10.10.10.10 --service oracle
+autorecon -t 10.10.10.10 -s http httpcms
+autorecon -t 10.10.10.10 --service oracle
 ```
 
 #### Important

@@ -34,20 +34,20 @@ intervals = (
 )
 
 EXAMPLES = """
-    Ex. python3 recon.py -t 10.10.10.10
-    Ex. python3 recon.py -t 10.10.10.10 -w secret
-    Ex. python3 recon.py -t 10.10.10.10 -w somedirectory
-    Ex. python3 recon.py -t 10.10.10.10 -w ' '
-    Ex. python3 recon.py -f ips.txt
-    Ex. python3 recon.py -t 10.10.10.10 --FUZZ
-    Ex. python3 recon.py -t 10.10.10.10 -b ssh
-    Ex. python3 recon.py -t 10.10.10.10 -b ssh -p 2222
-    Ex. python3 recon.py -t 10.10.10.10 -b ssh -u bob -P /usr/share/seclists/Passwords/darkc0de.txt
-    Ex. python3 recon.py -t 10.10.10.10 --ignore http httpcms ssl sslcms aquatone dns
-    Ex. python3 recon.py -t 10.10.10.10 --i ssl sslcms
-    Ex. python3 recon.py -t 10.10.10.10 --i fulltcp topports
-    Ex. python3 recon.py -t 10.10.10.10 --service http
-    Ex. python3 recon.py -t 10.10.10.10 -s topports remaining
+    Ex. autorecon -t 10.10.10.10
+    Ex. autorecon -t 10.10.10.10 -w secret
+    Ex. autorecon -t 10.10.10.10 -w somedirectory
+    Ex. autorecon -t 10.10.10.10 -w ' '
+    Ex. autorecon -f ips.txt
+    Ex. autorecon -t 10.10.10.10 --FUZZ
+    Ex. autorecon -t 10.10.10.10 -b ssh
+    Ex. autorecon -t 10.10.10.10 -b ssh -p 2222
+    Ex. autorecon -t 10.10.10.10 -b ssh -u bob -P /usr/share/seclists/Passwords/darkc0de.txt
+    Ex. autorecon -t 10.10.10.10 --ignore http httpcms ssl sslcms aquatone dns
+    Ex. autorecon -t 10.10.10.10 --i ssl sslcms
+    Ex. autorecon -t 10.10.10.10 --i fulltcp topports
+    Ex. autorecon -t 10.10.10.10 --service http
+    Ex. autorecon -t 10.10.10.10 -s topports remaining
 """
 
 V = "1.0.4"
@@ -97,7 +97,7 @@ def argument_parser():
     parser = argparse.ArgumentParser(
         conflict_handler="resolve",
         description="An Information Gathering and Enumeration Framework",
-        usage="python3 recon.py -t 10.10.10.10",
+        usage="autorecon -t 10.10.10.10",
     )
     parser.add_argument("-t", "--target", help="Single IPv4 Target to Scan")
     parser.add_argument("-F", "--FUZZ", help="auto fuzz found urls ending with .php for params", action="store_true")
@@ -113,7 +113,7 @@ def argument_parser():
         "-w",
         "--web",
         type=str,
-        help="Get open ports for IPv4 address, then only Enumerate Web & and Dns Services. -t,--target must be specified. -w, --web takes a URL as an argument. i.e. python3 recon.py -t 10.10.10.10 -w secret ",
+        help="Get open ports for IPv4 address, then only Enumerate Web & and Dns Services. -t,--target must be specified. -w, --web takes a URL as an argument. i.e. autorecon -t 10.10.10.10 -w secret ",
         nargs="?",
     )
     parser.add_argument(
