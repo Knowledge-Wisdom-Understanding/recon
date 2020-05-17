@@ -12,9 +12,14 @@ cwd=$(echo "$PWD")
 echo -e "${DOPE} Running: apt-get update -y"
 apt-get update -y
 
+apt-get install python-pip
+apt install python3-pip
+
+
 echo -e "${DOPE} Downloading dirsearch repository in /opt folder"
 cd /opt
 git clone https://github.com/maurosoria/dirsearch.git
+
 
 echo -e "${DOPE} Downloading parameth repository in /opt folder"
 cd /opt
@@ -59,14 +64,6 @@ git clone https://github.com/lanjelot/patator.git
 cd patator
 python3 -m pip install -r requirements.txt
 python3 setup.py install
-
-echo -e "${DOPE} Installing EyeWitness"
-apt install eyewitness -y
-cd /opt
-git clone https://github.com/FortyNorthSecurity/EyeWitness.git
-cd EyeWitness && cd setup
-chmod +x setup.sh
-./setup.sh
 
 echo -e "${DOPE} Installing ODAT"
 apt install odat -y
