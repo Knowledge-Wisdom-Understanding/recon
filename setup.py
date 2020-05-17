@@ -13,5 +13,6 @@ setup(name='autorecon',
       license='MIT',
       packages=['autorecon', 'autorecon.lib', 'autorecon.utils'],
       include_package_data=True,
-      install_requires=['sty', 'tqdm', 'PyYAML', 'wfuzz', 'requests', 'python_hosts', 'psutil', 'python_libnmap', 'beautifulsoup4', 'termcolor', 'xmltodict', 'impacket'],
+      install_requires=['sty', 'tqdm', 'PyYAML', 'wfuzz', 'requests', 'python_hosts', 'psutil', 'python_libnmap',
+                        'beautifulsoup4', 'termcolor', 'xmltodict','pyasn1' 'impacket', 'shodan','python-ldap','pycurl'],
       entry_points={'console_scripts': ['autorecon=autorecon.__main__:main']})
