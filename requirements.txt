@@ -14,3 +14,4 @@ pyasn1
 impacket
 python-ldap
 pycurl<=7.43.0.3
+tabulate==0.8.7

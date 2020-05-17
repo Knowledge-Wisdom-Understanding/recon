@@ -27,6 +27,13 @@ git clone https://github.com/maK-/parameth.git
 cd parameth
 python -m pip install -r requirements.txt
 
+export GOPATH="$HOME/go"
+export GOROOT="/usr/lib/go"
+export GOBIN="$GOPATH/bin"
+export PATH="$PATH:$GOPATH/bin"
+
+apt install -y golang
+
 echo -e "${DOPE} Installing kerbrute. Hopefully you have go installed on your system."
 go get github.com/ropnop/kerbrute || echo "doesn't look like you have go installed. go get command failed."
 
