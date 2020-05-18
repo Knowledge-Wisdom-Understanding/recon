@@ -1,14 +1,5 @@
 #!/usr/bin/env python3
 
-import os
-from sty import fg
-from autorecon.lib import nmapParser
-from autorecon.lib import domainFinder
-from subprocess import call
-import glob
-from autorecon.lib import vhostCrawl
-from autorecon.utils import config_parser
-from autorecon.utils import helper_lists
 import requests
 import re
 # from bs4 import BeautifulSoup  # SoupStrainer

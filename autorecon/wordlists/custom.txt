@@ -20088,7 +20088,7 @@ relaunch
 relay
 relcontent
 release
-release
+release/UpdateDetails
 RELEASE_NOTES.txt
 releases
 religion
@@ -24697,6 +24697,8 @@ updates
 updates-topic
 Updates.txt
 UPDATE.txt
+UpdateDetails
+updatedetails
 updown
 upfile
 upfile.php

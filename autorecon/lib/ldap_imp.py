@@ -10,7 +10,7 @@ from pyasn1.codec.der import decoder, encoder
 from pyasn1.type.univ import noValue
 import ldap as _ldap
 import random
-import json
+# import json
 import sys
 from datetime import datetime, timedelta
 import logging
@@ -29,7 +29,7 @@ class enumLdap:
         if "base_domain" in self.cache:
             return self.cache['base']
         else:
-            top_level = self.ll.search_s('', _ldap.SCOPE_BASE, 'objectClass=top')
+            top_level = self.ll.search_s('', _ldap.SCOPE_BASE, 'objectClass=top')  # pylint: disable=no-member
             naming_context = top_level[0][1]['namingContexts'][0].decode('utf-8')
             # print(f"Naming Context: {naming_context}")
             self.cache['base'] = naming_context

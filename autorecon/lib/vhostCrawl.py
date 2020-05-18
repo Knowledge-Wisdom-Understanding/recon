@@ -89,31 +89,31 @@ class checkSource:
                         self.htb_source_domains.append(d)
                         if d.count('.') == 1:
                             base_domain_name.append(d)
-                    # try:
-                    #     import wfuzz
-                    #     from tqdm import tqdm
+                    try:
+                        import wfuzz
+                        from tqdm import tqdm
 
-                    #     tk5 = c.getPath("wordlists", "top5Ksubs")
-                    #     print(f"""{cmd_info} wfuzz -z file,{tk5} -u {base_domain_name[0]}:{hp} -H 'Host: FUZZ.{base_domain_name[0]}:{hp}'""")
-                    #     print(f"{fg.li_yellow}Wfuzz's STDOUT is Hidden to prevent filling up Terminal. Desired Response Codes are unpredictable during initial fuzz session. {fg.rs} STDOUT will be written to {fg.li_magenta}{wfuzzReport}{fg.rs}")
-                    #     str_domain = f"""{base_domain_name[0]}:{hp}"""
-                    #     fuzz_domain = f"""FUZZ.{base_domain_name[0]}:{hp}"""
-                    #     wordlist_lines = 4997
-                    #     with tqdm(total=wordlist_lines) as pbar:
-                    #         for r in wfuzz.fuzz(
-                    #             url=str_domain,
-                    #             hc=[404, 400],
-                    #             payloads=[("file", dict(fn=tk5))],
-                    #             headers=[("Host", fuzz_domain)],
-                    #             printer=(wfuzzReport, "raw"),
-                    #         ):
-                    #             # print(r)
-                    #             pbar.update()
-                    #             pbar.set_description_str(desc=f"{fg.li_yellow}wfuzz{fg.rs}")
-                    #             # pass
+                        tk5 = c.getPath("wordlists", "top5Ksubs")
+                        print(f"""{cmd_info} wfuzz -z file,{tk5} -u {base_domain_name[0]}:{hp} -H 'Host: FUZZ.{base_domain_name[0]}:{hp}'""")
+                        print(f"{fg.li_yellow}Wfuzz's STDOUT is Hidden to prevent filling up Terminal. Desired Response Codes are unpredictable during initial fuzz session. {fg.rs} STDOUT will be written to {fg.li_magenta}{wfuzzReport}{fg.rs}")
+                        str_domain = f"""{base_domain_name[0]}:{hp}"""
+                        fuzz_domain = f"""FUZZ.{base_domain_name[0]}:{hp}"""
+                        wordlist_lines = 4997
+                        with tqdm(total=wordlist_lines) as pbar:
+                            for r in wfuzz.fuzz(
+                                url=str_domain,
+                                hc=[404, 400],
+                                payloads=[("file", dict(fn=tk5))],
+                                headers=[("Host", fuzz_domain)],
+                                printer=(wfuzzReport, "raw"),
+                            ):
+                                # print(r)
+                                pbar.update()
+                                pbar.set_description_str(desc=f"{fg.li_yellow}wfuzz{fg.rs}")
+                                # pass
 
-                    # except Exception as e:
-                    #     print(e)
+                    except Exception as e:
+                        print(e)
                     if os.path.exists(wfuzzReport):
                         awk_print = "awk '{print $6}'"
                         check_occurances = f"""sed -n -e 's/^.*C=//p' {wfuzzReport} | grep -v "Warning:" | {awk_print} | sort | uniq -c"""
