@@ -5,7 +5,7 @@ from impacket.dcerpc.v5.rpcrt import DCERPCException
 from impacket.examples import logger
 from impacket.nt_errors import STATUS_MORE_ENTRIES
 import logging
-import json
+# import json
 from datetime import datetime
 from tabulate import tabulate
 from sty import fg

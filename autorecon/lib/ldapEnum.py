@@ -7,7 +7,7 @@ from autorecon.utils import config_parser, helper_lists
 import re
 from subprocess import call, PIPE, Popen
 import requests
-from collections.abc import Iterable
+# from collections.abc import Iterable
 from impacket.smbconnection import SMBConnection, SessionError
 from time import sleep
 

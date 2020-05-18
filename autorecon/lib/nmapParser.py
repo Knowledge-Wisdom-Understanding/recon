@@ -126,7 +126,6 @@ class NmapParserFunk:
                         print(f"Key Error: {ke_err}")
                     except ValueError as ve_err:
                         print(f"Value Error: {ve_err}")
-                        pass
                     # print(self.os_system)
                     if self.os_system:
                         self.os_system = self.os_system[0].split()

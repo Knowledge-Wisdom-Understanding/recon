@@ -10,7 +10,6 @@ from subprocess import call, PIPE, Popen
 import requests
 from autorecon.utils import helper_lists
 from collections.abc import Iterable
-import datetime
 
 
 class KerbEnum:
