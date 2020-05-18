@@ -34,16 +34,13 @@ class KerbEnum:
                 else:
                     yield item
 
-        def parse_users(ad_domain):
+        def parse_users():
             """
             Returns a list of users
             """
             if os.path.exists(c.getPath("kerberos", "kerbUsers")):
                 with open(c.getPath("kerberos", "kerbUsers"), 'r') as kbu:
-                    lines = [l.strip() for l in kbu.readlines()]
-                    _users = ' '.join(lines).split()
-                    users = [u.replace(f"@{ad_domain}", "") for u in _users if ad_domain in u]
-                    # print(users)
+                    users = [u.split()[6].split('@')[0] for u in kbu.readlines() if 'VALID USERNAME:' in u]
                     return users
 
         def parse_ad_domain():
@@ -83,7 +80,7 @@ class KerbEnum:
                 dope_cmd = f"""{c.getCmd("kerberos", "kerbrute", domain=str(domain[0]))}"""
                 print(f"[{fg.li_magenta}+{fg.rs}] {dope_cmd}")
                 call(dope_cmd, shell=True)
-                users = parse_users(str(domain[0]))
+                users = parse_users()
                 if users:
                     print(users)
                     print("Todo: finish this module...")
