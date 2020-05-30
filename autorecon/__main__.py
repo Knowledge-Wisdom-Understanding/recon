@@ -315,7 +315,7 @@ def main():
         and (not args.FUZZ)
     ):
         validateIP()
-        if os.path.exists(f"{args.target}-Report/nmap/top-ports-{args.target}.nmap"):
+        if os.path.exists(f"~/.local/share/autorecon/reports/{args.target}/nmap/top-ports-{args.target}.nmap"):
             reset_timer()
             rc.enumDNS()
             rwc.enumHTTP2()
@@ -368,7 +368,7 @@ def main():
                     and (args.USERS is None)
                 ):
                     print(f"{teal}Brute Forcing SSH usernames with wordlist: {cwd}/wordlists/usernames.txt on default SSH port,{reset} {args.port}")
-                    if os.path.exists(f"{args.target}-Report/nmap/top-ports-{args.target}.nmap"):
+                    if os.path.exists(f"~/.local/share/autorecon/reports/{args.target}/nmap/top-ports-{args.target}.nmap"):
                         sshUserBrute()
                     else:
                         rc.scanTopTcpPorts()
@@ -394,7 +394,7 @@ def main():
                     and (args.USERS is None)
                 ):
                     print(f"{teal}Brute Forcing SSH usernames on port,{reset} {args.port}")
-                    if os.path.exists(f"{args.target}-Report/nmap/top-ports-{args.target}.nmap"):
+                    if os.path.exists(f"~/.local/share/autorecon/reports/{args.target}/nmap/top-ports-{args.target}.nmap"):
                         sshUserBrute()
                     else:
                         rc.scanTopTcpPorts()
