@@ -57,6 +57,12 @@ class checkSource:
                         for x in matches:
                             if any(s in x for s in htb):
                                 source_domain_name.append(x)
+                    for link in soup.find_all('img'):
+                        src_matches = link.get('src')
+                        matches = re.findall(r"(?:[a-zA-Z0-9](?:[a-zA-Z0-9\-]{,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{3}", src_matches)
+                        for x in matches:
+                            if any(s in x for s in htb):
+                                source_domain_name.append(x)
                 except requests.exceptions.ConnectionError as ce_error:
                     print("Connection Error: ", ce_error)
                     continue

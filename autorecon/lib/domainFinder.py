@@ -10,6 +10,18 @@ from subprocess import call
 from autorecon.utils import config_parser
 from autorecon.utils import helper_lists
 from collections.abc import Iterable
+from urllib.request import Request, urlopen, ssl, socket
+from urllib.error import URLError, HTTPError
+import json
+
+
+def flatten(lis):
+    for item in lis:
+        if isinstance(item, Iterable) and not isinstance(item, str):
+            for x in flatten(item):
+                yield x
+        else:
+            yield item
 
 
 class DomainFinder:
@@ -22,8 +34,21 @@ class DomainFinder:
         self.redirect_hostname = []
         self.fqdn_hostname = []
 
-    def sslScanner(self):
-        pass
+    def sslScanner(self, url, port):
+        """
+        ToDo: Impliment this function
+        """
+        context = ssl.create_default_context()
+        with socket.create_connection((url, port)) as sock:
+            with context.wrap_socket(sock, server_hostname=url) as ssock:
+                # encryption_version = ssock.version()
+                data = json.dumps(ssock.getpeercert(), indent=2)
+                _data = json.loads(data)
+                # expiration_date = _data['notAfter']
+                subjectAltName = _data['subjectAltName']
+        alt_hosts = list(flatten(subjectAltName))
+        alt_hosts = list(filter(('DNS').__ne__, alt_hosts))
+        return sorted(set(alt_hosts))
 
     def Scan(self):
         """Parse nmap's output from the top open ports scan and use regex to find valid hostnames that are

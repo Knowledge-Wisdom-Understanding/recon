@@ -365,7 +365,7 @@ paths:
     "http_vulns": "$reportDir/vulns/http-title.log"
     "all_vulns": "$reportDir/vulns/all-services.log"
   wordlists:
-    "top5Ksubs": "/usr/share/seclists/Discovery/DNS/subdomains-top1million-5000.txt"
+    "top5Ksubs": "$pwd/wordlists/subdomains-top1million-5000.txt"
     "wordlistsDir": "$reportDir/wordlists"
     "ldapUsernames": "$reportDir/wordlists/ldapUsernames.txt"
     "usernames_wordlist": "$pwd/wordlists/usernames.txt"

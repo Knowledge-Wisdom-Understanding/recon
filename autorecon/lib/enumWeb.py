@@ -41,6 +41,9 @@ class EnumWeb:
                     for _link in soup.findAll('a'):
                         if host in _link.get('href'):
                             found_links.append(_link.get('href'))
+                    for _link in soup.findAll('img'):
+                        if host in _link.get('src'):
+                            found_links.append(_link.get('src'))
                 except urllib.error.HTTPError as http_err:
                     print("HTTPError on http://{}:{}/ : {}".format(host, port, http_err))
                 except urllib.error.ContentTooShortError as content_err:
