@@ -3,6 +3,8 @@
 import requests
 import re
 # from bs4 import BeautifulSoup  # SoupStrainer
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
 class ParseRobots:
@@ -47,19 +49,11 @@ class ParseRobots:
             disallow_dirs = []
             regex = r"^\s*Disallow: (.*)"
             matches = re.findall(regex, robots, re.MULTILINE | re.IGNORECASE)
-            if len(matches) < 5:
-                for m in matches:
-                    disallow_dirs.append(m.replace("/", ""))
-                return disallow_dirs
-            else:
-                return None
-
-    def testing(self):
-        if self.interesting_dirs():
-            all_dirs = self.interesting_dirs()
-            print(all_dirs)
-
-
-# c = ParseRobots('10.10.10.187', '80', althost='admirer.htb')
-# c.interesting_dirs()
-# c.testing()
+            for m in matches:
+                if "*" not in m:
+                    if ' ' in m:
+                        disallow_dirs.append(m.lstrip("/").split(' ')[0])
+                    else:
+                        disallow_dirs.append(m.lstrip("/"))
+            return disallow_dirs
+        return None

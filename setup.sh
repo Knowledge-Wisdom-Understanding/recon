@@ -12,8 +12,10 @@ cwd=$(echo "$PWD")
 echo -e "${DOPE} Running: apt-get update -y"
 apt-get update -y
 
-apt-get install python-pip
-apt install python3-pip
+apt-get install python-pip -y
+apt-get install python3-pip -y
+apt-get install build-essential python3-dev libldap2-dev libsasl2-dev slapd ldap-utils -y
+apt-get install python-dev libssl-dev -y
 
 
 echo -e "${DOPE} Downloading dirsearch repository in /opt folder"

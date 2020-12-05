@@ -1,7 +1,6 @@
 
 !
 ..;/
-/
 @
 [
 ]
@@ -552,7 +551,6 @@ __
 2co
 2d
 2db
-%2e%2e//google.com
 2-easy-ways
 2_files
 2g

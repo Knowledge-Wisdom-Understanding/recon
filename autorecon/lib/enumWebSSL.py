@@ -4,6 +4,7 @@ import os
 from sty import fg
 from autorecon.lib import nmapParser
 from autorecon.lib import dnsenum
+from autorecon.lib import check_robots
 from autorecon.utils import peaceout_banner
 import glob
 from autorecon.utils import config_parser
@@ -55,13 +56,24 @@ class EnumWebSSL:
                     commands.append(c.getCmd("webSSL", "whatwebSSLTarget", port=sslport))
                     commands.append(c.getCmd("webSSL", "wafw00fSSLTarget", port=sslport))
                     commands.append(c.getCmd("webSSL", "curlRobotsSSLTarget", port=sslport))
+                    robots_check = check_robots.ParseRobots(self.target, sslport, tls=True)
+                    disallowed_dirs = robots_check.interesting_dirs()
                     if system_type:
                         if system_type[0] == "Windows":
                             commands.append(c.getCmd("webSSL", "dirsearchSSLTargetDictWindows", port=sslport))
+                            if disallowed_dirs:
+                                for _dir in disallowed_dirs:
+                                    commands.append(c.getCmd("webSSL", "dirsearchDisallowedWindows", port=sslport, dirname=_dir))
                         if system_type[0] == "Linux":
                             commands.append(c.getCmd("webSSL", "dirsearchSSLTargetDict", port=sslport))
+                            if disallowed_dirs:
+                                for _dir in disallowed_dirs:
+                                    commands.append(c.getCmd("webSSL", "dirsearchDisallowed", port=sslport, dirname=_dir))
                     else:
                         commands.append(c.getCmd("webSSL", "dirsearchSSLTargetDict", port=sslport))
+                        if disallowed_dirs:
+                            for _dir in disallowed_dirs:
+                                commands.append(c.getCmd("webSSL", "dirsearchDisallowed", port=sslport, dirname=_dir))
             else:
                 for sslport in ssl_ports:
                     for host in hostnames:
@@ -69,13 +81,24 @@ class EnumWebSSL:
                         commands.append(c.getCmd("webSSL", "whatwebSSLHost", host=host, port=sslport))
                         commands.append(c.getCmd("webSSL", "wafw00fSSLHost", host=host, port=sslport))
                         commands.append(c.getCmd("webSSL", "curlRobotsSSLHost", host=host, port=sslport))
+                        robots_check = check_robots.ParseRobots(self.target, sslport, althost=host, tls=True)
+                        disallowed_dirs = robots_check.interesting_dirs()
                         if system_type:
                             if system_type[0] == "Windows":
                                 commands.append(c.getCmd("webSSL", "dirsearchSSLHostDictWindows", host=host, port=sslport))
+                                if disallowed_dirs:
+                                    for _dir in disallowed_dirs:
+                                        commands.append(c.getCmd("webSSL", "dirsearchHostDisallowedWindows", host=host, port=sslport, dirname=_dir))
                             if system_type[0] == "Linux":
                                 commands.append(c.getCmd("webSSL", "dirsearchSSLHostDict", host=host, port=sslport))
+                                if disallowed_dirs:
+                                    for _dir in disallowed_dirs:
+                                        commands.append(c.getCmd("webSSL", "dirsearchHostDisallowed", host=host, port=sslport, dirname=_dir))
                         else:
                             commands.append(c.getCmd("webSSL", "dirsearchSSLHostDict", host=host, port=sslport))
+                            if disallowed_dirs:
+                                for _dir in disallowed_dirs:
+                                    commands.append(c.getCmd("webSSL", "dirsearchHostDisallowed", host=host, port=sslport, dirname=_dir))
 
             self.processes = tuple(commands)
 
