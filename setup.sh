@@ -21,8 +21,12 @@ apt-get install python-dev libssl-dev -y
 # Using forked version of dirsearch with a fix that i made. Will change this back once it get's merged into the original dirsearch project.
 echo -e "${DOPE} Downloading dirsearch repository in /opt folder"
 cd /opt
-# git clone https://github.com/maurosoria/dirsearch.git
-git clone --single-branch --branch prevent_added_to_queue_when_non_recursive https://github.com/Knowledge-Wisdom-Understanding/dirsearch.git
+if [ -d "/opt/dirsearch" ]; then
+    :
+else
+    # git clone https://github.com/maurosoria/dirsearch.git
+    git clone --single-branch --branch prevent_added_to_queue_when_non_recursive https://github.com/Knowledge-Wisdom-Understanding/dirsearch.git
+fi
 
 
 echo -e "${DOPE} Downloading parameth repository in /opt folder"
