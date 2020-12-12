@@ -55,5 +55,6 @@ class ParseRobots:
                         disallow_dirs.append(m.lstrip("/").split(' ')[0])
                     else:
                         disallow_dirs.append(m.lstrip("/"))
-            return disallow_dirs
+            _disallow_dirs = [d.rstrip('/') for d in disallow_dirs]
+            return _disallow_dirs
         return None
