@@ -181,7 +181,7 @@ commands:
     "nmapTopTcpPorts": "nmap -vv -Pn -O -sV -sC -p $topTcpPorts --script-timeout 5m -oA $nmapReportDir/top-ports-$target $target"
     "nmapFullTcpScan": "nmap -vv -Pn -sC -sV -p- -T4 --script-timeout 2m -oA $nmapReportDir/full-tcp-scan-$target $target"
     "nmapTopUdpScan": "nmap -sUV -vv --reason -T4 --max-retries 3 --max-rtt-timeout 150ms -pU:$topUdpPorts -oA $nmapReportDir/top-udp-ports $target"
-    "nmapVulners": "nmap -vv -sV -Pn --script nmap-vulners -p $openTcpPorts -oA $nmapReportDir/vulnscan-$target $target"
+    "nmapVulners": "nmap -vv -sV -Pn --script nmap-vulners/ -p $openTcpPorts -oA $nmapReportDir/vulnscan-$target $target"
   ldap:
     "nmapLdap": "nmap -vv -Pn -sV -p $ldapPorts --script ldap* -oA $nmapReportDir/ldap-$target $target"
     "enum4linuxLdap": "enum4linux -a -M -l -d $target | tee $reportDir/ldap/ldapEnum4linux.log"

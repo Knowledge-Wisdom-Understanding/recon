@@ -5,6 +5,7 @@ from subprocess import call, check_output, STDOUT
 from autorecon.lib import nmapParser
 import glob
 from autorecon.utils import config_parser
+import datetime
 
 
 class DefaultLinuxUsers:
@@ -211,6 +212,7 @@ class DirsearchURLS:
 
     def genDirsearchUrlList(self):
         c = config_parser.CommandParser(f"{os.path.expanduser('~')}/.config/autorecon/config.yaml", self.target)
+        current_month = datetime.datetime.now().strftime("%b")
         awkprint = "{print $3}"
         dirsearch_files = []
         dir_list = [
@@ -238,7 +240,7 @@ class DirsearchURLS:
 
         if len(dirsearch_files) != 0:
             all_dirsearch_files_on_one_line = " ".join(map(str, dirsearch_files))
-            url_list_cmd = f"""cat {all_dirsearch_files_on_one_line} | grep -Ev '400|403' | awk '{awkprint}' | sort -u >> {c.getPath("web", "aquatoneDirUrls")}"""
+            url_list_cmd = f"""cat {all_dirsearch_files_on_one_line} | grep -Ev '400|403|401|{current_month}' | awk '{awkprint}' | sort -u >> {c.getPath("web", "aquatoneDirUrls")}"""
             call(url_list_cmd, shell=True)
 
     def genProxyDirsearchUrlList(self):
@@ -248,6 +250,7 @@ class DirsearchURLS:
         Be opened up in the firefox web browser."""
 
         c = config_parser.CommandParser(f"{os.path.expanduser('~')}/.config/autorecon/config.yaml", self.target)
+        current_month = datetime.datetime.now().strftime("%b")
         if os.path.exists(c.getPath("proxy", "proxyDir")):
             awkprint = "{print $3}"
             dirsearch_files = []
@@ -271,7 +274,7 @@ class DirsearchURLS:
 
             if len(dirsearch_files) != 0:
                 all_dirsearch_files_on_one_line = " ".join(map(str, dirsearch_files))
-                url_list_cmd = f"""cat {all_dirsearch_files_on_one_line} | grep -Ev '400|403' | awk '{awkprint}' | sort -u > {c.getPath("proxy", "aquatoneDirProxyUrls")}"""
+                url_list_cmd = f"""cat {all_dirsearch_files_on_one_line} | grep -Ev '400|403|401|{current_month}' | awk '{awkprint}' | sort -u > {c.getPath("proxy", "aquatoneDirProxyUrls")}"""
                 call(url_list_cmd, shell=True)
 
 
