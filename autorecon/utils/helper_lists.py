@@ -257,7 +257,6 @@ class DirsearchURLS:
                 if urls:
                     all_urls = more_links + urls
                     all_urls = sorted(set(all_urls))
-                    print(all_urls)
                     with open(c.getPath("web", "aquatoneDirUrls"), 'w') as _adu:
                         if all_urls:
                             for i in all_urls:
