@@ -242,7 +242,7 @@ class DirsearchURLS:
                 with open(_file, 'r') as _f:
                     lines = [x.strip() for x in _f.readlines()]
                     _lines = [x.split(' ') for x in lines if 'Time:' not in x and x != '']
-                    _urls = [x for x in _lines if x[0] not in ['400', '401', '403']]
+                    _urls = [x for x in _lines if x[0] not in ['400', '401', '403', '307']]
                     __urls = [x[-1] for x in _urls]
                     for link in __urls:
                         urls.append(link)
