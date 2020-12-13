@@ -16,12 +16,22 @@
 
 ### INSTALLATION
 
+- Virtual Environment is the preferred method of installation
+
+```bash
+mkdir -p ~/pyenv
+python3 -m pip install virtualenv
+virtualenv -p python3 ~/pyenv/autorecon
+```
+
 ```bash
 cd /opt
 git clone https://github.com/Knowledge-Wisdom-Understanding/recon.git
 cd recon
 chmod +x setup.sh
 ./setup.sh
+source ~/pyenv/autorecon/bin/activate
+python3 -m pip install -r requirements.txt
 python3 setup.py install
 ```
 
