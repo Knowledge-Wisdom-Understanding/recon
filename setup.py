@@ -3,7 +3,7 @@
 from setuptools import setup
 
 setup(name='autorecon',
-      version='4.0.1',
+      version='4.2.0',
       description='Automatic Recon Tool',
       classifiers='Development Status :: 2 - Beta',
       keywords='autorecon recon auto-recon og-autorecon autorecon-og',

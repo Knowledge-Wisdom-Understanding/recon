@@ -45,7 +45,7 @@ python3 setup.py install
        __/__/   /_\   \ |  |  \   __\/  _ \|  |       __/ __ \_/ ___\/  _ \|       |
       |   |     ___    \|  |  /|  | (  |_| )  |    |   \  ___/\  \__(  |_| )   |   |
       |___|____/\__\____|____/_|__|\_\____/|__|____|_  /\___  |\___  \____/|___|  /
-      gtihub.com/Knowledge-Wisdom-Understanding  \___\/  \__\/  \__\_/ v3.6 \___\/
+      github.com/Knowledge-Wisdom-Understanding  \___\/  \__\/  \__\_/      \___\/ v4.2.0
 
 
 usage:  autorecon -t 10.10.10.10
