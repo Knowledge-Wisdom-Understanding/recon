@@ -10,6 +10,7 @@ import sys
 import random
 import os
 import socket
+from loguru import logger
 from autorecon.utils import run_commands
 from autorecon.utils import run_web_commands
 
@@ -173,8 +174,15 @@ def signal_handler(sig, frame):
     sys.exit(0)
 
 
+@logger.catch
 def main():
     """Call All the Functionlity from all lib files to automate the enumeration process."""
+    signal.signal(signal.SIGINT, signal_handler)
+    project_root = '/'.join(f"{os.path.dirname(os.path.realpath(__file__))}".split('/')[:-1])
+    if not os.path.exists(f"{project_root}/log"):
+        os.makedirs(f"{project_root}/log")
+    logger.add(f"{project_root}/log/debug.log", format="{time} {level} {message}", level="DEBUG")
+
     banner()
     args = argument_parser()
     startTimer = time.time()
@@ -448,5 +456,4 @@ def main():
 
 
 if __name__ == "__main__":
-    signal.signal(signal.SIGINT, signal_handler)
     main()

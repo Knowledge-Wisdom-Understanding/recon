@@ -16,3 +16,4 @@ python-ldap>=3.3.1
 pycurl>=7.43.0.6
 tabulate>=0.8.7
 urllib3>=1.25.9
+loguru>=0.5.3

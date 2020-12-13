@@ -7,7 +7,8 @@ import os
 
 class CommandParser:
     def __init__(self, config_path, target):
-        self.pwd = f"{os.path.dirname(os.path.realpath(__file__))}/../"
+        # self.pwd = f"{os.path.dirname(os.path.realpath(__file__))}/../"
+        self.pwd = '/'.join(f"{os.path.dirname(os.path.realpath(__file__))}".split('/')[:-1])
         self.target = target
         self.reportDir = f"""{os.path.expanduser('~')}/.local/share/autorecon/reports/{target}"""
         self.nmapReportDir = f"{self.reportDir}/nmap"

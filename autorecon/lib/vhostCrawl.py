@@ -221,6 +221,7 @@ class sourceCommentChecker:
                 print(fnf_error)
                 pass
             print(f"{cmd_info}{fg.li_yellow} Checking for comments in the source from found URL's...{fg.rs}")
+            url_list = sorted(set(url_list))
             for link in url_list:
                 if "https://" in link:
                     if not os.path.exists(c.getPath("webSSL", "webSSLDir")):
