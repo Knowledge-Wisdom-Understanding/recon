@@ -28,6 +28,11 @@ else
     git clone --single-branch --branch prevent_added_to_queue_when_non_recursive https://github.com/Knowledge-Wisdom-Understanding/dirsearch.git
 fi
 
+echo -e "${DOPE} Cloning enum4linux-ng repository to /opt folder"
+cd /opt
+git clone https://github.com/cddmp/enum4linux-ng.git
+
+
 
 echo -e "${DOPE} Downloading parameth repository in /opt folder"
 cd /opt

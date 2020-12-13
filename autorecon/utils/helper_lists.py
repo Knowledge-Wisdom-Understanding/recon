@@ -212,8 +212,6 @@ class DirsearchURLS:
 
     def genDirsearchUrlList(self):
         c = config_parser.CommandParser(f"{os.path.expanduser('~')}/.config/autorecon/config.yaml", self.target)
-        current_month = datetime.datetime.now().strftime("%b")
-        awkprint = "{print $3}"
         dirsearch_files = []
         dir_list = [
             d
@@ -239,9 +237,36 @@ class DirsearchURLS:
                             call(f"cat {rf}", shell=True)
 
         if len(dirsearch_files) != 0:
-            all_dirsearch_files_on_one_line = " ".join(map(str, dirsearch_files))
-            url_list_cmd = f"""cat {all_dirsearch_files_on_one_line} | grep -Ev '400|403|401|{current_month}' | awk '{awkprint}' | sort -u >> {c.getPath("web", "aquatoneDirUrls")}"""
-            call(url_list_cmd, shell=True)
+            urls = []
+            for _file in dirsearch_files:
+                with open(_file, 'r') as _f:
+                    lines = [x.strip() for x in _f.readlines()]
+                    _lines = [x.split(' ') for x in lines if 'Time:' not in x and x != '']
+                    _urls = [x for x in _lines if x[0] not in ['400', '401', '403']]
+                    __urls = [x[-1] for x in _urls]
+                    for link in __urls:
+                        urls.append(link)
+            urls = sorted(set(urls))
+            more_links = []
+            if os.path.exists(c.getPath("web", "aquatoneDirUrls")):
+                with open(c.getPath("web", "aquatoneDirUrls"), 'r') as adu:
+                    _links = [x.strip() for x in adu.readlines()]
+                    for i in _links:
+                        if i != '':
+                            more_links.append(i)
+                if more_links:
+                    if urls:
+                        all_urls = more_links + urls
+                        all_urls = sorted(set(all_urls))
+                with open(c.getPath("web", "aquatoneDirUrls"), 'w') as _adu:
+                    if all_urls:
+                        for i in all_urls:
+                            _adu.write(i + '\n')
+            else:
+                with open(c.getPath("web", "aquatoneDirUrls"), 'w') as _adu:
+                    if urls:
+                        for i in urls:
+                            _adu.write(i + '\n')
 
     def genProxyDirsearchUrlList(self):
         """This Class, genProxyDirsearchUrlList is reponsible for sorting all the found URL's

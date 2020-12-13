@@ -12,7 +12,7 @@ commands:
     "dirsearchHttpHostDict": "python3 /opt/dirsearch/dirsearch.py -u http://$host:$port -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101 Firefox/68.0' -e php,html -w $pwd/wordlists/custom.txt -f -t 80 -x 401,404,500,502 --plain-text-report $reportDir/web/dirsearch-dict-$host-$port.log"
     "dirsearchHttpTargetDictWindows": "python3 /opt/dirsearch/dirsearch.py -u http://$target:$port -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101 Firefox/68.0' -e asp,aspx,php,html -w $pwd/wordlists/custom.txt -f -t 80 -x 401,404,500,502 --plain-text-report $reportDir/web/dirsearch-dict-$target-$port.log"
     "dirsearchDisallowed": "python3 /opt/dirsearch/dirsearch.py -u http://$target:$port/$dirname/ -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101 Firefox/68.0' -e php,html,txt,xml -w $pwd/wordlists/better-common.txt -t 80 -x 401,404,500,502 --plain-text-report $reportDir/web/dirsearch-disallowed-$target-$port.log"
-    "dirsearchHostDisallowed": "python3 /opt/dirsearch/dirsearch.py -u http://$host:$port/$dirname/ -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101 Firefox/68.0' -e php,html,txt,xml -w $pwd/wordlists/better-common.txt -f -t 80 -x 401,404,500,502 --plain-text-report $reportDir/web/dirsearch-disallowed-$target-$port.log"
+    "dirsearchHostDisallowed": "python3 /opt/dirsearch/dirsearch.py -u http://$host:$port/$dirname/ -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101 Firefox/68.0' -e php,html -w $pwd/wordlists/better-common.txt -t 80 -x 401,404,500,502 --plain-text-report $reportDir/web/dirsearch-disallowed-$target-$port.log"
     "dirsearchHostDisallowedWindows": "python3 /opt/dirsearch/dirsearch.py -u http://$host:$port/$dirname/ -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101 Firefox/68.0' -e php,html,txt,xml,asp,aspx -w $pwd/wordlists/better-common.txt -t 80 -x 401,404,500,502 --plain-text-report $reportDir/web/dirsearch-disallowed-$target-$port.log"
     "dirsearchDisallowedWindows": "python3 /opt/dirsearch/dirsearch.py -u http://$target:$port/$dirname/ -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101 Firefox/68.0' -e asp,aspx,php,html,txt,xml -w $pwd/wordlists/better-common.txt -t 80 -x 401,404,500,502 --plain-text-report $reportDir/web/dirsearch-disallowed-$target-$port.log"
     "dirsearchHttpHostDictWindows": "python3 /opt/dirsearch/dirsearch.py -u http://$host:$port -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101 Firefox/68.0' -e asp,aspx,php,html,txt,xml -w $pwd/wordlists/custom.txt -t 80 -x 401,404,500,502 --plain-text-report $reportDir/web/dirsearch-dict-$host-$port.log"
@@ -74,7 +74,7 @@ commands:
     "dirsearchSSLHostRaftLargeDirs": "python3 /opt/dirsearch/dirsearch.py -u https://$host:$port/$url -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101 Firefox/68.0' -e php,asp,aspx,html,txt -w /usr/share/seclists/Discovery/Web-Content/raft-large-directories.txt -t 80 -x 401,404,500,502 --plain-text-report $reportDir/webSSL/dirsearch-raftLargeDirs-$host-$port.log"
     "dirsearchSSLTargetForeign": "python3 /opt/dirsearch/dirsearch.py -u https://$target:$port/$url -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101 Firefox/68.0' -e php,asp,aspx,html,txt -w $pwd/wordlists/foreign.txt -t 80 -x 401,404,500,502 --plain-text-report $reportDir/webSSL/dirsearch-foreign-$target-$port.log"
     "dirsearchSSLHostForeign": "python3 /opt/dirsearch/dirsearch.py -u https://$host:$port/$url -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101 Firefox/68.0' -e php,asp,aspx,html,txt -w $pwd/wordlists/foreign.txt -t 80 -x 401,404,500,502 --plain-text-report $reportDir/webSSL/dirsearch-foreign-$host-$port.log"
-    "dirsearchHostDisallowed": "python3 /opt/dirsearch/dirsearch.py -u https://$host:$port/$dirname/ -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101 Firefox/68.0' -e php,html,txt,xml -w $pwd/wordlists/better-common.txt -f -t 80 -x 401,404,500,502 --plain-text-report $reportDir/web/dirsearch-disallowed-$target-$port.log"
+    "dirsearchHostDisallowed": "python3 /opt/dirsearch/dirsearch.py -u https://$host:$port/$dirname/ -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101 Firefox/68.0' -e php,html,txt,xml -w $pwd/wordlists/better-common.txt -t 80 -x 401,404,500,502 --plain-text-report $reportDir/web/dirsearch-disallowed-$target-$port.log"
     "dirsearchHostDisallowedWindows": "python3 /opt/dirsearch/dirsearch.py -u https://$host:$port/$dirname/ -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101 Firefox/68.0' -e php,html,txt,xml,asp,aspx -w $pwd/wordlists/better-common.txt -t 80 -x 401,404,500,502 --plain-text-report $reportDir/web/dirsearch-disallowed-$target-$port.log"
     "dirsearchDisallowedWindows": "python3 /opt/dirsearch/dirsearch.py -u https://$target:$port/$dirname/ -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101 Firefox/68.0' -e asp,aspx,php,html,txt,xml -w $pwd/wordlists/better-common.txt -t 80 -x 401,404,500,502 --plain-text-report $reportDir/web/dirsearch-disallowed-$target-$port.log"
     "dirsearchDisallowed": "python3 /opt/dirsearch/dirsearch.py -u http://$target:$port/$dirname/ -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101 Firefox/68.0' -e php,html,txt,xml -w $pwd/wordlists/better-common.txt -t 80 -x 401,404,500,502 --plain-text-report $reportDir/web/dirsearch-disallowed-$target-$port.log"
@@ -184,7 +184,7 @@ commands:
     "nmapVulners": "nmap -vv -sV -Pn --script nmap-vulners/ -p $openTcpPorts -oA $nmapReportDir/vulnscan-$target $target"
   ldap:
     "nmapLdap": "nmap -vv -Pn -sV -p $ldapPorts --script ldap* -oA $nmapReportDir/ldap-$target $target"
-    "enum4linuxLdap": "enum4linux -a -M -l -d $target | tee $reportDir/ldap/ldapEnum4linux.log"
+    "enum4linuxLdap": "python3 /opt/enum4linux-ng/enum4linux-ng.py -L -v $target -oY $reportDir/ldap/ldapEnum4linux"
     "GetNPUsers": "/usr/share/doc/python3-impacket/examples/GetNPUsers.py $domain/ -dc-ip $target -usersfile $reportDir/wordlists/ldapUsernames.txt | tee $reportDir/ldap/getNPUserNamesBrute.log"
     "authCheck": "perl $pwd/scripts/acc_check.pl -t $target -U $reportDir/wordlists/ldapUsernames.txt -P $reportDir/wordlists/ldapUsernames.txt -v | tee $reportDir/loot/smb_auth_check.log"
     "authChecker": "perl $pwd/scripts/acc_check.pl -t $target -U $reportDir/wordlists/ldapUsernames.txt -p $password -v | tee $reportDir/loot/smb_auth_check2.log"
@@ -205,7 +205,7 @@ commands:
     "smbmapHR": "smbmap -H $target -R | tee -a $reportDir/smb/smb-scan-$target.log"
     "smbmapNull": "smbmap -u null -p '' -H $target | tee -a $reportDir/smb/smb-scan-$target.log"
     "smbmapNullR": "smbmap -u null -p '' -H $target -R | tee -a $reportDir/smb/smb-scan-$target.log"
-    "enum4linux": "enum4linux -av $target | tee -a $reportDir/smb/enum4linux-$target.log"
+    "enum4linux": "python3 /opt/enum4linux-ng/enum4linux-ng.py -A -C -R $target -oY $reportDir/smb/enum4linux-ng-$target"
     "authSmb": "smbmap -H $target -u '$validPass' -p '$validPass' -R | tee $reportDir/loot/authorized_smbmap.log"
     "azure": "smbmap -H $target -u '$validPass' -p '$validPass' -R 'users$$\\mhope' --download 'users$$\\mhope\\azure.xml' -q"
   smtp:
@@ -217,7 +217,7 @@ commands:
     "snmpCheck": "snmp-check -c public -v 1 -d $target | tee $reportDir/snmp/snmpcheck.log"
     "onesixtyone": "onesixtyone -c /usr/share/doc/onesixtyone/dict.txt $target | tee $reportDir/snmp/onesixtyone.log"
   rpc:
-    "enum4linuxRpc": "enum4linux -av $target | tee $reportDir/rpc/enum4linux.log"
+    "enum4linuxRpc": "python3 /opt/enum4linux-ng/enum4linux-ng.py -A -C -R $target -oY $reportDir/rpc/enum4linux-ng-$target"
     "rpcdump": "impacket-rpcdump @$target | tee $reportDir/rpc/rpcdump.log"
   telnet:
     "nmapTelnet": "nmap -Pn -sV -p $telnetPorts --script='banner,telnet-encryption,telnet-ntlm-info' -oA $nmapReportDir/telnet $target"
@@ -360,7 +360,7 @@ paths:
   rpc:
     "rpcDir": "$reportDir/rpc"
     "impRpc": "$reportDir/rpc/rpcdump.log"
-    "rpcEnum4linux": "$reportDir/rpc/rpcEnum4linux.log"
+    "rpcEnum4linux": "$reportDir/rpc/enum4linux-ng-$target.yaml"
   vuln:
     "vulnDir": "$reportDir/vulns"
     "ftp_vulns": "$reportDir/vulns/ftp.log"
@@ -415,7 +415,7 @@ paths:
     "kerbUsers": "$reportDir/kerberos/kerbrute_usernames.log"
   ldap:
     "ldapDir": "$reportDir/ldap"
-    "ldapEnum4linux": "$reportDir/ldap/ldapEnum4linux.log"
+    "ldapEnum4linux": "$reportDir/ldap/ldapEnum4linux.yaml"
     "nmapLdap": "$nmapReportDir/ldap-$target.nmap"
     "getNPUserNamesBrute": "$reportDir/ldap/getNPUserNamesBrute.log"
   loot:
