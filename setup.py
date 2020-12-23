@@ -14,5 +14,6 @@ setup(name='autorecon',
       packages=['autorecon', 'autorecon.lib', 'autorecon.utils'],
       include_package_data=True,
       install_requires=['sty', 'tqdm', 'PyYAML', 'wfuzz', 'requests', 'python_hosts', 'psutil', 'python_libnmap',
-                        'beautifulsoup4', 'termcolor', 'xmltodict', 'pyasn1', 'python-ldap', 'ldap3', 'impacket', 'shodan', 'pycurl', 'tabulate', 'urllib3' 'loguru'],
+                        'beautifulsoup4', 'termcolor', 'xmltodict', 'pyasn1', 'python-ldap', 'ldap3', 'impacket',
+                        'shodan', 'pycurl', 'tabulate', 'urllib3', 'loguru'],
       entry_points={'console_scripts': ['autorecon=autorecon.__main__:main']})
