@@ -1657,6 +1657,7 @@ football
 footer
 footers
 for
+forecast
 forcedownload
 forget
 forgot
