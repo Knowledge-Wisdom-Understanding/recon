@@ -82,7 +82,7 @@ class checkSource:
                     vhostnames = [i.lower() for i in sorted(set(all_hostnames))]
                     vhost_log = open(c.getPath("web", "vhostnames"), "a+")
                     for vh in vhostnames:
-                        vhost_log.write(vh)
+                        vhost_log.write(vh + "\n")
                     vhost_log.close()
                     print(f"""{cmd_info_orange} {fg.li_magenta}Found{fg.rs} {fg.cyan}{vhostnames}{fg.rs} in {fg.li_red}The Source!{fg.rs} http://{self.target}:{hp}""")
                     print(f"""{cmd_info} {fg.li_magenta}Adding{fg.rs} {fg.li_cyan} {vhostnames}{fg.rs} to /etc/hosts file""")
@@ -133,38 +133,38 @@ class checkSource:
                         filt2arr = [c for c in res_filt if len(c) != 0 and int(c[0]) < 5]
                         status_code = []
                         if len(filt2arr) != 0 and (len(filt2arr) < 5):
-                            # print(filt2arr)
                             for htprc in filt2arr:
                                 status_code.append(htprc[1])
                         if len(status_code) != 0 and len(status_code) <= 5:
+                            subdomains = []
                             for _ in status_code:
-                                # print(status_code)
                                 awk_print = "awk '{print $9}'"
-                                get_domain_cmd = f"""grep '{_} Ch' {wfuzzReport} | {awk_print}"""
+                                get_domain_cmd = f"""grep '{_} Ch' {wfuzzReport} | {awk_print} | sort -fu"""
                                 get_domains = (
                                     check_output(get_domain_cmd, shell=True, stderr=STDOUT)
                                     .rstrip()
                                     .decode("utf-8")
                                     .replace('"', "")
+                                    .split()
                                 )
-                                subdomains = []
-                                if get_domains is not None:
-                                    subdomains.append(get_domains)
-                                    sub_d = "{}.{}".format(
-                                        subdomains[0], base_domain_name[0]
-                                    )
+                                _get_domains = sorted(set(get_domains))
+                                if _get_domains:
+                                    for name in _get_domains:
+                                        subdomains.append(name)
+                                    if subdomains:
+                                        sub_d = [f"{s}.{base_domain_name[0]}" for s in subdomains]
 
-                                    print(f"""{cmd_info_orange}{fg.li_blue} Found Subdomain!{fg.rs} {fg.li_green}{sub_d}{fg.rs}""")
-                                    print(f"""{cmd_info}{fg.li_magenta} Adding{fg.rs} {fg.li_cyan}{sub_d}{fg.rs} to /etc/hosts file""")
-                                    hosts = Hosts(path="/etc/hosts")
-                                    new_entry = HostsEntry(
-                                        entry_type="ipv4",
-                                        address=self.target,
-                                        names=[sub_d],
-                                    )
-                                    hosts.add([new_entry], merge_names=True)
-                                    hosts.write()
-                                    self.htb_source_domains.append(sub_d)
+                                        print(f"""{cmd_info_orange}{fg.li_blue} Found Subdomain!{fg.rs} {fg.li_green}{sub_d}{fg.rs}""")
+                                        print(f"""{cmd_info}{fg.li_magenta} Adding{fg.rs} {fg.li_cyan}{sub_d}{fg.rs} to /etc/hosts file""")
+                                        hosts = Hosts(path="/etc/hosts")
+                                        new_entry = HostsEntry(
+                                            entry_type="ipv4",
+                                            address=self.target,
+                                            names=sub_d,
+                                        )
+                                        hosts.add([new_entry], merge_names=True)
+                                        hosts.write()
+                                        self.htb_source_domains.append(sub_d)
 
 
 class sourceCommentChecker:

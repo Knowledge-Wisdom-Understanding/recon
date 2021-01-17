@@ -10,8 +10,18 @@ from autorecon.lib import vhostCrawl
 from autorecon.lib import check_robots
 from autorecon.utils import config_parser
 from autorecon.utils import helper_lists
+from collections.abc import Iterable
 # import requests
 # from bs4 import BeautifulSoup  # SoupStrainer
+
+
+def flatten(lis):
+    for item in lis:
+        if isinstance(item, Iterable) and not isinstance(item, str):
+            for x in flatten(item):
+                yield x
+        else:
+            yield item
 
 
 class EnumWeb:
@@ -24,7 +34,7 @@ class EnumWeb:
         self.cms_processes = ""
         self.proxy_processes = ""
 
-    def check_links(self, hostnames, ports):
+    def check_links(self, hostnames: list, ports: list):
         import urllib.request
         import urllib.error
         from bs4 import BeautifulSoup
@@ -93,7 +103,7 @@ class EnumWeb:
                     for d in htb_source_domains:
                         another_array_of_hostnames.append(d)
 
-                sorted_hostnames = sorted(set(a.lower() for a in another_array_of_hostnames))
+                sorted_hostnames = sorted(set(a.lower() for a in flatten(another_array_of_hostnames)))
                 self.check_links(sorted_hostnames, http_ports)
                 for hostname in sorted_hostnames:
                     for port in _http_ports:
