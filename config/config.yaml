@@ -237,6 +237,7 @@ paths:
     "webDir": "$reportDir/web"
     "eyewitnessDirHost": "$reportDir/web/eyewitness-$host-$port"
     "eyewitnessDirTarget": "$reportDir/web/eyewitness-$target-$port"
+    "aquatoneRobots": "$reportDir/web/dirsearch-robots.log"
     "webWhatweb": "$reportDir/web/whatweb"
     "webNikto": "$reportDir/web/niktoscan"
     "webDs": "$reportDir/web/dirsearch"

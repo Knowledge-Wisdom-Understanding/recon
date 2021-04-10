@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 
+from autorecon.utils import config_parser
 import requests
 import re
 # from bs4 import BeautifulSoup  # SoupStrainer
 import urllib3
+from os import path
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
@@ -16,16 +18,27 @@ class ParseRobots:
         self.proxy_processes = ""
         self.tls = tls
         self.althost = althost
+        self.conf = config_parser.CommandParser(f"{path.expanduser('~')}/.config/autorecon/config.yaml", self.target)
 
-    def check_robots(self):
+    def get_url_path(self, robots=False):
         if self.tls is True:
             url_prefix = 'https://'
         else:
             url_prefix = 'http://'
         if self.althost:
-            url = f"{url_prefix}{self.althost}:{self.port}/robots.txt"
+            if robots:
+                url = f"{url_prefix}{self.althost}:{self.port}/robots.txt"
+            else:
+                url = f"{url_prefix}{self.althost}:{self.port}"
         else:
-            url = f"{url_prefix}{self.target}:{self.port}/robots.txt"
+            if robots:
+                url = f"{url_prefix}{self.target}:{self.port}/robots.txt"
+            else:
+                url = f"{url_prefix}{self.target}:{self.port}"
+        return url
+
+    def check_robots(self):
+        url = self.get_url_path(robots=True)
 
         try:
             req = requests.get(url, verify=False)
@@ -56,5 +69,24 @@ class ParseRobots:
                     else:
                         disallow_dirs.append(m.lstrip("/"))
             _disallow_dirs = [d.rstrip('/') for d in disallow_dirs]
-            return _disallow_dirs
+            with open(self.conf.getPath("web", "aquatoneRobots"), "w") as ar:
+                base_url = self.get_url_path()
+                for d in _disallow_dirs:
+                    ar.write(f"{base_url}/{d}"+"\n")
+
+            ignore = ['CHANGELOG', 'install', 'MAINTAINERS', 'themes', 'includes', 'modules', 'UPGRADE', 'LICENSE', 'INSTALL', 'update']
+            split_dirs = [path.splitext(d) for d in _disallow_dirs]
+            crawl_dirs = []
+            for d in split_dirs:
+                if len(d) == 1 and d[0] not in ignore:
+                    crawl_dirs.append(d)
+                elif len(d) == 2 and '.' not in d[0] and "?" not in d[0] and "/" not in d[0] and d[0] not in ignore:
+                    crawl_dirs.append(d[0])
+                elif len(d) == 2 and '.' in d[0]:
+                    continue
+
+            if len(crawl_dirs) <= 10:
+                return crawl_dirs
+            else:
+                return None
         return None
