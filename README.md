@@ -7,7 +7,6 @@
 
 - The purpose of O.G. Auto-Recon is to automate the initial information gathering phase and then enumerate based off those results as much as possible.
 - This tool is intended for CTF's and can be fairly noisy. (Not the most stealth conscious tool...)
-- All tools in this project are compliant with the OSCP exam rules.
 - Command syntax can be easily modified in the [Config](../master/config/config.yaml) settings. \$variable names should remain unchanged.
 - If Virtual Host Routing is detected, **O.G. Auto-Recon** will add the host names to your /etc/hosts file and continue to enumerate the newly discovered host names.
 - DNS enumeration is nerfed to ignore .com .co .eu .uk domains etc... since this tool was designed for CTF's like for instance, "hack the box". It will try to find most .htb domains if dns server's are detected..
@@ -190,15 +189,6 @@ autorecon -t 10.10.10.10 --service oracle
 This program is intended to be used in kali linux.
 If you notice a bug or have a feature request. Please create an issue or submit a pull request. Thanks!
 
-## Fun-Facts
-
-- I am aware that there is another very similar project with the same name Auto-Recon.
-- Originally, this project started out as a bash script [Auto-Recon-Bash-Version](https://github.com/Knowledge-Wisdom-Understanding/Auto-Recon) which quickly got out of hand maintenance wise.
-- Don't get it twisted :smiling_imp: The name Auto-Recon wasn't bitten. :green_apple:
-- Original first commit to bash version [Auto-Recon Original Commit](https://github.com/Knowledge-Wisdom-Understanding/Auto-Recon/commit/2c03459fa0c9844a66ba58097b326340bb4ef662)
-- Tib3rius's first commit to his project [Tib3rius Auto-Recon](https://github.com/Tib3rius/AutoRecon/commit/a08eeed021df9025e15361914c7332ef1f37b04e)
-- Coincidentally, both projects were created on March 1st, 2019.
-- Don't sweat the bozack. :sunglasses:
 
 ## Disclaimer
 
