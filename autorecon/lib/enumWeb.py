@@ -49,17 +49,28 @@ class EnumWeb:
                     url = urllib.request.urlopen(f'http://{host}:{port}/', context=ctx)
                     soup = BeautifulSoup(url, 'html.parser')
                     for _link in soup.findAll('a'):
-                        if host in _link.get('href'):
-                            found_links.append(_link.get('href'))
+                        try:
+                            if host in _link.get('href'):
+                                found_links.append(_link.get('href'))
+                        except TypeError as err:
+                            print(f"TypeError: {err}")
+                            break
                     for _link in soup.findAll('img'):
-                        if host in _link.get('src'):
-                            found_links.append(_link.get('src'))
+                        try:
+                            if host in _link.get('src'):
+                                found_links.append(_link.get('src'))
+                        except TypeError as err:
+                            print(f"TypeError: {err}")
+                            break
                 except urllib.error.HTTPError as http_err:
                     print("HTTPError on http://{}:{}/ : {}".format(host, port, http_err))
+                    break
                 except urllib.error.ContentTooShortError as content_err:
                     print("ContentTooShortError on http://{}:{}/ : {}".format(host, port, content_err))
+                    break
                 except urllib.error.URLError as url_err:
                     print("URLError on http://{}:{}/ : {}".format(host, port, url_err))
+                    break
         c = config_parser.CommandParser(f"{os.path.expanduser('~')}/.config/autorecon/config.yaml", self.target)
         if not os.path.exists(c.getPath("web", "aquatoneDir")):
             os.makedirs(c.getPath("web", "aquatoneDir"))
@@ -284,7 +295,7 @@ class EnumWeb:
                                                     manual_brute_force_script = f"""#!/bin/bash
 
 if [[ -n $(grep -i "User(s) Identified" {c.getPath("web","wpscanHttpTarget", httpPort=http_port)}) ]]; then
-    grep -w -A 100 "User(s)" {c.getPath("web","wpscanHttpTarget", httpPort=http_port)} | grep -w "[+]" | grep -v "WPVulnDB" | cut -d " " -f 2 | head -n -7 >{c.getPath("web", "wordpressUsers")}
+    grep -w -A 100 "User(s)" {c.getPath("web","wpscanHttpTarget", httpPort=http_port)} | grep -w "[+]" | grep -v "WPVulnDB" | cut -d " " -f 2 >{c.getPath("web", "wordpressUsers")}
     {c.getCmd("web", "CewlWeb", httpPort=http_port)}
     sleep 10
     echo "Adding John Rules to Cewl Wordlist!"
