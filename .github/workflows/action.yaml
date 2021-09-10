@@ -32,8 +32,12 @@ jobs:
       run: |
         source ~/pyenv/autorecon/bin/activate
         python3 -m pip install -e .
-        which autorecon
+        if command -v autorecon; then
+          sudo autorecon --help
+        else
+          echo -e "[-] autorecon not in path"
+        fi
     - name: Lint
       run: |
         python3 -m pip install pylint
-        pylint --rcfile=.pylintrc ./autorecon
+        pylint --rcfile=.pylintrc ./autorecon 2>/dev/null || echo -e "[-] Something went wrong"
