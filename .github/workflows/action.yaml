@@ -1,0 +1,33 @@
+name: Inspection
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [3.9]
+        os: ['ubuntu-latest']
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        python3 -m pip install --upgrade pip
+        pip install -r requirements.txt
+        python3 setup.py install
+    - name: Test
+      run: |
+        autorecon --help
+    - name: Lint
+      run: |
+        flake8 . --exclude=thirdparty --count --ignore=E501,F403,F405 --show-source --statistics
+        # exit-zero treats all errors as warnings.  Max complexity is currently 77.
+        flake8 . --exclude=thirdparty --count --ignore=E501 --exit-zero --max-complexity=10 --statistics

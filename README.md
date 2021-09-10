@@ -1,7 +1,6 @@
 # O.G. AUTO-RECON
 
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/fa8f5aab4e434f848e5b7f27bb9eb816)](https://app.codacy.com/app/Knowledge-Wisdom-Understanding/recon?utm_source=github.com&utm_medium=referral&utm_content=Knowledge-Wisdom-Understanding/recon&utm_campaign=Badge_Grade_Dashboard)
-[![HitCount](http://hits.dwyl.io/Knowledge-Wisdom-Understanding/https://githubcom/Knowledge-Wisdom-Understanding/recon.svg)](http://hits.dwyl.io/Knowledge-Wisdom-Understanding/https://githubcom/Knowledge-Wisdom-Understanding/recon)
+[![Donate](https://img.shields.io/badge/Donate-PayPal-yellow.svg)](https://www.paypal.com/donate?business=YR6C4WB5CDZZL&no_recurring=0&item_name=contribute+to+open+source&currency_code=USD)
 
 ## Features
 
@@ -188,7 +187,6 @@ autorecon -t 10.10.10.10 --service oracle
 
 This program is intended to be used in kali linux.
 If you notice a bug or have a feature request. Please create an issue or submit a pull request. Thanks!
-
 
 ## Disclaimer
 
