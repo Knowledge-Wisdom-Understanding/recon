@@ -15,10 +15,9 @@ apt-get update -y
 apt-get install python-pip -y
 apt-get install python3-pip -y
 apt-get install build-essential python3-dev libldap2-dev libsasl2-dev slapd ldap-utils -y
-apt-get install python-dev libssl-dev -y
+apt-get install python-dev libcurl4-openssl-dev libssl-dev -y
+apt-get install python3-pycurl -y
 
-
-# Using forked version of dirsearch with a fix that i made. Will change this back once it get's merged into the original dirsearch project.
 echo -e "${DOPE} Downloading dirsearch repository in /opt folder"
 cd /opt
 git clone https://github.com/maurosoria/dirsearch.git
