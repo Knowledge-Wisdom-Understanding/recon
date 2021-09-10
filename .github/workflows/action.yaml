@@ -31,7 +31,8 @@ jobs:
     - name: Test
       run: |
         source ~/pyenv/autorecon/bin/activate
-        sudo autorecon --help
+        python3 -m pip install -e .
+        which autorecon
     - name: Lint
       run: |
         python3 -m pip install pylint
