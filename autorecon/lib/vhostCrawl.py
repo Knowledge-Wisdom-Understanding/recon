@@ -134,7 +134,8 @@ class checkSource:
                         status_code = []
                         if len(filt2arr) != 0 and (len(filt2arr) < 5):
                             for htprc in filt2arr:
-                                status_code.append(htprc[1])
+                                if len(htprc) >= 2:
+                                    status_code.append(htprc[1])
                         if len(status_code) != 0 and len(status_code) <= 5:
                             subdomains = []
                             for _ in status_code:
