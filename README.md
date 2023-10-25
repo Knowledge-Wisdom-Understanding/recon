@@ -1,7 +1,5 @@
 # O.G. AUTO-RECON
 
-[![Donate](https://img.shields.io/badge/Donate-PayPal-yellow.svg)](https://www.paypal.com/donate?business=YR6C4WB5CDZZL&no_recurring=0&item_name=contribute+to+open+source&currency_code=USD)
-
 ## Features
 
 - The purpose of O.G. Auto-Recon is to automate the initial information gathering phase and then enumerate based off those results as much as possible.
